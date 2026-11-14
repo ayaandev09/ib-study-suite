@@ -1,0 +1,138 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <!-- Multi-chroma ambient quad aura -->
+    <radialGradient id="suiteAura" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.25"/>
+      <stop offset="35%" stop-color="#a855f7" stop-opacity="0.20"/>
+      <stop offset="65%" stop-color="#10b981" stop-opacity="0.15"/>
+      <stop offset="85%" stop-color="#f59e0b" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Spectrum Rim Gradient uniting all 4 disciplines -->
+    <linearGradient id="spectrumRim" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fbbf24"/>   <!-- Literature Amber -->
+      <stop offset="28%" stop-color="#a855f7"/>  <!-- STEM Violet -->
+      <stop offset="55%" stop-color="#38bdf8"/>  <!-- Economics Sky -->
+      <stop offset="78%" stop-color="#10b981"/>  <!-- Business Emerald -->
+      <stop offset="100%" stop-color="#f43f5e"/> <!-- German Rose -->
+    </linearGradient>
+
+    <linearGradient id="specularRimHighlight" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.6"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0.05"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <!-- Codex Glass Page Gradients -->
+    <linearGradient id="leftPageGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#cbd5e1" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#64748b" stop-opacity="0.7"/>
+    </linearGradient>
+
+    <linearGradient id="rightPageGrad" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="40%" stop-color="#e2e8f0" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#94a3b8" stop-opacity="0.7"/>
+    </linearGradient>
+
+    <!-- Center IB Diamond Star -->
+    <linearGradient id="goldCore" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fffbeb"/>
+      <stop offset="35%" stop-color="#fde047"/>
+      <stop offset="75%" stop-color="#f59e0b"/>
+      <stop offset="100%" stop-color="#d97706"/>
+    </linearGradient>
+
+    <filter id="glowDrop" x="-30%" y="-30%" width="160%" height="160%">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Quad-Chroma Aura -->
+  <circle cx="256" cy="256" r="244" fill="url(#suiteAura)"/>
+
+  <!-- Outer Glass Medallion Body (Deep Obsidian Base) -->
+  <circle cx="256" cy="256" r="230" fill="#070913" stroke="url(#spectrumRim)" stroke-width="7" stroke-opacity="0.95"/>
+  <circle cx="256" cy="256" r="230" fill="none" stroke="url(#specularRimHighlight)" stroke-width="3"/>
+
+  <!-- Inner Astrolabe Coordinate Ring (6 Sub-disciplines) -->
+  <circle cx="256" cy="256" r="212" fill="none" stroke="#ffffff" stroke-width="1.8" stroke-dasharray="6 6" stroke-opacity="0.35"/>
+  <circle cx="256" cy="256" r="198" fill="none" stroke="#38bdf8" stroke-width="1" stroke-opacity="0.25"/>
+
+  <!-- Four Discipline Orbital Ellipses -->
+  <!-- 1. STEM Orbit (Violet / Quanta) -->
+  <ellipse cx="256" cy="256" rx="175" ry="68" transform="rotate(-30 256 256)" fill="none" stroke="#a855f7" stroke-width="2.2" stroke-opacity="0.7" stroke-dasharray="12 4"/>
+  <!-- 2. Literature Orbit (Amber / Drama) -->
+  <ellipse cx="256" cy="256" rx="175" ry="68" transform="rotate(30 256 256)" fill="none" stroke="#f59e0b" stroke-width="2.2" stroke-opacity="0.7"/>
+  <!-- 3. Social Sciences Orbit (Emerald / Equilibrium) -->
+  <ellipse cx="256" cy="256" rx="175" ry="68" transform="rotate(90 256 256)" fill="none" stroke="#10b981" stroke-width="2.2" stroke-opacity="0.7" stroke-dasharray="8 6"/>
+
+  <!-- Discipline Node Beads on Orbits -->
+  <!-- Top: Literature Quill / Crown Bead (Amber) -->
+  <circle cx="256" cy="74" r="10" fill="#f59e0b" stroke="#fef08a" stroke-width="3" filter="url(#glowDrop)"/>
+  <path d="M256,66 L259,74 L256,82 L253,74 Z" fill="#ffffff"/>
+
+  <!-- Right: STEM Atom / Quantum Bead (Violet) -->
+  <circle cx="410" cy="170" r="9" fill="#a855f7" stroke="#e9d5ff" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <circle cx="410" cy="170" r="3.5" fill="#ffffff"/>
+
+  <!-- Bottom Right: Economics Vector Node (Sky) -->
+  <circle cx="395" cy="336" r="8.5" fill="#0284c7" stroke="#bae6fd" stroke-width="2" filter="url(#glowDrop)"/>
+
+  <!-- Bottom Left: Business C-Suite Node (Emerald) -->
+  <circle cx="118" cy="336" r="8.5" fill="#059669" stroke="#a7f3d0" stroke-width="2" filter="url(#glowDrop)"/>
+
+  <!-- Left: Languages Global Speech Rosette (Rose) -->
+  <circle cx="102" cy="170" r="9" fill="#e11d48" stroke="#fecdd3" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <circle cx="102" cy="170" r="3.5" fill="#ffffff"/>
+
+  <!-- ==================== CENTRAL CODEX & KNOWLEDGE NEXUS ==================== -->
+
+  <!-- Open Academic Codex (Left Page) -->
+  <path d="M 256,365 C 220,358 170,352 144,360 C 138,362 134,357 134,351 L 138,245 C 138,240 142,236 148,235 C 174,228 220,234 256,248 Z"
+        fill="url(#leftPageGrad)" stroke="#ffffff" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <!-- Left Page Ruling Lines -->
+  <path d="M 158,262 C 185,258 220,264 244,272" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 156,282 C 185,278 220,284 244,292" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 154,302 C 185,298 220,304 244,312" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 152,322 C 185,318 220,324 244,332" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+
+  <!-- Open Academic Codex (Right Page) -->
+  <path d="M 256,365 C 292,358 342,352 368,360 C 374,362 378,357 378,351 L 374,245 C 374,240 370,236 364,235 C 338,228 292,234 256,248 Z"
+        fill="url(#rightPageGrad)" stroke="#ffffff" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <!-- Right Page Ruling Lines -->
+  <path d="M 268,272 C 292,264 327,258 354,262" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 268,292 C 292,284 327,278 356,282" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 268,312 C 292,304 327,298 358,302" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+  <path d="M 268,332 C 292,324 327,318 360,322" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
+
+  <!-- Codex Spine Rib -->
+  <path d="M 256,248 L 256,367" stroke="#334155" stroke-width="4.5" stroke-linecap="round"/>
+  <path d="M 256,248 L 256,367" stroke="#f1f5f9" stroke-width="1.8" stroke-linecap="round"/>
+
+  <!-- Floating Prismatic Diamond Nexus above Codex -->
+  <g transform="translate(0, -32)">
+    <!-- Prismatic Backing Glow -->
+    <circle cx="256" cy="205" r="42" fill="#fbbf24" fill-opacity="0.25" filter="url(#glowDrop)"/>
+
+    <!-- 8-Point Diamond Star Facets -->
+    <!-- Primary Vertical Rhombus -->
+    <polygon points="256,138 274,205 256,238 238,205" fill="url(#goldCore)" stroke="#fff" stroke-width="2"/>
+    <!-- Primary Horizontal Rhombus -->
+    <polygon points="189,205 256,187 289,205 256,223" fill="url(#goldCore)" stroke="#fff" stroke-width="2" fill-opacity="0.9"/>
+
+    <!-- Diagonal Accent Beams -->
+    <line x1="215" y1="164" x2="297" y2="246" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.85"/>
+    <line x1="297" y1="164" x2="215" y2="246" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.85"/>
+
+    <!-- Epicenter Sparkle Bead -->
+    <circle cx="256" cy="205" r="8" fill="#ffffff" filter="url(#glowDrop)"/>
+    <circle cx="256" cy="205" r="4" fill="#fef08a"/>
+  </g>
+
+  <!-- Top Specular Rim Reflection Arch -->
+  <path d="M 120,135 A 210,210 0 0,1 392,135" fill="none" stroke="url(#specularRimHighlight)" stroke-width="3.5" stroke-linecap="round"/>
+</svg>

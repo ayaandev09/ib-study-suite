@@ -1,0 +1,217 @@
+import { ModuleAppMetadata, SessionSnapshot, SubjectCluster } from "@/types/workspace";
+
+export const SUBJECT_CLUSTERS: Record<
+  SubjectCluster,
+  { label: string; description: string; color: string }
+> = {
+  literature: {
+    label: "Literature & Language A",
+    description: "Orwell 1984 Paper 1/2/IO/HL Essay critical analysis & Newspeak synthesis",
+    color: "#f43f5e",
+  },
+  "social-sciences": {
+    label: "Social Sciences",
+    description: "IB Business Management SL/HL & IB Economics SL/HL (May 2027)",
+    color: "#f59e0b",
+  },
+  "stem-languages": {
+    label: "STEM & Language B",
+    description: "IB Biology SL/HL, IB Physics SL/HL & IB German B SL/HL (May 2027)",
+    color: "#22c55e",
+  },
+};
+
+export const MODULE_CATALOG: Record<string, ModuleAppMetadata> = {
+  biology: {
+    id: "biology",
+    title: "IB Biology SL / HL",
+    shortTitle: "Biology",
+    subjectCode: "BIO-SLHL-2027",
+    cluster: "stem-languages",
+    clusterLabel: "STEM & Language B",
+    description:
+      "Official May 2027 4-Theme × 4-Level syllabus (A1.1–D4.3), SL/HL extensions, KaTeX bio-equations, and lab stats.",
+    tagline: "Themes A–D · Unity, Form, Interaction & Continuity",
+    badge: "IB Biology May 2027",
+    level: "SL / HL",
+    accentColor: "from-green-500/20 to-emerald-500/20",
+    glowColor: "rgba(34, 197, 94, 0.35)",
+    quickRoutes: [
+      { label: "A1.1 Water", viewMode: "focus" },
+      { label: "4×4 Matrix", viewMode: "matrix" },
+      { label: "Lab & Stats", viewMode: "lexicon" },
+      { label: "Flashcards", viewMode: "revision" },
+    ],
+  },
+  orwell: {
+    id: "orwell",
+    title: "Orwell 1984 Codex",
+    shortTitle: "1984",
+    subjectCode: "ENG-A-SLHL-2027",
+    cluster: "literature",
+    clusterLabel: "Literature & Language A",
+    description:
+      "Totalitarian psychological dissection, Newspeak linguistics, Paper 1/2/IO & HL Essay dossier.",
+    tagline: "Totalitarianism, Newspeak & Memory Control",
+    badge: "English A Lit May 2027",
+    level: "SL / HL",
+    accentColor: "from-rose-500/20 to-pink-500/20",
+    glowColor: "rgba(244, 63, 94, 0.35)",
+    quickRoutes: [
+      { label: "Part 1", viewMode: "focus" },
+      { label: "Newspeak", viewMode: "lexicon" },
+      { label: "Themes Matrix", viewMode: "matrix" },
+      { label: "Revision Hub", viewMode: "revision" },
+    ],
+  },
+  business: {
+    id: "business",
+    title: "IB Business Management SL / HL",
+    shortTitle: "Business",
+    subjectCode: "BUS-SLHL-2027",
+    cluster: "social-sciences",
+    clusterLabel: "Social Sciences",
+    description:
+      "SL Core + HL Extension units, CUEGIS analytical framework, BMT decision tools, DCF/NPV & Paper 3.",
+    tagline: "CUEGIS Strategy, BMT Tools & Paper 3 HL",
+    badge: "IB BM May 2027",
+    level: "SL / HL",
+    accentColor: "from-blue-600/20 to-blue-800/20",
+    glowColor: "rgba(37, 99, 235, 0.38)",
+    quickRoutes: [
+      { label: "Unit 1", viewMode: "focus" },
+      { label: "CUEGIS", viewMode: "matrix" },
+      { label: "BMT Tools", viewMode: "matrix" },
+      { label: "Active Recall", viewMode: "revision" },
+    ],
+  },
+  economics: {
+    id: "economics",
+    title: "IB Economics SL / HL",
+    shortTitle: "Economics",
+    subjectCode: "ECON-SLHL-2027",
+    cluster: "social-sciences",
+    clusterLabel: "Social Sciences",
+    description:
+      "Living diagram simulator, Micro/Macro + HL Theory of the Firm, Paper 3 HL quantitative mastery & case vaults.",
+    tagline: "Micro, Macro, Global & Paper 3 HL Engine",
+    badge: "IB Econ May 2027",
+    level: "SL / HL",
+    accentColor: "from-sky-500/20 to-blue-500/20",
+    glowColor: "rgba(14, 165, 233, 0.35)",
+    quickRoutes: [
+      { label: "Micro/Macro", viewMode: "focus" },
+      { label: "Diagrams", viewMode: "diagrams" },
+      { label: "Case Study Vault", viewMode: "cases" },
+      { label: "Exam Mastery", viewMode: "exam-guide" },
+    ],
+  },
+  physics: {
+    id: "physics",
+    title: "IB Physics SL / HL",
+    shortTitle: "Physics",
+    subjectCode: "PHYS-SLHL-2027",
+    cluster: "stem-languages",
+    clusterLabel: "STEM & Language B",
+    description:
+      "May 2027 Themes A–E (SL + HL Rigid Body, Relativity, Thermodynamics, Induction & Quantum) + KaTeX formula bank.",
+    tagline: "Themes A–E SL & HL Mechanics, Fields & Quantum",
+    badge: "IB Physics May 2027",
+    level: "SL / HL",
+    accentColor: "from-indigo-500/20 to-blue-500/20",
+    glowColor: "rgba(99, 102, 241, 0.35)",
+    quickRoutes: [
+      { label: "Theme A", viewMode: "focus" },
+      { label: "Formulas", viewMode: "formulas" },
+      { label: "Diagram Lab", viewMode: "diagrams" },
+      { label: "Exam Mastery", viewMode: "exam-guide" },
+    ],
+  },
+  german: {
+    id: "german",
+    title: "IB German B SL / HL",
+    shortTitle: "German B",
+    subjectCode: "GERM-SLHL-2027",
+    cluster: "stem-languages",
+    clusterLabel: "STEM & Language B",
+    description:
+      "May 2027 SL & HL Textsorten blueprints, Redemittel idiom bank, grammar matrix & Dürrenmatt literary oral lab.",
+    tagline: "Textsorten, Redemittel & Dürrenmatt Oral Studio",
+    badge: "IB German B May 2027",
+    level: "SL / HL",
+    accentColor: "from-fuchsia-500/20 to-pink-500/20",
+    glowColor: "rgba(217, 70, 239, 0.35)",
+    quickRoutes: [
+      { label: "Textsorten", viewMode: "textsorten" },
+      { label: "Dürrenmatt", viewMode: "literatur" },
+      { label: "Grammar Lab", viewMode: "grammatik" },
+      { label: "Redemittel Bank", viewMode: "redemittel" },
+    ],
+  },
+  geography: {
+    id: "geography",
+    title: "IB Geography SL / HL",
+    shortTitle: "Geography",
+    subjectCode: "GEO-SLHL",
+    cluster: "social-sciences",
+    clusterLabel: "Social Sciences",
+    description:
+      "Core global change, physical-human options, HL global interactions, GIS quantitative skills & IA fieldwork vault.",
+    tagline: "Spatial Systems, Climate, Options & HL Interactions",
+    badge: "IB Geography SL / HL",
+    level: "SL / HL",
+    accentColor: "from-teal-500/20 to-cyan-500/20",
+    glowColor: "rgba(20, 184, 166, 0.35)",
+    quickRoutes: [
+      { label: "Concept Matrix", viewMode: "matrix" },
+      { label: "Executive Stream", viewMode: "stream" },
+      { label: "Models & Lexicon", viewMode: "lexicon" },
+      { label: "Flashcards", viewMode: "revision" },
+    ],
+  },
+};
+
+export const PRESET_SNAPSHOTS: SessionSnapshot[] = [
+  {
+    id: "bio-physics-stem-duo",
+    name: "IB Natural Sciences Synthesis",
+    subtitle: "IB Biology SL / HL × IB Physics SL / HL",
+    description:
+      "Side-by-side quantitative science workspace pairing Biology SL/HL (May 2027 Themes A–D) with Physics SL/HL mechanics, thermodynamics, relativity, and wave equations.",
+    clusterBadge: "STEM & Language B",
+    cluster: "stem-languages",
+    primaryAppId: "biology",
+    primaryLabel: "Biology SL/HL (May 2027)",
+    secondaryAppId: "physics",
+    secondaryLabel: "Physics SL/HL (Formula Bank)",
+    splitRatio: "50/50",
+  },
+  {
+    id: "social-sciences-strategy-duo",
+    name: "Business Strategy & Economic Market Duo",
+    subtitle: "Business Management SL / HL × Economics SL / HL",
+    description:
+      "Correlate macroeconomic government policies (interest rates, inflation) with corporate CUEGIS strategy, DCF/NPV, and Paper 3 HL analysis.",
+    clusterBadge: "Social Sciences",
+    cluster: "social-sciences",
+    primaryAppId: "business",
+    primaryLabel: "Business SL/HL (CUEGIS Matrix)",
+    secondaryAppId: "economics",
+    secondaryLabel: "Econ SL/HL (Diagram Lab)",
+    splitRatio: "50/50",
+  },
+  {
+    id: "stem-german-synthesis",
+    name: "Technical STEM & Language Synthesis",
+    subtitle: "Physics SL / HL × German B SL / HL",
+    description:
+      "Cross-train scientific principles with technical German vocabulary and formal textsorten construction for bilingual scientific literacy.",
+    clusterBadge: "STEM & Language B",
+    cluster: "stem-languages",
+    primaryAppId: "physics",
+    primaryLabel: "Physics SL/HL (Formula Bank)",
+    secondaryAppId: "german",
+    secondaryLabel: "German B SL/HL (Textsorten)",
+    splitRatio: "65/35",
+  },
+];

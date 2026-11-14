@@ -1,0 +1,38 @@
+"use client";
+
+import React from "react";
+
+export function AmbientAuroraCanvas() {
+  return (
+    <div
+      className="pointer-events-none fixed inset-0 z-0 overflow-hidden select-none"
+      aria-hidden="true"
+    >
+      {/* Lightweight GPU-composited static ambient vignettes (Business SL / HL Deep Royal & Cobalt Blue) */}
+      <div
+        className="absolute -top-36 -left-32 w-[520px] h-[520px] rounded-full opacity-26 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(37, 99, 235, 0.18) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          transform: "translateZ(0)",
+        }}
+      />
+      <div
+        className="absolute top-[32%] -right-36 w-[480px] h-[480px] rounded-full opacity-22 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(96, 165, 250, 0.14) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          transform: "translateZ(0)",
+        }}
+      />
+      <div
+        className="absolute -bottom-36 left-[22%] w-[520px] h-[520px] rounded-full opacity-20 pointer-events-none"
+        style={{
+          background: "radial-gradient(circle, rgba(29, 78, 216, 0.12) 0%, transparent 70%)",
+          filter: "blur(60px)",
+          transform: "translateZ(0)",
+        }}
+      />
+    </div>
+  );
+}

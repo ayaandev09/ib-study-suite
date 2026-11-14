@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <!-- Deep Obsidian Squircle Background -->
+    <radialGradient id="obsidianBg" cx="50%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#111827"/>
+      <stop offset="55%" stop-color="#080b12"/>
+      <stop offset="100%" stop-color="#05070c"/>
+    </radialGradient>
+
+    <!-- Multi-Chroma Prism Ambient Glow -->
+    <radialGradient id="prismAura" cx="50%" cy="50%" r="48%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.28"/>
+      <stop offset="35%" stop-color="#6366f1" stop-opacity="0.18"/>
+      <stop offset="68%" stop-color="#d946ef" stop-opacity="0.10"/>
+      <stop offset="100%" stop-color="#05070c" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Crisp Top Specular Rim -->
+    <linearGradient id="topSpecularRim" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.58"/>
+      <stop offset="22%" stop-color="#e2e8f0" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.14"/>
+    </linearGradient>
+
+    <!-- Subtle Spectral Edge Accent -->
+    <linearGradient id="spectralBorder" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#22c55e" stop-opacity="0.35"/>
+      <stop offset="22%" stop-color="#2563eb" stop-opacity="0.38"/>
+      <stop offset="44%" stop-color="#0ea5e9" stop-opacity="0.40"/>
+      <stop offset="66%" stop-color="#6366f1" stop-opacity="0.40"/>
+      <stop offset="84%" stop-color="#d946ef" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.35"/>
+    </linearGradient>
+
+    <!-- Liquid Glass Prism Facet Gradients -->
+    <linearGradient id="facetTopLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.92"/>
+      <stop offset="45%" stop-color="#e0f2fe" stop-opacity="0.62"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.28"/>
+    </linearGradient>
+
+    <linearGradient id="facetTopRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f8fafc" stop-opacity="0.78"/>
+      <stop offset="50%" stop-color="#c7d2fe" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#6366f1" stop-opacity="0.24"/>
+    </linearGradient>
+
+    <linearGradient id="facetMidLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#a7f3d0" stop-opacity="0.42"/>
+      <stop offset="55%" stop-color="#22c55e" stop-opacity="0.22"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0.30"/>
+    </linearGradient>
+
+    <linearGradient id="facetMidRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f5d0fe" stop-opacity="0.44"/>
+      <stop offset="55%" stop-color="#d946ef" stop-opacity="0.24"/>
+      <stop offset="100%" stop-color="#f43f5e" stop-opacity="0.28"/>
+    </linearGradient>
+
+    <linearGradient id="facetBottomLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bae6fd" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="#0284c7" stop-opacity="0.32"/>
+    </linearGradient>
+
+    <linearGradient id="facetBottomRight" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#93c5fd" stop-opacity="0.42"/>
+      <stop offset="100%" stop-color="#2563eb" stop-opacity="0.38"/>
+    </linearGradient>
+
+    <!-- Core Monolith Diamond Highlight -->
+    <linearGradient id="coreMonolith" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.98"/>
+      <stop offset="35%" stop-color="#e0f2fe" stop-opacity="0.82"/>
+      <stop offset="70%" stop-color="#818cf8" stop-opacity="0.52"/>
+      <stop offset="100%" stop-color="#38bdf8" stop-opacity="0.72"/>
+    </linearGradient>
+
+    <!-- Top Glass Specular Sheen -->
+    <linearGradient id="glassSheen" x1="20%" y1="0%" x2="80%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.42"/>
+      <stop offset="40%" stop-color="#ffffff" stop-opacity="0.06"/>
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+
+    <filter id="nodeGlow" x="-80%" y="-80%" width="260%" height="260%">
+      <feGaussianBlur stdDeviation="5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="prismShadow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#000000" flood-opacity="0.65"/>
+    </filter>
+  </defs>
+
+  <!-- Apple Obsidian Squircle Base -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="url(#obsidianBg)"/>
+
+  <!-- Ambient Multi-Chroma Aura -->
+  <circle cx="256" cy="256" r="220" fill="url(#prismAura)"/>
+
+  <!-- Top-Half Subtle Glass Sheen -->
+  <path d="M 124 18 L 388 18 C 446 18 494 66 494 124 L 494 210 C 390 250 122 250 18 210 L 18 124 C 18 66 66 18 124 18 Z"
+        fill="url(#glassSheen)" opacity="0.55"/>
+
+  <!-- Squircle Borders: Spectral Rim + Crisp Top Specular Rim -->
+  <rect x="16" y="16" width="480" height="480" rx="108" fill="none" stroke="url(#spectralBorder)" stroke-width="3"/>
+  <rect x="17.5" y="17.5" width="477" height="477" rx="106.5" fill="none" stroke="url(#topSpecularRim)" stroke-width="2.5"/>
+
+  <!-- Orbital Ring Connecting the 6 IB Subjects -->
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#ffffff" stroke-width="1.4" stroke-opacity="0.16"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="url(#spectralBorder)" stroke-width="2.2" stroke-dasharray="14 28" stroke-linecap="round"/>
+
+  <!-- 6 Luminous Orbital Element Accents (Hexagonal Symmetry) -->
+  <!-- 1. Biology (Top: 256, 80) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="256" cy="80" r="11" fill="#22c55e" stroke="#bbf7d0" stroke-width="2.5"/>
+    <circle cx="256" cy="80" r="4" fill="#ffffff"/>
+  </g>
+  <!-- 2. Business (Top-Right: 408.4, 168) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="408.4" cy="168" r="11" fill="#2563eb" stroke="#93c5fd" stroke-width="2.5"/>
+    <circle cx="408.4" cy="168" r="4" fill="#ffffff"/>
+  </g>
+  <!-- 3. Economics (Bottom-Right: 408.4, 344) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="408.4" cy="344" r="11" fill="#0ea5e9" stroke="#bae6fd" stroke-width="2.5"/>
+    <circle cx="408.4" cy="344" r="4" fill="#ffffff"/>
+  </g>
+  <!-- 4. Physics (Bottom: 256, 432) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="256" cy="432" r="11" fill="#6366f1" stroke="#c7d2fe" stroke-width="2.5"/>
+    <circle cx="256" cy="432" r="4" fill="#ffffff"/>
+  </g>
+  <!-- 5. German (Bottom-Left: 103.6, 344) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="103.6" cy="344" r="11" fill="#d946ef" stroke="#f5d0fe" stroke-width="2.5"/>
+    <circle cx="103.6" cy="344" r="4" fill="#ffffff"/>
+  </g>
+  <!-- 6. Orwell 1984 (Top-Left: 103.6, 168) -->
+  <g filter="url(#nodeGlow)">
+    <circle cx="103.6" cy="168" r="11" fill="#f43f5e" stroke="#fecdd3" stroke-width="2.5"/>
+    <circle cx="103.6" cy="168" r="4" fill="#ffffff"/>
+  </g>
+
+  <!-- Central Crystalline Hexagonal Liquid Glass Prism / Faceted Monolith -->
+  <!-- Outer Hex Vertices: Top(256,122), TR(372,189), BR(372,323), Bot(256,390), BL(140,323), TL(140,189) -->
+  <g filter="url(#prismShadow)">
+    <!-- 6 Faceted Glass Planes Meeting at Center (256, 256) -->
+    <polygon points="256,122 140,189 256,256" fill="url(#facetTopLeft)"/>
+    <polygon points="256,122 372,189 256,256" fill="url(#facetTopRight)"/>
+    <polygon points="140,189 140,323 256,256" fill="url(#facetMidLeft)"/>
+    <polygon points="372,189 372,323 256,256" fill="url(#facetMidRight)"/>
+    <polygon points="140,323 256,390 256,256" fill="url(#facetBottomLeft)"/>
+    <polygon points="372,323 256,390 256,256" fill="url(#facetBottomRight)"/>
+
+    <!-- Inner Monolith Diamond Core -->
+    <polygon points="256,158 318,256 256,354 194,256" fill="url(#coreMonolith)" fill-opacity="0.45" stroke="#ffffff" stroke-opacity="0.78" stroke-width="2"/>
+
+    <!-- Facet Ridge Lines (Crisp Refractive Edges) -->
+    <line x1="256" y1="122" x2="256" y2="390" stroke="#ffffff" stroke-opacity="0.65" stroke-width="1.8"/>
+    <line x1="140" y1="189" x2="372" y2="323" stroke="#ffffff" stroke-opacity="0.38" stroke-width="1.4"/>
+    <line x1="372" y1="189" x2="140" y2="323" stroke="#ffffff" stroke-opacity="0.38" stroke-width="1.4"/>
+
+    <!-- Outer Hexagonal Glass Rim -->
+    <polygon points="256,122 372,189 372,323 256,390 140,323 140,189"
+             fill="none" stroke="url(#topSpecularRim)" stroke-width="3.2" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Central Specular Star Sparkle -->
+  <circle cx="256" cy="256" r="10" fill="#ffffff" fill-opacity="0.92" filter="url(#nodeGlow)"/>
+  <path d="M 256 232 L 260 252 L 280 256 L 260 260 L 256 280 L 252 260 L 232 256 L 252 252 Z" fill="#ffffff" fill-opacity="0.95"/>
+</svg>

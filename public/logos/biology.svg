@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <radialGradient id="bioGlow" cx="50%" cy="50%" r="62%">
+      <stop offset="0%" stop-color="#22c55e" stop-opacity="0.42"/>
+      <stop offset="50%" stop-color="#14b8a6" stop-opacity="0.18"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="helixLime" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#bef264"/>
+      <stop offset="45%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#14b8a6"/>
+    </linearGradient>
+    <linearGradient id="helixMint" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#5eead4"/>
+      <stop offset="50%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#84cc16"/>
+    </linearGradient>
+    <linearGradient id="cellMembrane" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#86efac"/>
+      <stop offset="50%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#0d9488"/>
+    </linearGradient>
+    <filter id="bioDropGlow" x="-25%" y="-25%" width="150%" height="150%">
+      <feDropShadow dx="0" dy="0" stdDeviation="8" flood-color="#22c55e" flood-opacity="0.55"/>
+    </filter>
+  </defs>
+
+  <!-- Ambient Bioluminescent Aura -->
+  <circle cx="256" cy="256" r="240" fill="url(#bioGlow)"/>
+
+  <!-- Outer Cellular Membrane Ring -->
+  <circle cx="256" cy="256" r="224" fill="#030d08" stroke="url(#cellMembrane)" stroke-width="5" stroke-opacity="0.95"/>
+  <circle cx="256" cy="256" r="208" fill="none" stroke="#4ade80" stroke-width="1.5" stroke-dasharray="7 7" stroke-opacity="0.45"/>
+
+  <!-- Subtle Cellular Organelle Orbit -->
+  <ellipse cx="256" cy="256" rx="164" ry="82" transform="rotate(-25 256 256)" fill="none" stroke="#2dd4bf" stroke-width="1.8" stroke-opacity="0.28"/>
+
+  <!-- DNA Double Helix Rungs (Base Pairs) -->
+  <g stroke-linecap="round" stroke-width="5">
+    <line x1="204" y1="126" x2="308" y2="126" stroke="#86efac" stroke-opacity="0.75"/>
+    <line x1="226" y1="168" x2="286" y2="168" stroke="#5eead4" stroke-opacity="0.85"/>
+    <line x1="226" y1="256" x2="286" y2="256" stroke="#bef264" stroke-opacity="0.9"/>
+    <line x1="204" y1="300" x2="308" y2="300" stroke="#86efac" stroke-opacity="0.8"/>
+    <line x1="226" y1="344" x2="286" y2="344" stroke="#5eead4" stroke-opacity="0.85"/>
+    <line x1="204" y1="386" x2="308" y2="386" stroke="#86efac" stroke-opacity="0.75"/>
+  </g>
+
+  <!-- DNA Double Helix Strands -->
+  <g filter="url(#bioDropGlow)" fill="none" stroke-width="11" stroke-linecap="round">
+    <path d="M 190,104 C 190,165 322,190 322,256 C 322,322 190,347 190,408" stroke="url(#helixLime)"/>
+    <path d="M 322,104 C 322,165 190,190 190,256 C 190,322 322,347 322,408" stroke="url(#helixMint)"/>
+  </g>
+
+  <!-- Nucleotide Backbone Nodes -->
+  <g stroke="#ffffff" stroke-width="2">
+    <circle cx="190" cy="104" r="8" fill="#bef264"/>
+    <circle cx="322" cy="104" r="8" fill="#5eead4"/>
+    <circle cx="256" cy="212" r="9" fill="#22c55e"/>
+    <circle cx="256" cy="300" r="9" fill="#14b8a6"/>
+    <circle cx="190" cy="408" r="8" fill="#5eead4"/>
+    <circle cx="322" cy="408" r="8" fill="#bef264"/>
+  </g>
+</svg>

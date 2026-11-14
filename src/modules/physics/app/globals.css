@@ -1,0 +1,748 @@
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,400;1,6..72,600&family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700&family=Caveat:wght@400;500;600;700&family=Kalam:wght@300;400;700&display=swap");
+@import "tailwindcss";
+
+:root {
+  --bg-obsidian: #060402;
+  --bg-cosmos: #060402;
+  --glass-surface: rgba(28, 17, 9, 0.72);
+  --glass-surface-elevated: rgba(38, 22, 12, 0.82);
+  --glass-border-highlight: rgba(251, 191, 36, 0.35);
+  --glass-border-subtle: rgba(251, 191, 36, 0.16);
+
+  /* Physics SL / HL Flagship Tinting Palette - German B Obsidian Amber */
+  --accent-cyan: #d97706;
+  --accent-violet: #991b1b;
+  --accent-indigo: #047857;
+  --accent-emerald: #10b981;
+  --accent-amber: #f59e0b;
+  --accent-rose: #ef4444;
+
+  /* Academic & Professional Scholarly Typography Stacks */
+  --font-newsreader: "Newsreader", "EB Garamond", "Georgia", "Times New Roman", serif;
+  --font-garamond: "EB Garamond", "Georgia", "Times New Roman", serif;
+  --font-jakarta: "Plus Jakarta Sans", "Inter", system-ui, -apple-system, sans-serif;
+  --font-academic-mono: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+
+  /* Universal Default Font */
+  --active-academic-font: var(--font-jakarta);
+  --active-academic-sans: var(--font-jakarta);
+
+  --font-sans: var(--active-academic-sans);
+  --font-serif: var(--active-academic-font);
+  --font-mono: var(--font-academic-mono);
+
+  /* Uniswap DEX Elastic Jelly Physics Curves */
+  --spring-easing: linear(
+    0, 0.016 0.5%, 0.06 1%, 0.226 2%, 1.116 5.4%, 1.375 6.6%, 1.527 7.7%,
+    1.565 8.2%, 1.585 8.8%, 1.581 9.3%, 1.559 9.8%, 1.458 10.9%, 0.937 14.3%,
+    0.784 15.5%, 0.693 16.6%, 0.67 17.1%, 0.657 17.7%, 0.671 18.7%, 0.729 19.8%,
+    1.042 23.3%, 1.13 24.5%, 1.182 25.6%, 1.201 26.7%, 1.192 27.7%, 1.156 28.8%,
+    0.977 32.2%, 0.925 33.4%, 0.894 34.5%, 0.882 35.6%, 0.887 36.6%, 0.907 37.7%,
+    1.045 42.4%, 1.069 44.5%, 1.059 46.3%, 0.979 50.9%, 0.96 53.4%, 0.966 55.3%,
+    1.013 59.9%, 1.024 62.3%, 0.986 71.2%, 1.008 79.9%, 0.995 88.9%, 1
+  );
+  --jelly-bounce-easing: linear(
+    0, 0.214 14.7%, 0.386 23.7%, 0.598 31.9%, 0.999 44.7%, 0.807 52.6%,
+    0.762 56%, 0.747 59.4%, 0.758 62.4%, 0.793 65.6%, 0.999 77.4%, 0.961 81.2%,
+    0.949 84.8%, 0.956 88%, 0.993 95.5%, 1
+  );
+  --jelly-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --jelly-spring-soft: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+html[data-academic-font="newsreader"],
+:root[data-academic-font="newsreader"] {
+  --active-academic-font: var(--font-newsreader);
+}
+
+html[data-academic-font="garamond"],
+:root[data-academic-font="garamond"] {
+  --active-academic-font: var(--font-garamond);
+}
+
+html[data-academic-font="jakarta"],
+:root[data-academic-font="jakarta"] {
+  --active-academic-font: var(--font-jakarta);
+}
+
+@theme {
+  --font-sans: var(--active-academic-sans);
+  --font-serif: var(--active-academic-font);
+  --font-mono: var(--font-academic-mono);
+}
+
+.font-serif {
+  font-family: var(--active-academic-font) !important;
+}
+
+.font-sans {
+  font-family: var(--active-academic-sans) !important;
+}
+
+.font-mono {
+  font-family: var(--font-academic-mono) !important;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  background-color: var(--bg-obsidian);
+  color: #f1f5f9;
+  font-family: var(--font-sans);
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  overscroll-behavior-y: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+body {
+  min-height: 100dvh;
+  background-color: #060402;
+  background-image:
+    radial-gradient(ellipse at 12% 8%, rgba(217, 119, 6, 0.32) 0%, transparent 46%),
+    radial-gradient(ellipse at 88% 12%, rgba(153, 27, 27, 0.25) 0%, transparent 46%),
+    radial-gradient(ellipse at 50% 108%, rgba(4, 120, 87, 0.28) 0%, transparent 62%),
+    linear-gradient(180deg, #060402 0%, #150b05 52%, #060402 100%);
+  background-attachment: fixed;
+  overflow-x: hidden;
+  font-family: var(--font-sans);
+  letter-spacing: -0.011em;
+  overscroll-behavior-y: none;
+}
+
+button, input, textarea, select {
+  font-family: inherit;
+}
+
+/* ==================== MAC WIDESCREEN & IPHONE 16e VIEWPORT SHELLS ==================== */
+.mac-dashboard-shell {
+  width: 100%;
+  max-width: 100%;
+  min-height: 100vh;
+  margin-inline: auto;
+  padding: 1.25rem 1.25rem 5rem;
+  position: relative;
+}
+
+/* ==================== NATIVE MACOS WINDOW DRAG REGION ==================== */
+.mac-drag-region {
+  -webkit-app-region: drag;
+}
+
+.mac-no-drag {
+  -webkit-app-region: no-drag;
+}
+
+/* ============================================================================
+   macOS APPLE LIQUID GLASS & UNISWAP DEX ELASTIC JELLY SURFACES
+   ============================================================================ */
+
+/* 1. Redesigned Rounded Long Command Bar (Apple Liquid Glass) */
+.liquid-glass-longbar,
+.liquid-glass-long-bar {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.12) 0%,
+    rgba(32, 20, 10, 0.88) 45%,
+    rgba(10, 7, 4, 0.97) 100%
+  );
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid rgba(251, 191, 36, 0.45);
+  border-left: 1px solid rgba(251, 191, 36, 0.22);
+  border-right: 1px solid rgba(251, 191, 36, 0.18);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.85),
+    0 0 28px -4px rgba(217, 119, 6, 0.25),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.42),
+    inset 0 -1px 2px rgba(0, 0, 0, 0.3);
+  border-radius: 28px;
+  overflow: visible !important;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+}
+
+.liquid-glass-longbar:hover,
+.liquid-glass-long-bar:hover {
+  border-top-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 24px 56px -8px rgba(0, 0, 0, 0.9),
+    0 0 34px -2px rgba(217, 119, 6, 0.38),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.55);
+}
+
+/* 2. Primary Floating Sidebar Shell */
+.liquid-glass-sidebar {
+  background: linear-gradient(
+    165deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    rgba(28, 17, 9, 0.84) 55%,
+    rgba(7, 5, 3, 0.97) 100%
+  );
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  border-top: 1px solid rgba(251, 191, 36, 0.32);
+  border-left: 1px solid rgba(251, 191, 36, 0.18);
+  border-right: 1px solid rgba(153, 27, 27, 0.18);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow: 0 20px 48px -8px rgba(0, 0, 0, 0.8),
+    0 0 24px -4px rgba(217, 119, 6, 0.18),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.3);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 3. Bento Study Card Surface with Elastic Jelly Hover */
+.liquid-glass-bento,
+.liquid-glass-card {
+  position: relative;
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(217, 119, 6, 0.14), transparent 56%),
+    linear-gradient(
+      145deg,
+      rgba(255, 255, 255, 0.075) 0%,
+      rgba(28, 18, 10, 0.74) 52%,
+      rgba(6, 4, 3, 0.95) 100%
+    );
+  backdrop-filter: blur(18px) saturate(170%);
+  -webkit-backdrop-filter: blur(18px) saturate(170%);
+  border-top: 1px solid rgba(251, 191, 36, 0.32);
+  border-left: 1px solid rgba(251, 191, 36, 0.18);
+  border-right: 1px solid rgba(153, 27, 27, 0.2);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.6);
+  box-shadow:
+    0 18px 44px -8px rgba(0, 0, 0, 0.88),
+    0 0 28px -4px rgba(217, 119, 6, 0.18),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.35);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: transform 0.38s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.25s ease,
+              box-shadow 0.3s ease;
+  contain: layout paint;
+}
+
+.liquid-glass-bento:hover,
+.liquid-glass-card:hover {
+  transform: translateY(-1px);
+  border-top-color: rgba(251, 191, 36, 0.65);
+  box-shadow: 0 24px 54px -10px rgba(0, 0, 0, 0.92),
+    0 0 34px -2px rgba(217, 119, 6, 0.35),
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.5);
+}
+
+.liquid-glass-bento:active,
+.liquid-glass-card:active {
+  transform: scale3d(0.988, 0.988, 1);
+  transition: transform 0.1s ease-out;
+}
+
+/* 4. Flagship Liquid Glass Card 2.0 Specular Highlights */
+.liquid-card-flagship {
+  background:
+    radial-gradient(120% 120% at 0% 0%, rgba(217, 119, 6, 0.16), transparent 56%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(28, 14, 6, 0.74) 52%, rgba(6, 4, 2, 0.94));
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(251, 191, 36, 0.22);
+  box-shadow:
+    0 24px 60px -12px rgba(0, 0, 0, 0.85),
+    0 0 35px -8px rgba(217, 119, 6, 0.2),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.3),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.04);
+}
+
+.liquid-card-flagship:hover {
+  border-color: rgba(251, 191, 36, 0.48);
+  box-shadow:
+    0 28px 70px -12px rgba(0, 0, 0, 0.9),
+    0 0 45px -8px rgba(217, 119, 6, 0.35),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.42),
+    inset 0 -1px 0 0 rgba(255, 255, 255, 0.06);
+}
+
+/* 5. Floating Bottom Dock Pill */
+.liquid-glass-dock {
+  background: linear-gradient(
+    180deg,
+    rgba(28, 18, 10, 0.90) 0%,
+    rgba(10, 7, 4, 0.96) 100%
+  );
+  backdrop-filter: blur(18px) saturate(190%);
+  -webkit-backdrop-filter: blur(18px) saturate(190%);
+  border: 1px solid rgba(251, 191, 36, 0.25);
+  box-shadow:
+    0 22px 55px -10px rgba(0, 0, 0, 0.85),
+    0 0 35px -10px rgba(217, 119, 6, 0.25),
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.34);
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* 6. Interactive Specular Pill Button (Uniswap Elastic Jelly Physics) */
+.liquid-glass-pill {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.18);
+  transform: translateZ(0);
+  transition: transform 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.15s ease,
+              border-color 0.15s ease,
+              box-shadow 0.22s ease;
+  cursor: pointer;
+}
+
+.liquid-glass-pill:hover {
+  transform: translateY(-1px);
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.3);
+  box-shadow:
+    0 8px 20px -4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+}
+
+.liquid-glass-pill:active {
+  transform: scale3d(0.975, 0.975, 1);
+  transition: transform 0.08s ease-out;
+}
+
+.liquid-glass-pill-active {
+  background: linear-gradient(
+    135deg,
+    rgba(217, 119, 6, 0.45) 0%,
+    rgba(153, 27, 27, 0.36) 100%
+  );
+  border: 1px solid rgba(251, 191, 36, 0.65);
+  box-shadow:
+    inset 0 1.5px 0 0 rgba(255, 255, 255, 0.45),
+    0 6px 20px -2px rgba(217, 119, 6, 0.42);
+}
+
+/* Universal Tactile Mechanical Button Actuation */
+button,
+[role="button"],
+a[role="button"],
+summary,
+.liquid-glass-pill,
+.soft-button,
+.soft-tick-btn {
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    transform 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.16s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.12s ease,
+    border-color 0.12s ease,
+    filter 0.12s ease;
+}
+
+button:hover,
+[role="button"]:hover,
+a[role="button"]:hover,
+summary:hover,
+.liquid-glass-pill:hover,
+.soft-button:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.06);
+}
+
+button:active,
+[role="button"]:active,
+a[role="button"]:active,
+summary:active,
+.liquid-glass-pill:active,
+.soft-button:active,
+.soft-tick-btn:active {
+  transform: translateY(1.5px) scale(0.965) !important;
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 1px 2px rgba(0, 0, 0, 0.3) !important;
+  transition: transform 0.04s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.04s ease !important;
+  filter: brightness(0.93) !important;
+}
+
+button:disabled,
+button[disabled],
+[role="button"][aria-disabled="true"] {
+  cursor: not-allowed;
+  opacity: 0.45;
+  transform: none !important;
+  filter: none !important;
+}
+
+/* Modern Web Guidance: Offscreen Content Rendering Deferral */
+.deferred-chapter-card {
+  content-visibility: auto;
+  contain-intrinsic-size: auto none auto 540px;
+}
+
+/* Custom Subtle Scrollbar */
+::-webkit-scrollbar,
+.subtle-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track,
+.subtle-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb,
+.subtle-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.14);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover,
+.subtle-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+/* ============================================================================
+   BUTTER-SMOOTH GPU COMPOSITED ANIMATIONS & HARDWARE TRANSITIONS
+   ============================================================================ */
+@keyframes jellySpotlightEnter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92) translateY(-14px);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.015) translateY(2px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.jelly-spotlight-enter {
+  animation: jellySpotlightEnter 0.28s cubic-bezier(0.34, 1.4, 0.64, 1) both;
+  will-change: transform, opacity;
+}
+
+@keyframes softFadeSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.liquid-view-enter,
+.topic-transition-enter {
+  animation: softFadeSlideIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: opacity, transform;
+}
+
+@keyframes sheet-enter-smooth {
+  0% {
+    transform: translate3d(0, 100%, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.sheet-enter-smooth {
+  animation: sheet-enter-smooth 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+  will-change: transform;
+}
+
+/* ============================================================================
+   ACADEMIC HANDWRITTEN NOTES SURFACE (RULED NOTEBOOK)
+   ============================================================================ */
+.academic-notes-canvas {
+  font-family: 'Caveat', 'Kalam', 'Noteworthy', 'Snell Roundhand', 'Chalkboard', cursive, sans-serif !important;
+  line-height: 28px !important;
+  font-size: 1.15rem !important;
+  letter-spacing: 0.02em !important;
+  background-image: repeating-linear-gradient(
+    transparent,
+    transparent 27px,
+    rgba(255, 255, 255, 0.07) 27px,
+    rgba(255, 255, 255, 0.07) 28px
+  ) !important;
+  background-attachment: local !important;
+}
+
+.academic-notes-canvas::placeholder {
+  font-family: 'Caveat', 'Kalam', cursive, sans-serif !important;
+  color: rgba(255, 255, 255, 0.35) !important;
+  font-style: italic !important;
+}
+
+/* KaTeX Mathematics Support & Overflow Protection */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.25rem 0;
+  max-width: 100%;
+}
+
+html, body {
+  scroll-behavior: auto;
+}
+
+/* ==========================================================================
+   CONTAINER QUERIES FOR ADAPTIVE BENTO WORKSPACES
+   Smoothly reflows bento grids when left/right sidebars collapse or expand
+   ========================================================================== */
+@container (min-width: 860px) {
+  .bento-adaptive-12 {
+    display: grid !important;
+    grid-template-columns: repeat(12, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  .bento-span-7 {
+    grid-column: span 7 / span 7 !important;
+  }
+  .bento-span-5 {
+    grid-column: span 5 / span 5 !important;
+  }
+  .bento-span-6 {
+    grid-column: span 6 / span 6 !important;
+  }
+  .bento-adaptive-4 {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 0.875rem !important;
+  }
+  .bento-adaptive-3 {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+    gap: 0.875rem !important;
+  }
+}
+
+@container (min-width: 580px) and (max-width: 859px) {
+  .bento-adaptive-12 {
+    display: grid !important;
+    grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
+    gap: 1rem !important;
+  }
+  .bento-span-7, .bento-span-5, .bento-span-6 {
+    grid-column: span 1 / span 1 !important;
+    width: 100% !important;
+  }
+  .bento-adaptive-4 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.875rem !important;
+  }
+  .bento-adaptive-3 {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 0.875rem !important;
+  }
+}
+
+@container (max-width: 579px) {
+  .bento-adaptive-12 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+  .bento-span-7, .bento-span-5, .bento-span-6 {
+    width: 100% !important;
+  }
+  .bento-adaptive-4, .bento-adaptive-3 {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.875rem !important;
+  }
+}
+
+/* ============================================================================
+   FLUID AUTO-ADJUSTING ACADEMIC TYPOGRAPHY ENGINE (SUITE-WIDE)
+   - Continuously scales font-size using CSS clamp() based on dynamic viewport width
+   - Smoothly reflows between 15.5px (compact windows/split screen) and 17.5px (wide desktop)
+   - Calibrated for comfortable, golden-ratio legibility without visual bulk
+   ============================================================================ */
+:root {
+  /* Fluid root base: 15.5px at 390px viewport -> 17.5px at 1440px+ viewport */
+  font-size: clamp(15.5px, 14.5px + 0.35vw, 17.5px);
+}
+
+/* Fluid auto-adjusting micro utilities (badges, chips, timestamps, code chips) */
+[class*="text-[7px]"], .text-\[7px\] { font-size: clamp(0.72rem, 0.68rem + 0.1vw, 0.78rem) !important; }
+[class*="text-[8px]"], .text-\[8px\] { font-size: clamp(0.75rem, 0.71rem + 0.1vw, 0.81rem) !important; }
+[class*="text-[9px]"], .text-\[9px\] { font-size: clamp(0.78rem, 0.74rem + 0.1vw, 0.84rem) !important; }
+[class*="text-[10px]"], .text-\[10px\] { font-size: clamp(0.81rem, 0.77rem + 0.12vw, 0.88rem) !important; }
+[class*="text-[11px]"], .text-\[11px\] { font-size: clamp(0.85rem, 0.81rem + 0.12vw, 0.92rem) !important; }
+[class*="text-[12px]"], .text-\[12px\] { font-size: clamp(0.88rem, 0.84rem + 0.12vw, 0.94rem) !important; }
+
+/* Fluid auto-adjusting semantic utilities */
+.text-xs, [class*="text-xs"] { font-size: clamp(0.84rem, 0.80rem + 0.12vw, 0.90rem) !important; }
+.text-sm, [class*="text-sm"] { font-size: clamp(0.92rem, 0.88rem + 0.14vw, 0.98rem) !important; }
+.text-base, [class*="text-base"] { font-size: clamp(1.00rem, 0.96rem + 0.15vw, 1.08rem) !important; }
+.text-lg, [class*="text-lg"] { font-size: clamp(1.12rem, 1.06rem + 0.20vw, 1.22rem) !important; }
+.text-xl, [class*="text-xl"] { font-size: clamp(1.25rem, 1.18rem + 0.25vw, 1.38rem) !important; }
+.text-2xl, [class*="text-2xl"] { font-size: clamp(1.50rem, 1.40rem + 0.35vw, 1.68rem) !important; }
+.text-3xl, [class*="text-3xl"] { font-size: clamp(1.85rem, 1.70rem + 0.45vw, 2.10rem) !important; }
+
+/* Naturally wrapping containers with fluid rhythm */
+p, blockquote, .academic-prose, article {
+  line-height: 1.62 !important;
+  letter-spacing: 0.008em;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Mathematical and scientific KaTeX expressions */
+.katex-formula-wrapper, .katex {
+  font-size: 1.04em !important;
+  max-width: 100%;
+}
+
+/* ===== Light / dark mode (inversion-based so every view and modal follows) ===== */
+html.theme-light {
+  filter: invert(1) hue-rotate(180deg);
+  background: #fff;
+}
+html.theme-light img,
+html.theme-light video,
+html.theme-light canvas,
+html.theme-light iframe,
+html.theme-light svg image,
+html.theme-light .no-invert {
+  filter: invert(1) hue-rotate(180deg);
+}
+html,
+body {
+  transition: background-color 0.3s ease;
+}
+.theme-toggle-fab {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 2147483000;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+.theme-toggle-track {
+  display: block;
+  width: 52px;
+  height: 28px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(14px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+.theme-toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: rgba(251, 191, 36, 0.9);
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+html.theme-light .theme-toggle-thumb {
+  transform: translateX(24px);
+}
+
+
+/* ===== Tinted liquid-glass bento cards (set --tint as "r, g, b") ===== */
+.glass-tint {
+  position: relative;
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(var(--tint), 0.28), transparent 60%),
+    linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(8, 6, 4, 0.72));
+  backdrop-filter: blur(20px) saturate(170%);
+  -webkit-backdrop-filter: blur(20px) saturate(170%);
+  border: 1px solid rgba(var(--tint), 0.38);
+  box-shadow:
+    0 14px 30px -12px rgba(0, 0, 0, 0.7),
+    inset 0 1px 0 rgba(255, 255, 255, 0.16);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.25s ease, box-shadow 0.3s ease;
+}
+.glass-tint:hover {
+  border-color: rgba(255, 255, 255, 0.30);
+  box-shadow:
+    0 24px 50px -12px rgba(0, 0, 0, 0.95),
+    0 0 24px -6px rgba(255, 255, 255, 0.10),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+.tint-amber { --tint: 255, 255, 255; }
+.tint-rose { --tint: 255, 255, 255; }
+.tint-emerald { --tint: 255, 255, 255; }
+.tint-sky { --tint: 255, 255, 255; }
+.tint-violet { --tint: 255, 255, 255; }
+.tint-orange { --tint: 255, 255, 255; }
+.tint-cyan { --tint: 255, 255, 255; }
+.tint-indigo { --tint: 255, 255, 255; }
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-tint { transition: none; }
+}
+
+/* ===== Liquid glass floating bar ===== */
+.liquid-glass-bar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(12, 12, 16, 0.82);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  box-shadow:
+    0 12px 32px -10px rgba(0, 0, 0, 0.75),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28);
+}
+
+
+/* ==================== 4K OLED TRUE BLACK & ENHANCED LIQUID GLASS ==================== */
+:root {
+  --bg-oled: #000000;
+  --bg-card-oled: rgba(10, 10, 12, 0.72);
+}
+
+html, body {
+  background-color: #000000 !important;
+  color: #f1f5f9;
+}
+
+.liquid-glass-bento,
+.glass-tint {
+  background:
+    radial-gradient(130% 120% at 0% 0%, rgba(var(--tint, 255, 255, 255), 0.08), transparent 65%),
+    linear-gradient(160deg, rgba(255, 255, 255, 0.05) 0%, rgba(12, 12, 16, 0.88) 100%) !important;
+  backdrop-filter: blur(28px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(28px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.95), inset 0 1px 0 rgba(255, 255, 255, 0.16) !important;
+}
+
+.liquid-glass-bar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.03)),
+    rgba(12, 12, 16, 0.82) !important;
+  backdrop-filter: blur(32px) saturate(190%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(190%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.18) !important;
+  box-shadow: 0 14px 35px -8px rgba(0, 0, 0, 0.9), inset 0 1px 0 rgba(255, 255, 255, 0.25) !important;
+}
