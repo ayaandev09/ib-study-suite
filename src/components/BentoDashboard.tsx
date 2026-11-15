@@ -190,7 +190,7 @@ function BentoSubjectCard({
         delay: isRevealed ? Math.min(0.22, delay * 0.5) : 0,
       }}
       className="relative select-none group"
-      style={{ perspective: "1200px", willChange: "transform, opacity", backfaceVisibility: "hidden" }}
+      style={{ backfaceVisibility: "hidden" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -242,8 +242,8 @@ function BentoSubjectCard({
           }}
         />
 
-        {/* Card Body Raised in 3D Space */}
-        <div style={{ transform: "translateZ(20px)" }}>
+        {/* Card Body */}
+        <div>
           {/* Header: Cluster Badge & Level */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -276,7 +276,6 @@ function BentoSubjectCard({
               className="relative w-12 h-12 rounded-[16px] flex items-center justify-center shrink-0 overflow-hidden transition-transform duration-300 group-hover:scale-105"
               style={
                 {
-                  transform: "translateZ(28px)",
                   "--card-mouse-x": `${tilt.glareX}%`,
                   "--card-mouse-y": `${tilt.glareY}%`,
                   background: `radial-gradient(120% 120% at ${tilt.glareX}% ${tilt.glareY}%, rgba(255,255,255,0.26) 0%, rgba(${accent.rgb}, 0.22) 48%, rgba(${accent.rgb}, 0.08) 100%)`,
@@ -316,7 +315,7 @@ function BentoSubjectCard({
               <img
                 src={SUBJECT_LOGOS[mod.id]}
                 alt={mod.title}
-                className="relative z-10 w-7 h-7 object-contain drop-shadow-[0_2px_6px_rgba(0,0,0,0.45)]"
+                className="relative z-10 w-9 h-9 object-contain"
               />
             </div>
             <div>
@@ -439,7 +438,7 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
                 window.dispatchEvent(new CustomEvent("ib-suite-replay-startup"))
               }
               title="Replay Suite Startup Animation"
-              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-black/70 border border-white/20 p-1.5 shadow-[0_0_34px_rgba(56,189,248,0.18)] shrink-0 overflow-hidden hover:border-white/45 transition-colors cursor-pointer"
+              className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-black/70 border border-white/20 p-0.5 shadow-[0_0_34px_rgba(56,189,248,0.18)] shrink-0 overflow-hidden hover:border-white/45 transition-colors cursor-pointer"
             >
               <img
                 src="/logos/suite.svg"

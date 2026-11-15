@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
   <defs>
     <!-- Deep Obsidian Squircle Background -->
     <radialGradient id="obsidianBg" cx="50%" cy="32%" r="72%">
@@ -116,39 +116,39 @@
 
   <!-- 6 Luminous Orbital Element Accents (Hexagonal Symmetry) -->
   <!-- 1. Biology (Top: 256, 80) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="256" cy="80" r="11" fill="#22c55e" stroke="#bbf7d0" stroke-width="2.5"/>
     <circle cx="256" cy="80" r="4" fill="#ffffff"/>
   </g>
   <!-- 2. Business (Top-Right: 408.4, 168) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="408.4" cy="168" r="11" fill="#2563eb" stroke="#93c5fd" stroke-width="2.5"/>
     <circle cx="408.4" cy="168" r="4" fill="#ffffff"/>
   </g>
   <!-- 3. Economics (Bottom-Right: 408.4, 344) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="408.4" cy="344" r="11" fill="#0ea5e9" stroke="#bae6fd" stroke-width="2.5"/>
     <circle cx="408.4" cy="344" r="4" fill="#ffffff"/>
   </g>
   <!-- 4. Physics (Bottom: 256, 432) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="256" cy="432" r="11" fill="#6366f1" stroke="#c7d2fe" stroke-width="2.5"/>
     <circle cx="256" cy="432" r="4" fill="#ffffff"/>
   </g>
   <!-- 5. German (Bottom-Left: 103.6, 344) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="103.6" cy="344" r="11" fill="#d946ef" stroke="#f5d0fe" stroke-width="2.5"/>
     <circle cx="103.6" cy="344" r="4" fill="#ffffff"/>
   </g>
   <!-- 6. Orwell 1984 (Top-Left: 103.6, 168) -->
-  <g filter="url(#nodeGlow)">
+  <g>
     <circle cx="103.6" cy="168" r="11" fill="#f43f5e" stroke="#fecdd3" stroke-width="2.5"/>
     <circle cx="103.6" cy="168" r="4" fill="#ffffff"/>
   </g>
 
   <!-- Central Crystalline Hexagonal Liquid Glass Prism / Faceted Monolith -->
   <!-- Outer Hex Vertices: Top(256,122), TR(372,189), BR(372,323), Bot(256,390), BL(140,323), TL(140,189) -->
-  <g filter="url(#prismShadow)">
+  <g>
     <!-- 6 Faceted Glass Planes Meeting at Center (256, 256) -->
     <polygon points="256,122 140,189 256,256" fill="url(#facetTopLeft)"/>
     <polygon points="256,122 372,189 256,256" fill="url(#facetTopRight)"/>
@@ -171,6 +171,6 @@
   </g>
 
   <!-- Central Specular Star Sparkle -->
-  <circle cx="256" cy="256" r="10" fill="#ffffff" fill-opacity="0.92" filter="url(#nodeGlow)"/>
+  <circle cx="256" cy="256" r="10" fill="#ffffff" fill-opacity="0.92"/>
   <path d="M 256 232 L 260 252 L 280 256 L 260 260 L 256 280 L 252 260 L 232 256 L 252 252 Z" fill="#ffffff" fill-opacity="0.95"/>
 </svg>

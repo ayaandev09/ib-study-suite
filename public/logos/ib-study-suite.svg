@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" preserveAspectRatio="xMidYMid meet" shape-rendering="geometricPrecision">
   <defs>
     <!-- Multi-chroma ambient quad aura -->
     <radialGradient id="suiteAura" cx="50%" cy="50%" r="50%">
@@ -72,28 +72,28 @@
 
   <!-- Discipline Node Beads on Orbits -->
   <!-- Top: Literature Quill / Crown Bead (Amber) -->
-  <circle cx="256" cy="74" r="10" fill="#f59e0b" stroke="#fef08a" stroke-width="3" filter="url(#glowDrop)"/>
+  <circle cx="256" cy="74" r="10" fill="#f59e0b" stroke="#fef08a" stroke-width="3"/>
   <path d="M256,66 L259,74 L256,82 L253,74 Z" fill="#ffffff"/>
 
   <!-- Right: STEM Atom / Quantum Bead (Violet) -->
-  <circle cx="410" cy="170" r="9" fill="#a855f7" stroke="#e9d5ff" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <circle cx="410" cy="170" r="9" fill="#a855f7" stroke="#e9d5ff" stroke-width="2.5"/>
   <circle cx="410" cy="170" r="3.5" fill="#ffffff"/>
 
   <!-- Bottom Right: Economics Vector Node (Sky) -->
-  <circle cx="395" cy="336" r="8.5" fill="#0284c7" stroke="#bae6fd" stroke-width="2" filter="url(#glowDrop)"/>
+  <circle cx="395" cy="336" r="8.5" fill="#0284c7" stroke="#bae6fd" stroke-width="2"/>
 
   <!-- Bottom Left: Business C-Suite Node (Emerald) -->
-  <circle cx="118" cy="336" r="8.5" fill="#059669" stroke="#a7f3d0" stroke-width="2" filter="url(#glowDrop)"/>
+  <circle cx="118" cy="336" r="8.5" fill="#059669" stroke="#a7f3d0" stroke-width="2"/>
 
   <!-- Left: Languages Global Speech Rosette (Rose) -->
-  <circle cx="102" cy="170" r="9" fill="#e11d48" stroke="#fecdd3" stroke-width="2.5" filter="url(#glowDrop)"/>
+  <circle cx="102" cy="170" r="9" fill="#e11d48" stroke="#fecdd3" stroke-width="2.5"/>
   <circle cx="102" cy="170" r="3.5" fill="#ffffff"/>
 
   <!-- ==================== CENTRAL CODEX & KNOWLEDGE NEXUS ==================== -->
 
   <!-- Open Academic Codex (Left Page) -->
   <path d="M 256,365 C 220,358 170,352 144,360 C 138,362 134,357 134,351 L 138,245 C 138,240 142,236 148,235 C 174,228 220,234 256,248 Z"
-        fill="url(#leftPageGrad)" stroke="#ffffff" stroke-width="2.5" filter="url(#glowDrop)"/>
+        fill="url(#leftPageGrad)" stroke="#ffffff" stroke-width="2.5"/>
   <!-- Left Page Ruling Lines -->
   <path d="M 158,262 C 185,258 220,264 244,272" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
   <path d="M 156,282 C 185,278 220,284 244,292" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
@@ -102,7 +102,7 @@
 
   <!-- Open Academic Codex (Right Page) -->
   <path d="M 256,365 C 292,358 342,352 368,360 C 374,362 378,357 378,351 L 374,245 C 374,240 370,236 364,235 C 338,228 292,234 256,248 Z"
-        fill="url(#rightPageGrad)" stroke="#ffffff" stroke-width="2.5" filter="url(#glowDrop)"/>
+        fill="url(#rightPageGrad)" stroke="#ffffff" stroke-width="2.5"/>
   <!-- Right Page Ruling Lines -->
   <path d="M 268,272 C 292,264 327,258 354,262" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
   <path d="M 268,292 C 292,284 327,278 356,282" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-opacity="0.6"/>
@@ -116,7 +116,7 @@
   <!-- Floating Prismatic Diamond Nexus above Codex -->
   <g transform="translate(0, -32)">
     <!-- Prismatic Backing Glow -->
-    <circle cx="256" cy="205" r="42" fill="#fbbf24" fill-opacity="0.25" filter="url(#glowDrop)"/>
+    <circle cx="256" cy="205" r="42" fill="#fbbf24" fill-opacity="0.25"/>
 
     <!-- 8-Point Diamond Star Facets -->
     <!-- Primary Vertical Rhombus -->
@@ -129,7 +129,7 @@
     <line x1="297" y1="164" x2="215" y2="246" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-opacity="0.85"/>
 
     <!-- Epicenter Sparkle Bead -->
-    <circle cx="256" cy="205" r="8" fill="#ffffff" filter="url(#glowDrop)"/>
+    <circle cx="256" cy="205" r="8" fill="#ffffff"/>
     <circle cx="256" cy="205" r="4" fill="#fef08a"/>
   </g>
 
