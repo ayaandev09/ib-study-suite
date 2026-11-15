@@ -34,7 +34,7 @@ const TILES: Tile[] = [
   { id: "revision", title: "Revise", blurb: "Flashcards and practice", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "matrix", title: "Concept Matrix", blurb: "How ideas connect", tint: "tint-indigo", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Glossary", blurb: "Terms and symbols", tint: "tint-cyan", icon: <Library className="w-6 h-6" />, span: "" },
-  { id: "stream", title: "Quick Read", blurb: "Skim the whole syllabus", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "stream", title: "Syllabus Checklist", blurb: "Track units & subunits", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
 ];
 
 export function HomeDashboard() {

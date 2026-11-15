@@ -89,7 +89,11 @@ export function TopCommandBar({
   const btn =
     "flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-medium cursor-pointer transition-colors bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-slate-200 shrink-0";
   const sectionLabel =
-    viewMode === "home" ? "Home" : navModes.find((m) => m.id === viewMode)?.label ?? "IB Deutsch B";
+    viewMode === "home"
+      ? "Home"
+      : viewMode === "stream"
+      ? "Syllabus Checklist"
+      : navModes.find((m) => m.id === viewMode)?.label ?? "IB Deutsch B";
 
   return (
     <header

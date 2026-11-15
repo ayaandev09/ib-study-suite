@@ -18,7 +18,7 @@ import { OrwellAppLogo } from "./OrwellAppLogo";
 const ITEMS: { id: ViewMode; label: string; tint: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", tint: "245,158,11", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Chapters", tint: "245,158,11", icon: <LayoutGrid className="w-4 h-4" /> },
-  { id: "stream", label: "Executive Stream", tint: "249,115,22", icon: <Layers className="w-4 h-4" /> },
+  { id: "stream", label: "Syllabus Checklist", tint: "249,115,22", icon: <Layers className="w-4 h-4" /> },
   { id: "matrix", label: "Theme Matrix", tint: "244,63,94", icon: <Network className="w-4 h-4" /> },
   { id: "lexicon", label: "Symbols & Motifs", tint: "14,165,233", icon: <Gem className="w-4 h-4" /> },
   { id: "revision", label: "Revise", tint: "16,185,129", icon: <GraduationCap className="w-4 h-4" /> },

@@ -56,8 +56,8 @@ const TILES: Tile[] = [
   },
   {
     id: "stream",
-    title: "Executive Stream",
-    blurb: "Skim all 4 themes with 1-click jump",
+    title: "Syllabus Checklist",
+    blurb: "Track every theme & subunit with 1-click jump",
     icon: <Layers className="w-6 h-6 text-green-200" />,
     span: "sm:col-span-2",
   },

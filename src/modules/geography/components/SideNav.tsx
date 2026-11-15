@@ -17,7 +17,7 @@ import { cn } from "@/modules/geography/lib/cn";
 const NAV_ITEMS: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Topics", icon: <BookOpen className="w-4 h-4" /> },
-  { id: "stream", label: "Executive Stream", icon: <Layers className="w-4 h-4" /> },
+  { id: "stream", label: "Syllabus Checklist", icon: <Layers className="w-4 h-4" /> },
   { id: "matrix", label: "Concept Matrix", icon: <Grid className="w-4 h-4" /> },
   { id: "lexicon", label: "Models & Lexicon", icon: <BookMarked className="w-4 h-4" /> },
   { id: "revision", label: "Flashcards", icon: <GraduationCap className="w-4 h-4" /> },

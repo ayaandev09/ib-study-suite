@@ -40,8 +40,8 @@ const NAV_MODES: ViewModeItem[] = [
   },
   {
     id: "stream",
-    label: "Syllabus Stream",
-    shortLabel: "Stream",
+    label: "Syllabus Checklist",
+    shortLabel: "Checklist",
     icon: <Rows3 className="w-3.5 h-3.5" />,
   },
   {

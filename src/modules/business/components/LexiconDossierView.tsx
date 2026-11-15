@@ -11,7 +11,6 @@ import {
 } from "@/modules/business/data";
 import { useStudyStore } from "@/modules/business/store/useStudyStore";
 import { MathFormula } from "./MathFormula";
-import { CSuiteDecisionSandbox } from "./CSuiteDecisionSandbox";
 import {
   Calculator,
   Users,
@@ -25,7 +24,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-type DossierTab = "csuite" | "formulas" | "theorists" | "glossary";
+type DossierTab = "formulas" | "theorists" | "glossary";
 
 const ALPHABET = [
   "ALL",
@@ -70,7 +69,7 @@ const UNIT_FILTERS = [
 
 export const LexiconDossierView = React.memo(function LexiconDossierView() {
   const searchQuery = useStudyStore((state) => state.searchQuery);
-  const [activeTab, setActiveTab] = useState<DossierTab>("csuite");
+  const [activeTab, setActiveTab] = useState<DossierTab>("formulas");
   const [selectedLetter, setSelectedLetter] = useState<string>("ALL");
   const [selectedUnit, setSelectedUnit] = useState<string>("ALL");
   const [hlOnlyFilter, setHlOnlyFilter] = useState<boolean>(false);
@@ -172,17 +171,6 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
           {/* Sub-Tabs */}
           <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
             <button
-              onClick={() => setActiveTab("csuite")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-sans font-medium transition-all cursor-pointer ${
-                activeTab === "csuite"
-                  ? "bg-blue-500/25 border border-blue-400/50 text-blue-200 shadow-md"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Sparkles className="w-3.5 h-3.5 text-blue-400" />
-              <span>C-Suite Decision &amp; Quant Lab</span>
-            </button>
-            <button
               onClick={() => setActiveTab("formulas")}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-sans font-medium transition-all cursor-pointer ${
                 activeTab === "formulas"
@@ -218,11 +206,6 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
           </div>
         </div>
       </section>
-
-      {/* =====================================================================
-          TAB 0: C-SUITE EXECUTIVE DECISION & QUANTITATIVE SANDBOX
-          ===================================================================== */}
-      {activeTab === "csuite" && <CSuiteDecisionSandbox />}
 
       {/* =====================================================================
           TAB 1: FORMULAS BANK

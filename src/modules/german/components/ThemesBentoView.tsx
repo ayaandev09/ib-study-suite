@@ -127,23 +127,12 @@ export function ThemesBentoView() {
       </div>
 
       {/* =====================================================================
-          1. ACTIVE FOCUS SUBTOPIC FLAGSHIP BENTO CARD (MATCHING 4 FLAGSHIPS)
+          1. ACTIVE FOCUS SUBTOPIC BENTO STACK (SINGLE-COLUMN VERTICAL BENTO)
           ===================================================================== */}
-      <section className="space-y-4" id="active-subtopic-focus">
-        {/* Active Recall 3D Flip Card */}
-        <RecallFlipCard
-          moduleCode={activeTopic.displayCode}
-          title={`${activeTopic.displayCode} · ${activeTopic.title}`}
-          prompt={activeTopic.overview}
-          answer={`Kultureller Schwerpunkt: ${activeTopic.culturalSpotlight.title} (${activeTopic.culturalSpotlight.region}) — ${activeTopic.culturalSpotlight.description}`}
-          accent={activeTheme.color}
-          secondary="#9333ea"
-          meta={`IB GERMAN B · THEMA ${activeTheme.themeNumber}`}
-        />
-
-        {/* Flagship Hero Header with Dynamic Theme Radial Glow */}
+      <section className="space-y-5" id="active-subtopic-focus">
+        {/* HERO BENTO HEADER */}
         <div
-          className="liquid-glass-bento rounded-3xl p-6 lg:p-7 relative overflow-hidden transition-all duration-300"
+          className="liquid-glass-bento rounded-3xl p-6 relative overflow-hidden transition-all duration-300 border border-white/10"
           style={{
             borderColor: `${activeTheme.color}45`,
           }}
@@ -246,7 +235,7 @@ export function ThemesBentoView() {
             </div>
           </div>
 
-          {/* Mode Switcher: Study as New vs Exam Cram */}
+          {/* Mode Switcher & Quick Actions */}
           <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
               <button
@@ -298,96 +287,6 @@ export function ThemesBentoView() {
           </div>
         </div>
 
-        {/* Dual Mode Callout Box */}
-        {studyGoal === "revise" ? (
-          <div
-            className="rounded-3xl p-5 border relative overflow-hidden transition-all duration-300"
-            style={{
-              borderColor: "rgba(239, 68, 68, 0.35)",
-              background:
-                "linear-gradient(135deg, rgba(239, 68, 68, 0.12) 0%, rgba(168, 85, 247, 0.08) 50%, rgba(15, 23, 42, 0.9) 100%)",
-            }}
-          >
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/40">
-                  <Flame className="w-4 h-4 text-rose-400 animate-pulse" />
-                </span>
-                <div>
-                  <h3 className="text-sm font-bold text-white tracking-wide">
-                    IB German B Prüfungs-Blitzanalyse &amp; Kernaussagen
-                  </h3>
-                  <p className="text-xs text-rose-300/80">
-                    High-Yield Debatten &amp; mündliche Prüfungsargumente (Paper 1 &amp; Oral Exam)
-                  </p>
-                </div>
-              </div>
-              <span className="font-mono text-xs px-2.5 py-1 rounded-xl bg-rose-500/20 text-rose-200 border border-rose-400/30">
-                ⚡ Rapid Recall
-              </span>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-              {activeTopic.keyDebates.map((debate, i) => (
-                <div
-                  key={i}
-                  className="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-1.5"
-                >
-                  <span className="font-mono text-[10px] font-bold text-rose-300 uppercase block">
-                    Debatte {i + 1}
-                  </span>
-                  <p className="text-xs text-slate-200 leading-relaxed">{debate}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        ) : (
-          <div
-            className="rounded-3xl p-5 border relative overflow-hidden transition-all duration-300"
-            style={{
-              borderColor: `${activeTheme.color}40`,
-              background: `linear-gradient(135deg, ${activeTheme.color}14 0%, rgba(16, 185, 129, 0.08) 50%, rgba(15, 23, 42, 0.9) 100%)`,
-            }}
-          >
-            <div className="flex items-center justify-between gap-3 mb-3">
-              <div className="flex items-center gap-2">
-                <span
-                  className="p-2 rounded-xl border"
-                  style={{
-                    backgroundColor: `${activeTheme.color}20`,
-                    borderColor: `${activeTheme.color}40`,
-                    color: activeTheme.color,
-                  }}
-                >
-                  <BookOpen className="w-4 h-4" />
-                </span>
-                <div>
-                  <h3 className="text-sm font-bold text-white tracking-wide">
-                    Geführte Themeneinführung &amp; DACH-Kontext
-                  </h3>
-                  <p className="text-xs text-slate-300">
-                    Kulturelle Hintergründe für {activeTopic.culturalSpotlight.region}
-                  </p>
-                </div>
-              </div>
-              <span
-                className="font-mono text-xs px-2.5 py-1 rounded-xl border"
-                style={{
-                  backgroundColor: `${activeTheme.color}15`,
-                  color: activeTheme.color,
-                  borderColor: `${activeTheme.color}35`,
-                }}
-              >
-                Geführtes Lernen
-              </span>
-            </div>
-
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-black/40 p-4 rounded-2xl border border-white/10">
-              {activeTopic.overview}
-            </p>
-          </div>
-        )}
-
         {/* Optional Scratchpad Card */}
         {showScratchpad && (
           <div className="animate-in fade-in duration-200">
@@ -402,150 +301,226 @@ export function ThemesBentoView() {
           </div>
         )}
 
-        {/* 4-Card Bento Grid for Active Subtopic */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Card A: Kultureller DACH-Schwerpunkt */}
-          <div
-            className="rounded-3xl p-5 border flex flex-col justify-between relative overflow-hidden transition-all"
-            style={{
-              borderColor: `${activeTheme.color}35`,
-              background: `linear-gradient(145deg, ${activeTheme.color}16 0%, rgba(15, 23, 42, 0.75) 50%, rgba(2, 6, 23, 0.94) 100%)`,
-              boxShadow: `0 14px 34px -8px rgba(0, 0, 0, 0.85), 0 0 20px -6px ${activeTheme.color}20`,
-            }}
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
+        {/* BENTO CARD 1: Core Analysis / Synthesis & Key Debates */}
+        <div
+          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
+          style={{
+            borderColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.35)" : `${activeTheme.color}35`,
+          }}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2.5">
                 <span
-                  className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg border uppercase tracking-wider flex items-center gap-1.5"
+                  className="p-2 rounded-xl border"
                   style={{
-                    backgroundColor: `${activeTheme.color}25`,
-                    color: activeTheme.color,
-                    borderColor: `${activeTheme.color}50`,
+                    backgroundColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.18)" : `${activeTheme.color}20`,
+                    borderColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.4)" : `${activeTheme.color}40`,
+                    color: studyGoal === "revise" ? "#fca5a5" : activeTheme.color,
                   }}
                 >
-                  <MapPin className="w-3 h-3" />
-                  DACH-FOKUS · {activeTopic.culturalSpotlight.region}
+                  {studyGoal === "revise" ? (
+                    <Flame className="w-4 h-4" />
+                  ) : (
+                    <BookOpen className="w-4 h-4" />
+                  )}
                 </span>
-                <span className="text-[11px] font-mono text-slate-400">
-                  Paper 2 &amp; Oral Key
-                </span>
+                <div>
+                  <h3 className="text-base font-bold text-white tracking-tight">
+                    {studyGoal === "revise"
+                      ? "Prüfungs-Blitzanalyse & Kernaussagen"
+                      : "Kernanalyse & Zentrale Kontroversen"}
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    {studyGoal === "revise"
+                      ? "High-Yield Debatten für Paper 1 & Individual Oral"
+                      : `Themeneinführung & Argumentationslinien (${activeTopic.displayCode})`}
+                  </p>
+                </div>
               </div>
+              <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-white/[0.04] text-slate-300 border border-white/10 shrink-0">
+                {studyGoal === "revise" ? "⚡ Rapid Recall" : "Synthese"}
+              </span>
+            </div>
 
-              <h3 className="text-base font-bold text-white mb-2">
-                {activeTopic.culturalSpotlight.title}
-              </h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                {activeTopic.culturalSpotlight.description}
+            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                {activeTopic.overview}
               </p>
             </div>
 
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs text-violet-300">
-              <span className="font-mono text-[11px] text-slate-400">
-                Authentischer Kulturbezug
-              </span>
-              <span className="flex items-center gap-1 font-bold">
-                Kriterium B2 Relevanz
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-              </span>
-            </div>
-          </div>
-
-          {/* Card B: Paper 1 Prüfungsaufgabe & Textsorte */}
-          <div
-            className="rounded-3xl p-5 border flex flex-col justify-between relative overflow-hidden transition-all"
-            style={{
-              borderColor: "rgba(168, 85, 247, 0.35)",
-              background:
-                "linear-gradient(145deg, rgba(168, 85, 247, 0.14) 0%, rgba(15, 23, 42, 0.75) 50%, rgba(2, 6, 23, 0.94) 100%)",
-              boxShadow:
-                "0 14px 34px -8px rgba(0, 0, 0, 0.85), 0 0 20px -6px rgba(168, 85, 247, 0.20)",
-            }}
-          >
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-violet-500/20 text-violet-300 border border-violet-400/40 uppercase tracking-wider flex items-center gap-1.5">
-                  <FileText className="w-3 h-3" />
-                  PAPER 1 SCHREIBEN
-                </span>
-                <span className="text-[11px] font-mono text-slate-400">
-                  Register: {activeTopic.sampleEssayPrompts[0]?.register}
-                </span>
+            <div className="space-y-2.5">
+              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
+                Zentrale Kontroversen &amp; Debatten
               </div>
-
-              <div className="mb-2">
-                <span className="text-[11px] font-mono text-violet-300 font-bold block mb-1">
-                  Empfohlene Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
-                </span>
-                <p className="text-xs sm:text-sm text-slate-200 italic font-serif leading-relaxed bg-black/40 p-3 rounded-xl border border-white/5">
-                  „{activeTopic.sampleEssayPrompts[0]?.prompt}“
-                </p>
+              <div className="space-y-2">
+                {activeTopic.keyDebates.map((debate, i) => (
+                  <div
+                    key={i}
+                    className="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5"
+                  >
+                    <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-300 border border-rose-400/30 shrink-0 mt-0.5">
+                      D{i + 1}
+                    </span>
+                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
+                      {debate}
+                    </p>
+                  </div>
+                ))}
               </div>
             </div>
-
-            <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between">
-              <span className="text-[11px] text-slate-400 font-mono">
-                Wortanzahl: 250–400 Wörter (SL) / 450–600 (HL)
-              </span>
-              <button
-                onClick={() => setViewMode("textsorten")}
-                className="text-xs font-bold text-violet-300 hover:text-white flex items-center gap-1 cursor-pointer transition-colors"
-              >
-                <span>Formatvorlage anzeigen</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-            </div>
           </div>
+        </div>
 
-          {/* Card C: Schlüsselwortschatz (Full Width on Mobile, Grid on Tablet/Desktop) */}
-          <div
-            className="md:col-span-2 rounded-3xl p-5 border relative overflow-hidden transition-all"
-            style={{
-              borderColor: "rgba(56, 189, 248, 0.35)",
-              background:
-                "linear-gradient(145deg, rgba(56, 189, 248, 0.12) 0%, rgba(15, 23, 42, 0.8) 50%, rgba(2, 6, 23, 0.95) 100%)",
-              boxShadow:
-                "0 14px 34px -8px rgba(0, 0, 0, 0.85), 0 0 20px -6px rgba(56, 189, 248, 0.18)",
-            }}
-          >
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
+        {/* BENTO CARD 2: Key Vocabulary & Redemittel */}
+        <div
+          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
+          style={{ borderColor: "rgba(56, 189, 248, 0.3)" }}
+        >
+          <div className="space-y-4">
+            <div className="flex items-center justify-between gap-2">
+              <div>
                 <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/40 uppercase tracking-wider">
-                  SCHLÜSSELWORTSCHATZ &amp; KONTEXTE (C1/B2)
+                  SCHLÜSSELWORTSCHATZ (C1/B2)
                 </span>
-                <span className="text-xs text-slate-400">
-                  {activeTopic.vocabBullets.length} Kernbegriffe mit Anwendungsbeispiel
-                </span>
+                <h3 className="text-base font-bold text-white mt-2">
+                  Kernbegriffe &amp; Kontexte
+                </h3>
               </div>
-              <button
-                onClick={() => setViewMode("redemittel")}
-                className="text-xs text-sky-300 hover:text-white font-bold flex items-center gap-1 cursor-pointer"
-              >
-                <span>Redemittel Dossier</span>
-                <ChevronRight className="w-3.5 h-3.5" />
-              </button>
+              <span className="text-xs font-mono text-slate-400 shrink-0">
+                {activeTopic.vocabBullets.length} Begriffe
+              </span>
             </div>
 
-            <div className="bento-adaptive-3 gap-2.5">
+            <div className="space-y-2.5">
               {activeTopic.vocabBullets.map((v, i) => (
                 <div
                   key={i}
-                  className="p-3 rounded-2xl bg-slate-950/70 border border-white/10 hover:border-sky-400/40 transition-colors"
+                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-400/40 transition-colors"
                 >
-                  <div className="flex items-baseline justify-between mb-1">
+                  <div className="flex items-baseline justify-between gap-2 mb-1">
                     <span className="font-bold text-sky-200 text-xs sm:text-sm">
                       {v.german}
                     </span>
-                    <span className="text-[10px] text-slate-400 italic">
+                    <span className="text-[11px] text-slate-400 italic shrink-0">
                       {v.english}
                     </span>
                   </div>
-                  <p className="text-[11px] text-slate-300 italic leading-snug">
+                  <p className="text-[11px] text-slate-300/90 italic leading-snug">
                     „{v.context}“
                   </p>
                 </div>
               ))}
             </div>
           </div>
+
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+            <span className="text-[11px] font-mono text-slate-400">
+              Redemittel &amp; Konnektoren
+            </span>
+            <button
+              onClick={() => setViewMode("redemittel")}
+              className="text-xs text-sky-300 hover:text-white font-bold flex items-center gap-1 cursor-pointer"
+            >
+              <span>Redemittel Dossier</span>
+              <ChevronRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* BENTO CARD 3: Cultural DACH Context */}
+        <div
+          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
+          style={{ borderColor: `${activeTheme.color}35` }}
+        >
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span
+                className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg border uppercase tracking-wider flex items-center gap-1.5"
+                style={{
+                  backgroundColor: `${activeTheme.color}25`,
+                  color: activeTheme.color,
+                  borderColor: `${activeTheme.color}50`,
+                }}
+              >
+                <MapPin className="w-3 h-3" />
+                DACH-FOKUS · {activeTopic.culturalSpotlight.region}
+              </span>
+              <span className="text-[11px] font-mono text-slate-400">
+                Paper 2 &amp; Oral Key
+              </span>
+            </div>
+
+            <h3 className="text-base font-bold text-white mb-2">
+              {activeTopic.culturalSpotlight.title}
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              {activeTopic.culturalSpotlight.description}
+            </p>
+          </div>
+
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-violet-300">
+            <span className="font-mono text-[11px] text-slate-400">
+              Authentischer Kulturbezug
+            </span>
+            <span className="flex items-center gap-1 font-bold">
+              Kriterium B2 Relevanz
+              <Check className="w-3.5 h-3.5 text-emerald-400" />
+            </span>
+          </div>
+        </div>
+
+        {/* BENTO CARD 4: IB Exam / Paper 1 & Textsorten Strategy */}
+        <div
+          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
+          style={{ borderColor: "rgba(168, 85, 247, 0.35)" }}
+        >
+          <div>
+            <div className="flex items-center justify-between mb-3">
+              <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-violet-500/20 text-violet-300 border border-violet-400/40 uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="w-3 h-3" />
+                PAPER 1 SCHREIBEN &amp; STRATEGIE
+              </span>
+              <span className="text-[11px] font-mono text-slate-400">
+                Register: {activeTopic.sampleEssayPrompts[0]?.register}
+              </span>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-[11px] font-mono text-violet-300 font-bold block">
+                Empfohlene Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
+              </span>
+              <p className="text-xs sm:text-sm text-slate-200 italic font-serif leading-relaxed bg-black/40 p-3.5 rounded-2xl border border-white/10">
+                „{activeTopic.sampleEssayPrompts[0]?.prompt}“
+              </p>
+            </div>
+          </div>
+
+          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
+            <span className="text-[11px] text-slate-400 font-mono">
+              250–400 Wörter (SL) / 450–600 (HL)
+            </span>
+            <button
+              onClick={() => setViewMode("textsorten")}
+              className="text-xs font-bold text-violet-300 hover:text-white flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+            >
+              <span>Formatvorlage anzeigen</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+
+        {/* BENTO CARD 5: Active Recall / Self-Check Prompt */}
+        <div>
+          <RecallFlipCard
+            moduleCode={activeTopic.displayCode}
+            title={`${activeTopic.displayCode} · ${activeTopic.title}`}
+            prompt={activeTopic.overview}
+            answer={`Kultureller Schwerpunkt: ${activeTopic.culturalSpotlight.title} (${activeTopic.culturalSpotlight.region}) — ${activeTopic.culturalSpotlight.description}`}
+            accent={activeTheme.color}
+            secondary="#9333ea"
+            meta={`ACTIVE RECALL · THEMA ${activeTheme.themeNumber}`}
+          />
         </div>
       </section>
 

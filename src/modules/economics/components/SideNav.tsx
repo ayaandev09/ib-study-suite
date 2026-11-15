@@ -9,7 +9,6 @@ import {
   GraduationCap,
   Network,
   Library,
-  LineChart,
   Briefcase,
   ClipboardList,
 } from "lucide-react";
@@ -20,13 +19,12 @@ import { IBEconomicsAppLogo } from "./IBEconomicsAppLogo";
 const ITEMS: { id: ViewMode; label: string; tint: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", tint: "245,158,11", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Topics", tint: "245,158,11", icon: <LayoutGrid className="w-4 h-4" /> },
-  { id: "diagrams", label: "Diagram Lab", tint: "14,165,233", icon: <LineChart className="w-4 h-4" /> },
   { id: "cases", label: "Case Studies", tint: "244,63,94", icon: <Briefcase className="w-4 h-4" /> },
   { id: "exam-guide", label: "Exam Guide", tint: "139,92,246", icon: <ClipboardList className="w-4 h-4" /> },
   { id: "revision", label: "Revise", tint: "16,185,129", icon: <GraduationCap className="w-4 h-4" /> },
   { id: "matrix", label: "Concept Matrix", tint: "99,102,241", icon: <Network className="w-4 h-4" /> },
   { id: "lexicon", label: "Glossary", tint: "6,182,212", icon: <Library className="w-4 h-4" /> },
-  { id: "stream", label: "Executive Stream", tint: "249,115,22", icon: <Layers className="w-4 h-4" /> },
+  { id: "stream", label: "Syllabus Checklist", tint: "249,115,22", icon: <Layers className="w-4 h-4" /> },
 ];
 
 export function SideNav() {

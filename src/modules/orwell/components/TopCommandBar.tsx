@@ -92,7 +92,7 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = React.memo(({
   const sectionLabels: Record<string, string> = {
     home: "Home",
     focus: "Chapters",
-    stream: "Speed-Read Stream",
+    stream: "Syllabus Checklist",
     matrix: "Theme Matrix",
     lexicon: "Symbols & Motifs",
     revision: "Revision Hub",

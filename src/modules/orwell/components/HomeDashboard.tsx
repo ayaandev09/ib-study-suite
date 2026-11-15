@@ -31,7 +31,7 @@ const TILES: Tile[] = [
   { id: "matrix", title: "Theme Matrix", blurb: "Doublethink, telescreens, Newspeak & power", tint: "tint-rose", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "revision", title: "Revision Hub", blurb: "Flashcards, quizzes, and cram outlines", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Symbols & Motifs", blurb: "Paperweight, telescreens, St. Clement's & diary", tint: "tint-sky", icon: <Gem className="w-6 h-6" />, span: "" },
-  { id: "stream", title: "Speed-Read Stream", blurb: "Continuous 24-chapter overview", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "stream", title: "Syllabus Checklist", blurb: "Track all 3 Parts & 24 Chapters with completion toggles", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
 ];
 
 export function HomeDashboard() {

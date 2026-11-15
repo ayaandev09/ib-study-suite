@@ -10,7 +10,6 @@ import {
   GraduationCap,
   Network,
   Library,
-  LineChart,
   Briefcase,
   ClipboardList,
   ArrowUpRight,
@@ -30,13 +29,12 @@ type Tile = {
 
 const TILES: Tile[] = [
   { id: "focus", title: "Topics", blurb: "Study one topic at a time", tint: "tint-amber", icon: <LayoutGrid className="w-6 h-6" />, span: "sm:col-span-2" },
-  { id: "diagrams", title: "Diagram Lab", blurb: "Practise drawing and shifting curves", tint: "tint-sky", icon: <LineChart className="w-6 h-6" />, span: "" },
   { id: "cases", title: "Case Studies", blurb: "Real-world examples to cite", tint: "tint-rose", icon: <Briefcase className="w-6 h-6" />, span: "" },
   { id: "exam-guide", title: "Exam Guide", blurb: "Paper structure and mark schemes", tint: "tint-violet", icon: <ClipboardList className="w-6 h-6" />, span: "" },
   { id: "revision", title: "Revise", blurb: "Flashcards and active recall", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "matrix", title: "Concept Matrix", blurb: "How the key concepts connect", tint: "tint-indigo", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Glossary", blurb: "Terms, formulas and theorists", tint: "tint-cyan", icon: <Library className="w-6 h-6" />, span: "" },
-  { id: "stream", title: "Quick Read", blurb: "Skim the whole syllabus", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "stream", title: "Syllabus Checklist", blurb: "Track every unit and subunit", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
 ];
 
 export function HomeDashboard() {

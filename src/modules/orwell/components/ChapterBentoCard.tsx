@@ -156,22 +156,8 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         isDeferredBelowFold ? "deferred-chapter-card" : ""
       }`}
     >
-      <RecallFlipCard
-        moduleCode={chapter.displayCode}
-        title={`${chapter.displayCode} · ${chapter.title}`}
-        prompt={
-          matchingCram?.teacherDiscussionQuestions?.[0] ||
-          chapter.examPromptTakeaway ||
-          chapter.summary
-        }
-        answer={matchingCram?.sixtySecondSummary || chapter.summary}
-        accent="#f43f5e"
-        secondary="#e11d48"
-        meta="ACTIVE RECALL"
-      />
-
       {/* ==================== BENTO HERO HEADER ==================== */}
-      <div className="liquid-glass-bento rounded-3xl p-6 lg:p-7 relative overflow-hidden">
+      <div className="liquid-glass-bento rounded-3xl p-6 relative overflow-hidden">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
           {/* Hierarchy Breadcrumb: Book Part ➔ Chapter */}
           <div className="flex flex-wrap items-center gap-2">
@@ -431,10 +417,10 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
       )}
 
       <DeepDive>
-      {/* ==================== BENTO ROW 1: SUMMARY & THEME TRACKING (ADAPTIVE WORKSPACE) ==================== */}
-      <div className="bento-adaptive-12">
-        {/* Summary & Speed-Read Bullets (7 Cols) */}
-        <div className="bento-span-7 liquid-glass-bento rounded-3xl p-5 sm:p-6 flex flex-col justify-between">
+      {/* ==================== BENTO STACK: SUMMARY & THEME TRACKING ==================== */}
+      <div className="space-y-5">
+        {/* Summary & Speed-Read Bullets */}
+        <div className="liquid-glass-bento rounded-3xl p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
@@ -505,8 +491,8 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
           </div>
         </div>
 
-        {/* Theme Tracking Bento (5 Cols) */}
-        <div className="bento-span-5 liquid-glass-bento rounded-3xl p-5 sm:p-6 flex flex-col justify-between">
+        {/* Theme Tracking Bento */}
+        <div className="liquid-glass-bento rounded-3xl p-6 flex flex-col justify-between">
           <div>
             <div className="flex items-center gap-2 mb-4">
               <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
@@ -699,10 +685,10 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         chapterCode={chapter.displayCode}
       />
 
-      {/* ==================== BENTO ROW 3: DEEP ANALYSIS & KEY QUOTES (ADAPTIVE WORKSPACE) ==================== */}
-      <div className="bento-adaptive-12">
-        {/* Multi-Source Synthesis Analysis (6 Cols) */}
-        <div className="bento-span-6 liquid-glass-bento rounded-3xl p-5 sm:p-6 space-y-4">
+      {/* ==================== BENTO STACK: DEEP ANALYSIS & KEY QUOTES ==================== */}
+      <div className="space-y-5">
+        {/* Multi-Source Synthesis Analysis */}
+        <div className="liquid-glass-bento rounded-3xl p-6 space-y-4">
           <div className="flex items-center gap-2.5">
             <span className="p-2 rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300">
               <GraduationCap className="w-4 h-4" />
@@ -765,9 +751,9 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
           </div>
         </div>
 
-        {/* Key Quotes & Study Scratchpad (6 Cols) */}
-        <div className="bento-span-6 flex flex-col gap-4">
-          <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 flex-1">
+        {/* Key Quotes & Study Scratchpad */}
+        <div className="flex flex-col gap-5">
+          <div className="liquid-glass-bento rounded-3xl p-6 flex-1">
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2.5">
                 <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
@@ -854,6 +840,21 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         </div>
       </div>
       </DeepDive>
+
+      {/* ==================== ACTIVE RECALL / SELF-CHECK BENTO ==================== */}
+      <RecallFlipCard
+        moduleCode={chapter.displayCode}
+        title={`${chapter.displayCode} · ${chapter.title}`}
+        prompt={
+          matchingCram?.teacherDiscussionQuestions?.[0] ||
+          chapter.examPromptTakeaway ||
+          chapter.summary
+        }
+        answer={matchingCram?.sixtySecondSummary || chapter.summary}
+        accent="#f43f5e"
+        secondary="#e11d48"
+        meta="ACTIVE RECALL"
+      />
     </article>
   );
 });

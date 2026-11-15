@@ -37,8 +37,8 @@ const VIEW_MODES: {
   },
   {
     id: "stream",
-    label: "Executive Stream",
-    shortLabel: "Flow",
+    label: "Syllabus Checklist",
+    shortLabel: "Checklist",
     icon: <Layers className="w-3.5 h-3.5" />,
   },
   {

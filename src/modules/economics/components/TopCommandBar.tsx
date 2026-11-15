@@ -59,17 +59,10 @@ const NAV_MODES: ViewModeItem[] = [
   },
   {
     id: "stream",
-    label: "Syllabus Flow",
-    shortLabel: "Flow",
-    badge: "Stream",
+    label: "Syllabus Checklist",
+    shortLabel: "Checklist",
+    badge: "Check",
     icon: <Rows3 className="w-3.5 h-3.5" />,
-  },
-  {
-    id: "diagrams",
-    label: "Diagram Lab",
-    shortLabel: "Lab",
-    badge: "29",
-    icon: <Layers className="w-3.5 h-3.5" />,
   },
   {
     id: "matrix",
@@ -188,9 +181,6 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
         } else if (e.key === "2") {
           e.preventDefault();
           setViewMode("stream");
-        } else if (e.key === "3") {
-          e.preventDefault();
-          setViewMode("diagrams");
         } else if (e.key === "4") {
           e.preventDefault();
           setViewMode("matrix");

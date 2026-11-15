@@ -17,7 +17,7 @@ import { BiologyAppLogo } from "./BiologyAppLogo";
 const ITEMS: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Topics", icon: <LayoutGrid className="w-4 h-4" /> },
-  { id: "stream", label: "Executive Stream", icon: <Layers className="w-4 h-4" /> },
+  { id: "stream", label: "Syllabus Checklist", icon: <Layers className="w-4 h-4" /> },
   { id: "matrix", label: "Concept Matrix", icon: <Network className="w-4 h-4" /> },
   { id: "lexicon", label: "Glossary & Labs", icon: <FlaskConical className="w-4 h-4" /> },
   { id: "revision", label: "Flashcards", icon: <GraduationCap className="w-4 h-4" /> },

@@ -30,7 +30,7 @@ const TILES: Tile[] = [
   { id: "matrix", title: "CUEGIS & Concept Matrix", blurb: "Change, Culture, Ethics, Globalization, Innovation, Strategy", tint: "tint-rose", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "revision", title: "Active Recall Hub", blurb: "Flashcard decks, formulas & Paper 1/2 models", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Terms & Theorists", blurb: "Maslow, Taylor, Ansoff, Porter, Lewin & BMT glossary", tint: "tint-sky", icon: <Library className="w-6 h-6" />, span: "" },
-  { id: "stream", title: "Executive Stream", blurb: "Rapid linear review of all units", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "stream", title: "Syllabus Checklist", blurb: "Track every unit and subunit", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
 ];
 
 export function HomeDashboard() {
