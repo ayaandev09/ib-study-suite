@@ -1394,6 +1394,8 @@ function getActionText(doc: IndexedDocument): string {
       return `Open in German B SL / HL Studio`;
     case "geography":
       return `Open ${doc.item.badge} in IB Geography`;
+    default:
+      return `Open ${doc.item.title}`;
   }
 }
 

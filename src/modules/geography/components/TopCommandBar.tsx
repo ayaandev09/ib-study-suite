@@ -40,7 +40,7 @@ export function TopCommandBar() {
   };
 
   return (
-    <header className="sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-2.5 bg-[#030a0a]/85 backdrop-blur-md border-b border-teal-500/15">
+    <header className="sticky top-0 z-20 mb-4 rounded-2xl liquid-glass-elevated px-3.5 py-2 flex items-center justify-between gap-3 border border-teal-400/20">
       {/* Left: Sidebar Toggle + Active Topic Pill */}
       <div className="flex items-center gap-2.5 min-w-0">
         <button

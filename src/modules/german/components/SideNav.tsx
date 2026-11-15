@@ -41,7 +41,7 @@ export function SideNav() {
   return (
     <aside
       data-tour="sidebar"
-      className={`shrink-0 rounded-3xl flex flex-col h-[calc(100vh-4.5rem)] sticky top-[56px] select-none overflow-hidden transition-[width,opacity,padding,margin] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 bg-fuchsia-950/[0.16] backdrop-blur-xl border border-fuchsia-400/[0.18] shadow-2xl ${
+      className={`hidden md:flex shrink-0 rounded-3xl flex-col h-[calc(100vh-4.5rem)] sticky top-[56px] select-none overflow-hidden transition-[width,opacity,padding,margin] duration-250 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 bg-fuchsia-950/[0.16] backdrop-blur-xl border border-fuchsia-400/[0.18] shadow-2xl ${
         sidebarCollapsed
           ? "w-0 max-w-0 p-0 mr-0 border-0 opacity-0 pointer-events-none"
           : "w-[228px] mr-5 p-3.5 opacity-100"

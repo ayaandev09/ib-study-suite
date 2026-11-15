@@ -54,7 +54,7 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
   return (
     <article
       key={topic.id}
-      className="max-w-5xl mx-auto space-y-6 pb-20"
+      className="w-full space-y-6 pb-20"
     >
       {/* =====================================================================
           1. ZEN HEADER: Topic Title, Metadata & Completion

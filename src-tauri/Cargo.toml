@@ -1,6 +1,6 @@
 [package]
 name = "ib_study_suite"
-version = "1.0.0"
+version = "1.0.1"
 description = "Unified IB Study Suite"
 authors = ["Ayaan Atif"]
 edition = "2024"

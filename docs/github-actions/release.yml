@@ -1,0 +1,92 @@
+name: Release Build
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target universal-apple-darwin'
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Rust toolchain
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build Next.js Static Export
+        run: npm run build
+
+      - name: Build Tauri Desktop App
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'IB Study Suite ${{ github.ref_name }}'
+          releaseBody: |
+            ## IB Study Suite Desktop Release (${{ github.ref_name }})
+            
+            Official offline-first desktop application for the IB Diploma Programme (May 2027 curriculum).
+            
+            ### Included Subjects (SL & HL)
+            - **IB Biology (SL/HL)**
+            - **IB Physics (SL/HL)**
+            - **IB Economics (SL/HL)**
+            - **IB Business Management (SL/HL)**
+            - **IB Geography (SL/HL)**
+            - **IB German B (SL/HL)**
+            - **English A Literature (*Nineteen Eighty-Four*)**
+            
+            ---
+            
+            ### Installation & Security Instructions
+            
+            #### 🍎 macOS Users (Apple Silicon & Intel)
+            1. Download the `.dmg` installer below.
+            2. Open the disk image and drag **IB Study Suite** into your **Applications** folder.
+            3. **First launch bypass:** Because this build is distributed directly from GitHub without an Apple Developer ID notarization certificate:
+               - Right-click (or Control-click) **IB Study Suite** in Applications and choose **Open**.
+               - Click **Open** in the confirmation alert.
+               - *Alternative:* Open **System Settings → Privacy & Security**, scroll down to the Security section, and click **Open Anyway**.
+            
+            #### 🪟 Windows Users (x64)
+            1. Download the `.exe` (or `.msi`) installer below.
+            2. Double-click the downloaded setup file.
+            3. **SmartScreen bypass:** Because the binary is self-published:
+               - Click **More info** on the blue "Windows protected your PC" banner.
+               - Click **Run anyway**.
+          releaseDraft: false
+          prerelease: false
+          args: ${{ matrix.args }}

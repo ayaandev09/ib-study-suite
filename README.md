@@ -32,12 +32,33 @@ An offline-first desktop study workspace for the IB Diploma Programme (May 2027 
 | --- | --- |
 | ![Universal Search](docs/screenshots/universal-search.png) | ![Onboarding Walkthrough](docs/screenshots/walkthrough.png) |
 
-## Download (v1.0.0)
+## Download & Installation (v1.0.1)
 
-Grab the latest installers from the [Releases](../../releases) page:
+Grab the latest native desktop installers directly from the [GitHub Releases](../../releases/latest) page:
 
-- **macOS (Apple Silicon / Universal):** `IBStudySuite-macOS-v1.0.dmg` — open the `.dmg` and drag **IBStudySuite** into Applications.
-- **Windows (x64):** `IBStudySuite-Windows-x64.exe` — standalone executable powered by WebView2 (pre-installed on Windows 10/11).
+- **🍎 macOS (Apple Silicon & Intel Universal):** Download `IBStudySuite-macOS.dmg`
+- **🪟 Windows (x64):** Download `IBStudySuite-Windows-x64-setup.exe` (or `.msi`)
+
+### First-Time Opening & Security Permissions
+
+Because IB Study Suite is an open-source, community-distributed academic tool without paid enterprise certificates, your operating system will show a standard first-time security prompt:
+
+#### On macOS
+1. Open the downloaded `.dmg` and drag **IB Study Suite** to your **Applications** folder.
+2. **First launch:** Right-click (or Control-click) **IB Study Suite** in Applications and select **Open**.
+3. In the alert asking if you want to open it, click **Open**.
+4. *Alternative:* Go to **System Settings → Privacy & Security**, scroll down to the **Security** section, and click **"Open Anyway"**.
+5. *Terminal fallback (if quarantine flag persists):*
+   ```bash
+   xattr -cr /Applications/IBStudySuite.app
+   ```
+
+#### On Windows
+1. Double-click the downloaded setup installer (`.exe` or `.msi`).
+2. When Windows SmartScreen displays the blue protection notice (*"Windows protected your PC"*):
+   - Click **"More info"**
+   - Click **"Run anyway"**
+3. The app will install and open immediately with full offline capabilities.
 
 ## Development
 

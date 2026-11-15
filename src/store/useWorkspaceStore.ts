@@ -9,6 +9,7 @@ import {
   SplitRatio,
 } from "@/types/workspace";
 import { MODULE_CATALOG, PRESET_SNAPSHOTS } from "@/data/modulesMeta";
+import { soundEngine } from "@/lib/soundEngine";
 
 export interface NavHistoryRoute {
   appId: AppId;
@@ -91,6 +92,8 @@ interface WorkspaceState {
   setWorldClocks: (clocks: WorldClockItem[]) => void;
   resetWorldClocks: () => void;
   triggerAppIntro: (appId: AppId) => void;
+  replayAppIntro: (appId: AppId) => void;
+  resetSeenAppIntros: () => void;
   dismissAppIntro: () => void;
   setSettingsOpen: (open: boolean) => void;
   setReleaseNotesOpen: (open: boolean) => void;
@@ -245,7 +248,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
 
       triggerAppIntro: (appId) => {
+        if (get().seenAppIntros[appId]) return;
+        set((state) => ({
+          activeAppIntro: appId,
+          seenAppIntros: { ...state.seenAppIntros, [appId]: true },
+        }));
+      },
+
+      replayAppIntro: (appId) => {
         set({ activeAppIntro: appId });
+      },
+
+      resetSeenAppIntros: () => {
+        set({ seenAppIntros: {} });
       },
 
       pushModuleRoute: (route, prevRoute) => {
@@ -445,7 +460,12 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       },
 
       openModule: (appId, customLabel, initialRoute) => {
-        const { openInstances, seenAppIntros } = get();
+        if (!MODULE_CATALOG[appId]) return "";
+
+        const alreadySeen = Boolean(get().seenAppIntros[appId]);
+
+        const { openInstances } = get();
+        const validOpenInstances = openInstances.filter((i) => Boolean(MODULE_CATALOG[i.appId]));
         const meta = MODULE_CATALOG[appId];
         const newInstanceId = `inst-${appId}-${Date.now()}`;
 
@@ -460,25 +480,30 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           createdAt: Date.now(),
         };
 
-        set({
-          openInstances: [...openInstances, newInstance],
+        set((state) => ({
+          openInstances: [...validOpenInstances, newInstance],
           primaryInstanceId: newInstanceId,
           activeView: "workspace",
           isExposeOpen: false,
-          activeAppIntro: !seenAppIntros[appId] ? appId : get().activeAppIntro,
-          ...appendNavHistory(get().navHistory, get().navIndex, {
+          activeAppIntro: alreadySeen ? null : appId,
+          seenAppIntros: alreadySeen
+            ? state.seenAppIntros
+            : { ...state.seenAppIntros, [appId]: true },
+          ...appendNavHistory(state.navHistory, state.navIndex, {
             view: "workspace",
             instanceId: newInstanceId,
           }),
-        });
+        }));
 
         return newInstanceId;
       },
 
       launchOrActivateModule: (appId, customLabel, initialRoute) => {
+        if (!MODULE_CATALOG[appId]) return "";
+
         const { openInstances, activateInstance, openModule } = get();
-        // If an instance of this app already exists, activate it
-        const existing = openInstances.find((i) => i.appId === appId);
+        // If an instance of this app already exists, activate it cleanly
+        const existing = openInstances.find((i) => i.appId === appId && Boolean(MODULE_CATALOG[i.appId]));
         if (existing) {
           activateInstance(existing.instanceId);
           return existing.instanceId;
@@ -493,7 +518,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           secondarySplitInstanceId,
         } = get();
         const nextInstances = openInstances.filter(
-          (i) => i.instanceId !== instanceId
+          (i) => i.instanceId !== instanceId && Boolean(MODULE_CATALOG[i.appId])
         );
 
         let nextPrimary = primaryInstanceId;
@@ -526,20 +551,27 @@ export const useWorkspaceStore = create<WorkspaceState>()(
 
       activateInstance: (instanceId) => {
         const { openInstances, seenAppIntros } = get();
-        const target = openInstances.find((i) => i.instanceId === instanceId);
+        const validInstances = openInstances.filter((i) => Boolean(MODULE_CATALOG[i.appId]));
+        const target = validInstances.find((i) => i.instanceId === instanceId);
         const appId = target?.appId;
-        set({
+        const alreadySeen = appId ? Boolean(seenAppIntros[appId]) : true;
+
+        set((state) => ({
+          openInstances: validInstances,
           primaryInstanceId: instanceId,
           secondarySplitInstanceId: null,
           activeView: "workspace",
           isExposeOpen: false,
-          activeAppIntro:
-            appId && !seenAppIntros[appId] ? appId : get().activeAppIntro,
-          ...appendNavHistory(get().navHistory, get().navIndex, {
+          activeAppIntro: !alreadySeen && appId ? appId : null,
+          seenAppIntros:
+            !alreadySeen && appId
+              ? { ...state.seenAppIntros, [appId]: true }
+              : state.seenAppIntros,
+          ...appendNavHistory(state.navHistory, state.navIndex, {
             view: "workspace",
             instanceId,
           }),
-        });
+        }));
       },
 
       pinToSplitView: (instanceId) => {
@@ -589,18 +621,20 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         if (!primaryInstanceId && openInstances.length > 0) {
           const firstAppId = openInstances[0].appId;
           const firstId = openInstances[0].instanceId;
-          set({
+          const alreadySeen = Boolean(seenAppIntros[firstAppId]);
+          set((state) => ({
             primaryInstanceId: firstId,
             activeView: "workspace",
             isExposeOpen: false,
-            activeAppIntro: !seenAppIntros[firstAppId]
-              ? firstAppId
-              : get().activeAppIntro,
-            ...appendNavHistory(get().navHistory, get().navIndex, {
+            activeAppIntro: alreadySeen ? null : firstAppId,
+            seenAppIntros: alreadySeen
+              ? state.seenAppIntros
+              : { ...state.seenAppIntros, [firstAppId]: true },
+            ...appendNavHistory(state.navHistory, state.navIndex, {
               view: "workspace",
               instanceId: firstId,
             }),
-          });
+          }));
         } else if (openInstances.length === 0) {
           // Open biology by default
           const id = get().openModule("biology");
@@ -614,18 +648,20 @@ export const useWorkspaceStore = create<WorkspaceState>()(
             (i) => i.instanceId === primaryInstanceId
           );
           const currentAppId = current?.appId;
-          set({
+          const alreadySeen = currentAppId ? Boolean(seenAppIntros[currentAppId]) : true;
+          set((state) => ({
             activeView: "workspace",
             isExposeOpen: false,
-            activeAppIntro:
-              currentAppId && !seenAppIntros[currentAppId]
-                ? currentAppId
-                : get().activeAppIntro,
-            ...appendNavHistory(get().navHistory, get().navIndex, {
+            activeAppIntro: !alreadySeen && currentAppId ? currentAppId : null,
+            seenAppIntros:
+              !alreadySeen && currentAppId
+                ? { ...state.seenAppIntros, [currentAppId]: true }
+                : state.seenAppIntros,
+            ...appendNavHistory(state.navHistory, state.navIndex, {
               view: "workspace",
               instanceId: primaryInstanceId,
             }),
-          });
+          }));
         }
       },
 
@@ -673,17 +709,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         }
 
         const { seenAppIntros } = get();
-        set({
+        const alreadySeen = Boolean(seenAppIntros[snapshot.primaryAppId]);
+        set((state) => ({
           openInstances: [...openInstances, ...additionalInstances],
           primaryInstanceId: primaryInstId!,
           secondarySplitInstanceId: null,
           splitRatio: snapshot.splitRatio || "50/50",
           activeView: "workspace",
           isExposeOpen: false,
-          activeAppIntro: !seenAppIntros[snapshot.primaryAppId]
-            ? snapshot.primaryAppId
-            : get().activeAppIntro,
-        });
+          activeAppIntro: alreadySeen ? null : snapshot.primaryAppId,
+          seenAppIntros: alreadySeen
+            ? state.seenAppIntros
+            : { ...state.seenAppIntros, [snapshot.primaryAppId]: true },
+        }));
       },
 
       saveCurrentAsSnapshot: (name, description) => {
@@ -773,6 +811,24 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
 
+        // Session-only lifecycle: reset per-subject startup intros so each app launch starts fresh
+        state.seenAppIntros = {};
+        state.activeAppIntro = null;
+
+        // Clean up any legacy seenAppIntros saved in localStorage from older versions
+        if (typeof window !== "undefined") {
+          try {
+            const raw = localStorage.getItem("ib_unified_study_suite_workspace_v1");
+            if (raw) {
+              const parsed = JSON.parse(raw);
+              if (parsed?.state?.seenAppIntros) {
+                delete parsed.state.seenAppIntros;
+                localStorage.setItem("ib_unified_study_suite_workspace_v1", JSON.stringify(parsed));
+              }
+            }
+          } catch {}
+        }
+
         if (!state.worldClocks || !Array.isArray(state.worldClocks) || state.worldClocks.length === 0) {
           state.worldClocks = DEFAULT_WORLD_CLOCKS;
         }
@@ -807,7 +863,16 @@ export const useWorkspaceStore = create<WorkspaceState>()(
           }
         }
         if (!state.enabledSubjects || state.enabledSubjects.length === 0) {
-          state.enabledSubjects = ALL_SUBJECT_IDS;
+          state.enabledSubjects = [...ALL_SUBJECT_IDS];
+        } else {
+          // Filter to strictly valid catalog subjects, completely purging any obsolete modules (e.g. math-aa, math-ai)
+          const validSet = new Set<AppId>(ALL_SUBJECT_IDS);
+          state.enabledSubjects = state.enabledSubjects.filter((id) => validSet.has(id));
+          ALL_SUBJECT_IDS.forEach((id) => {
+            if (!state.enabledSubjects.includes(id)) {
+              state.enabledSubjects.push(id);
+            }
+          });
         }
         if (!state.subjectLevels) {
           state.subjectLevels = DEFAULT_SUBJECT_LEVELS;
@@ -822,6 +887,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         state.navHistory = [{ view: "dashboard", instanceId: null }];
         state.navIndex = 0;
         state.isRestoringHistory = false;
+
+        // Clean up any stale storage entries
+        if (typeof window !== "undefined") {
+          try {
+            localStorage.removeItem("ib_suite_math_aa_store");
+            localStorage.removeItem("ib_suite_math_ai_store");
+          } catch {}
+        }
       },
     }
   )

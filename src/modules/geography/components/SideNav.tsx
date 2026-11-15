@@ -35,7 +35,7 @@ export function SideNav() {
   return (
     <aside
       data-tour="sidebar"
-      className="shrink-0 rounded-3xl flex flex-col h-[calc(100vh-4.5rem)] sticky top-[56px] w-[228px] mr-5 p-3.5 select-none overflow-hidden z-10 bg-teal-950/[0.16] backdrop-blur-xl border border-teal-400/[0.18] shadow-2xl"
+      className="hidden md:flex shrink-0 rounded-3xl flex-col h-[calc(100vh-4.5rem)] sticky top-[56px] w-[228px] mr-5 p-3.5 select-none overflow-hidden z-10 bg-teal-950/[0.16] backdrop-blur-xl border border-teal-400/[0.18] shadow-2xl"
     >
       <div className="w-[200px] flex flex-col h-full min-h-0 gap-3">
         {/* Header */}

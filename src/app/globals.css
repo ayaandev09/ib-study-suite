@@ -37,6 +37,12 @@
   --font-serif: var(--font-rounded);
   --font-mono: var(--font-academic-mono);
   --font-display: var(--font-cinzel);
+
+  /* iPhone Safe Area & Touch Ergonomics */
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --safe-left: env(safe-area-inset-left, 0px);
+  --safe-right: env(safe-area-inset-right, 0px);
 }
 
 * {
@@ -47,10 +53,11 @@ html {
   color-scheme: dark;
   background-color: #000000;
   color: #F5F5F7;
-  font-size: 16.5px;
+  font-size: 16px;
   font-family: var(--font-rounded);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
   text-rendering: optimizeLegibility;
   overscroll-behavior-y: none;
 }
@@ -59,12 +66,19 @@ body {
   background-color: #000000;
   color: #F5F5F7;
   font-family: var(--font-rounded);
-  line-height: 1.65;
+  line-height: 1.6;
   letter-spacing: -0.005em;
   overflow-x: hidden;
   min-height: 100vh;
+  min-height: 100dvh;
   margin: 0;
   padding: 0;
+  -webkit-overflow-scrolling: touch;
+}
+
+button, a, input, select, textarea, [role="button"] {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* ============================================================================
@@ -689,4 +703,98 @@ button:not(:disabled):not([data-motion="true"]):active,
 [role="button"]:not([aria-disabled="true"]):not([data-motion="true"]):active {
   transform: scale(0.968);
   transition-duration: 0.08s;
+}
+
+/* ============================================================================
+   NATIVE MAC SIRI / APPLE INTELLIGENCE SPOTLIGHT LIQUID GLASS HAZE
+   ============================================================================ */
+
+@keyframes siriConicSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes siriAuraPulse {
+  0%, 100% {
+    opacity: 0.72;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.95;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes siriOrbGlow {
+  0%, 100% {
+    filter: hue-rotate(0deg) brightness(1.1);
+  }
+  50% {
+    filter: hue-rotate(180deg) brightness(1.3);
+  }
+}
+
+/* ============================================================================
+   MACOS SIRI-POWERED SPOTLIGHT LIQUID GLASS (TRANSLUCENT HAZE & CLEAR GLASS PILL)
+   ============================================================================ */
+
+.siri-liquid-haze {
+  backdrop-filter: blur(52px) saturate(160%) brightness(0.92);
+  -webkit-backdrop-filter: blur(52px) saturate(160%) brightness(0.92);
+  background-color: rgba(0, 0, 0, 0.50);
+}
+
+.siri-perimeter-halo {
+  display: none !important;
+}
+
+.siri-clear-glass-pill {
+  background: rgba(10, 10, 12, 0.82);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(255, 255, 255, 0.02) 45%,
+    rgba(0, 0, 0, 0.40) 100%
+  );
+  backdrop-filter: blur(48px) saturate(140%);
+  -webkit-backdrop-filter: blur(48px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.35),
+    0 24px 64px rgba(0, 0, 0, 0.9);
+}
+
+.siri-clear-close-orb {
+  background: rgba(10, 10, 12, 0.82);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.10) 0%,
+    rgba(0, 0, 0, 0.40) 100%
+  );
+  backdrop-filter: blur(48px) saturate(140%);
+  -webkit-backdrop-filter: blur(48px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  box-shadow:
+    inset 0 1.5px 2px rgba(255, 255, 255, 0.35),
+    0 24px 64px rgba(0, 0, 0, 0.9);
+}
+
+.siri-clear-results {
+  background: rgba(10, 12, 16, 0.88);
+  background-image: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.07) 0%,
+    rgba(255, 255, 255, 0.01) 40%,
+    rgba(0, 0, 0, 0.50) 100%
+  );
+  backdrop-filter: blur(52px) saturate(140%);
+  -webkit-backdrop-filter: blur(52px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  box-shadow:
+    inset 0 1px 1px rgba(255, 255, 255, 0.25),
+    0 34px 80px rgba(0, 0, 0, 0.95);
 }

@@ -54,7 +54,9 @@ export const SplitWorkspaceLayout = memo(function SplitWorkspaceLayout() {
     enabledSubjects,
   } = useWorkspaceStore();
 
-  if (openInstances.length === 0) {
+  const validInstances = openInstances.filter((inst) => Boolean(MODULE_CATALOG[inst.appId]));
+
+  if (validInstances.length === 0) {
     return (
       <div className="relative w-full min-h-screen bg-black flex flex-col items-center justify-center pt-20 px-4">
         <div className="liquid-glass-elevated rounded-3xl p-8 max-w-lg w-full text-center border border-white/10 shadow-2xl space-y-4">
@@ -96,8 +98,8 @@ export const SplitWorkspaceLayout = memo(function SplitWorkspaceLayout() {
         The active primaryInstanceId is displayed full-width (w-full).
         Inactive instances have display: 'none', remaining 100% alive in the React tree.
       */}
-      <div className="relative flex w-full min-h-screen pt-[52px]">
-        {openInstances.map((inst) => {
+      <div className="relative flex w-full min-h-screen pt-[calc(52px+env(safe-area-inset-top,0px))] pb-[max(env(safe-area-inset-bottom),5.5rem)] md:pb-6">
+        {validInstances.map((inst) => {
           const isPrimary = inst.instanceId === primaryInstanceId;
           const isVisible = isPrimary;
 

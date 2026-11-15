@@ -16,9 +16,12 @@ import {
   Play,
   Globe2,
   SlidersHorizontal,
+  Sigma,
+  Calculator,
 } from "lucide-react";
 import { RefractedText } from "@/components/reactdrops/refracted-text";
 import { CockpitClockAndCalendar } from "@/components/CockpitClockAndCalendar";
+import { soundEngine } from "@/lib/soundEngine";
 
 const SUBJECT_LOGOS: Record<AppId, string> = {
   biology: "/logos/biology.svg",
@@ -149,8 +152,8 @@ function BentoSubjectCard({
     const y = e.clientY - rect.top;
     const pctX = (x / rect.width) * 100;
     const pctY = (y / rect.height) * 100;
-    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 7;
-    const rotateX = -((y - rect.height / 2) / (rect.height / 2)) * 7;
+    const rotateY = ((x - rect.width / 2) / (rect.width / 2)) * 15.5;
+    const rotateX = -((y - rect.height / 2) / (rect.height / 2)) * 15.5;
     setTilt({
       rotateX,
       rotateY,
@@ -190,7 +193,7 @@ function BentoSubjectCard({
         delay: isRevealed ? Math.min(0.22, delay * 0.5) : 0,
       }}
       className="relative select-none group"
-      style={{ backfaceVisibility: "hidden" }}
+      style={{ perspective: 950, backfaceVisibility: "hidden" }}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
     >
@@ -200,24 +203,32 @@ function BentoSubjectCard({
         animate={{
           rotateX: tilt.rotateX,
           rotateY: tilt.rotateY,
-          scale: tilt.isHovered ? 1.018 : 1,
+          scale: tilt.isHovered ? 1.042 : 1,
         }}
         whileTap={{ scale: 0.976 }}
         transition={{ type: "spring", stiffness: 320, damping: 24, mass: 0.55 }}
         style={{
+          transformStyle: "preserve-3d",
           backfaceVisibility: "hidden",
           borderColor: tilt.isHovered
-            ? `rgba(${accent.rgb}, 0.48)`
+            ? `rgba(${accent.rgb}, 0.55)`
             : `rgba(${accent.rgb}, 0.24)`,
-          background: `radial-gradient(125% 95% at 18% 0%, rgba(${accent.rgb}, 0.22) 0%, rgba(${accent.rgb}, 0.08) 46%, rgba(8,10,16,0.92) 100%)`,
+          background: `radial-gradient(125% 95% at 18% 0%, rgba(${accent.rgb}, 0.24) 0%, rgba(${accent.rgb}, 0.08) 46%, rgba(8,10,16,0.92) 100%)`,
           boxShadow: tilt.isHovered
-            ? `0 22px 44px -10px rgba(0, 0, 0, 0.9), 0 0 32px -4px rgba(${accent.rgb}, 0.26), inset 0 1px 1px 0 rgba(255, 255, 255, 0.34), inset 0 -1px 0 rgba(${accent.rgb}, 0.3)`
+            ? `0 28px 56px -10px rgba(0, 0, 0, 0.95), 0 0 38px -4px rgba(${accent.rgb}, 0.35), inset 0 1.5px 1.5px 0 rgba(255, 255, 255, 0.42), inset 0 -1px 0 rgba(${accent.rgb}, 0.35)`
             : `0 14px 32px -10px rgba(0, 0, 0, 0.85), inset 0 1px 0.5px 0 rgba(255, 255, 255, 0.2), inset 0 -1px 0 rgba(${accent.rgb}, 0.16)`,
-          backdropFilter: "blur(12px) saturate(160%)",
-          WebkitBackdropFilter: "blur(16px) saturate(190%) brightness(1.05)",
+          backdropFilter: "blur(14px) saturate(160%)",
+          WebkitBackdropFilter: "blur(18px) saturate(190%) brightness(1.06)",
         } as React.CSSProperties}
         className="bento-subject-card relative rounded-3xl p-6 flex flex-col justify-between overflow-hidden cursor-pointer min-h-[300px] border transition-colors"
-        onClick={onLaunch}
+        onClick={() => {
+          soundEngine.playClick();
+          const store = useWorkspaceStore.getState();
+          if (!store.seenAppIntros[mod.id]) {
+            soundEngine.playSubjectIntro(mod.id);
+          }
+          onLaunch();
+        }}
       >
         {/* Soft Internal Glowing Orb */}
         <div
@@ -242,8 +253,8 @@ function BentoSubjectCard({
           }}
         />
 
-        {/* Card Body */}
-        <div>
+        {/* Card Body with 3D Depth */}
+        <div style={{ transform: "translateZ(22px)" }}>
           {/* Header: Cluster Badge & Level */}
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
@@ -349,6 +360,11 @@ function BentoSubjectCard({
             transition={{ type: "spring", stiffness: 450, damping: 26 }}
             onClick={(e) => {
               e.stopPropagation();
+              soundEngine.playClick();
+              const store = useWorkspaceStore.getState();
+              if (!store.seenAppIntros[mod.id]) {
+                soundEngine.playSubjectIntro(mod.id);
+              }
               onLaunch();
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-medium transition-all cursor-pointer shadow-sm whitespace-nowrap shrink-0"
@@ -375,6 +391,7 @@ function BentoSubjectCard({
                 transition={{ type: "spring", stiffness: 450, damping: 26 }}
                 onClick={(e) => {
                   e.stopPropagation();
+                  soundEngine.playClick();
                   onOpenQuickRoute(r.label, r.viewMode);
                 }}
                 className="px-2 py-1 rounded-lg bg-white/[0.05] hover:bg-white/[0.13] text-[10px] font-mono text-white/60 hover:text-white transition-colors border border-white/10 cursor-pointer whitespace-nowrap shrink-0"
@@ -421,12 +438,12 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
   }, []);
 
   return (
-    <div className="relative z-10 w-full min-h-screen pt-20 pb-28 px-4 sm:px-6">
+    <div className="relative z-10 w-full min-h-screen pt-20 pb-36 px-3.5 sm:px-6">
       <div className="max-w-6xl mx-auto space-y-10">
         {/* ====================================================================
             1. Clean Bento Header Bar with Living Chromatic Accent
            ==================================================================== */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 pt-4 border-b border-white/[0.08] pb-8">
+        <div className="relative z-[150] flex flex-col md:flex-row md:items-end justify-between gap-4 pt-4 border-b border-white/[0.08] pb-8">
           <div className="flex items-start gap-4">
             <motion.button
               type="button"
@@ -488,7 +505,7 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
           </div>
 
           <div className="flex flex-col items-start md:items-end gap-2.5">
-            <div data-tour="cockpit" className="rounded-2xl">
+            <div data-tour="cockpit" className="rounded-2xl relative z-[120]">
               <CockpitClockAndCalendar />
             </div>
 
@@ -500,7 +517,10 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
                   whileHover={{ scale: 1.04 }}
                   whileTap={{ scale: 0.94 }}
                   transition={{ type: "spring", stiffness: 450, damping: 25 }}
-                  onClick={setWorkspaceView}
+                  onClick={() => {
+                    soundEngine.playClick();
+                    setWorkspaceView();
+                  }}
                   className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white text-black text-xs font-medium hover:bg-white/95 shadow-[0_4px_20px_rgba(255,255,255,0.24)] cursor-pointer"
                 >
                   <Play className="w-3.5 h-3.5 fill-black" />
@@ -515,7 +535,7 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
             2. Active Sessions Row (Frosted Liquid Glass on OLED Black)
            ==================================================================== */}
         {openInstances.length > 0 && (
-          <section className="space-y-3">
+          <section className="relative z-20 space-y-3">
             <div className="flex items-center justify-between">
               <h2 className="text-xs font-semibold text-white/55 uppercase tracking-wider flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.85)]" />
@@ -541,7 +561,10 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
                     whileHover={{ y: -2, scale: 1.012 }}
                     whileTap={{ scale: 0.976 }}
                     transition={{ type: "spring", stiffness: 360, damping: 24 }}
-                    onClick={() => activateInstance(inst.instanceId)}
+                    onClick={() => {
+                      soundEngine.playClick();
+                      activateInstance(inst.instanceId);
+                    }}
                     className={`liquid-glass-card group cursor-pointer rounded-2xl p-4 transition-colors duration-200 ${
                       isPrimary
                         ? "border-white/40 shadow-[0_0_26px_rgba(var(--subject-rgb,255,255,255),0.26)]"
@@ -602,7 +625,7 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
         {/* ====================================================================
             3. Clean 3×2 Subject Module Bento Grid with 3D Interactive Hover
            ==================================================================== */}
-        <section data-tour="subjects-grid" className="space-y-4">
+        <section data-tour="subjects-grid" className="relative z-10 space-y-4">
           <div className="flex items-center justify-between gap-3">
             <h2 className="text-xs font-semibold text-white/55 uppercase tracking-wider">
               IB Coursework Modules ({enabledModules.length} {enabledModules.length === 1 ? "Subject" : "Subjects"})

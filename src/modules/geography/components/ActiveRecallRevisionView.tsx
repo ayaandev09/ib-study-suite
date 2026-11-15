@@ -128,7 +128,7 @@ export function ActiveRecallRevisionView() {
   }, [filteredTopics, completedTopics]);
 
   return (
-    <div className="max-w-6xl mx-auto space-y-7 pb-20">
+    <div className="w-full space-y-7 pb-20">
       {/* Hero Header & Mode Switcher */}
       <div className="liquid-glass-bento rounded-3xl p-6 sm:p-8 space-y-6 relative overflow-hidden border border-white/10">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-5">

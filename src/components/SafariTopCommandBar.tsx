@@ -21,6 +21,8 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { UniversalSearchModal } from "./UniversalSearchModal";
+import { useSoundStore } from "@/store/useSoundStore";
+import { soundEngine } from "@/lib/soundEngine";
 
 const SUBJECT_COLORS: Record<string, { base: string; border: string; bg: string }> = {
   orwell: { base: "#f43f5e", border: "rgba(244, 63, 94, 0.35)", bg: "rgba(244, 63, 94, 0.18)" },
@@ -53,6 +55,8 @@ export function SafariTopCommandBar() {
     setSettingsOpen,
     setReleaseNotesOpen,
   } = useWorkspaceStore();
+
+  const { playClick, playPop, playChime } = useSoundStore();
 
   const enabledModules = Object.values(MODULE_CATALOG).filter((mod) =>
     enabledSubjects.includes(mod.id)
@@ -152,16 +156,17 @@ export function SafariTopCommandBar() {
     <>
       <header
         data-tour="topbar"
-        className="fixed top-0 left-0 right-0 z-40 h-[52px] bg-[#000000]/88 backdrop-blur-md border-b border-white/[0.10] shadow-[0_4px_30px_rgba(0,0,0,0.85)] flex items-center justify-between px-3.5 select-none"
+        className="fixed top-0 left-0 right-0 z-40 h-[calc(52px+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] bg-[#000000]/88 backdrop-blur-md border-b border-white/[0.10] shadow-[0_4px_30px_rgba(0,0,0,0.85)] flex items-center justify-between px-2.5 md:px-3.5 select-none"
         aria-label="Unified macOS Safari Top Command Bar"
       >
         {/* ====================================================================
             1. Left Region: Native macOS Traffic Light Padding + Dashboard Controls
            ==================================================================== */}
-        <div className="flex items-center gap-3 shrink-0 pl-[76px]">
+        <div className="flex items-center gap-2 md:gap-3 shrink-0 pl-1 md:pl-[76px]">
           {/* Unified Suite Official Liquid Glass Logo Emblem */}
           <button
             onClick={() => {
+              playClick();
               if (activeView === "dashboard") {
                 setWorkspaceView();
               } else {
@@ -188,7 +193,10 @@ export function SafariTopCommandBar() {
             <motion.button
               type="button"
               data-motion="true"
-              onClick={goBack}
+              onClick={() => {
+                playPop();
+                goBack();
+              }}
               disabled={!canGoBack}
               whileHover={canGoBack ? { scale: 1.08, backgroundColor: "rgba(255, 255, 255, 0.16)" } : undefined}
               whileTap={canGoBack ? { scale: 0.92 } : undefined}
@@ -206,7 +214,10 @@ export function SafariTopCommandBar() {
             <motion.button
               type="button"
               data-motion="true"
-              onClick={goForward}
+              onClick={() => {
+                playPop();
+                goForward();
+              }}
               disabled={!canGoForward}
               whileHover={canGoForward ? { scale: 1.08, backgroundColor: "rgba(255, 255, 255, 0.16)" } : undefined}
               whileTap={canGoForward ? { scale: 0.92 } : undefined}
@@ -226,6 +237,7 @@ export function SafariTopCommandBar() {
           {/* Dashboard Home Toggle (⌘0) */}
           <button
             onClick={() => {
+              playClick();
               if (activeView === "dashboard") {
                 setWorkspaceView();
               } else {
@@ -271,7 +283,9 @@ export function SafariTopCommandBar() {
         <div className="flex-1 max-w-3xl mx-3 flex items-center gap-2 overflow-hidden">
           {/* A. Unified Subject Tabs */}
           <div className="flex items-center gap-1 max-w-[45vw] overflow-x-auto no-scrollbar">
-            {openInstances.map((inst) => {
+            {openInstances
+              .filter((inst) => Boolean(MODULE_CATALOG[inst.appId]))
+              .map((inst) => {
               const isPrimary =
                 inst.instanceId === primaryInstanceId &&
                 activeView === "workspace";
@@ -285,6 +299,9 @@ export function SafariTopCommandBar() {
                 >
                   <button
                     onClick={() => {
+                      if (!isPrimary) {
+                        soundEngine.playClick();
+                      }
                       activateInstance(inst.instanceId);
                     }}
                     className={`flex items-center gap-1.5 pl-2.5 pr-6 py-1 rounded-full text-xs transition-all duration-200 ${
@@ -308,7 +325,7 @@ export function SafariTopCommandBar() {
                         backgroundColor:
                           isPrimary
                             ? SUBJECT_COLORS[inst.appId]?.base || "#4ade80"
-                            : SUBJECT_COLORS[inst.appId]?.base || clusterMeta.color,
+                            : SUBJECT_COLORS[inst.appId]?.base || clusterMeta?.color || "#ffffff",
                       }}
                     />
                     <span className="truncate max-w-[90px] sm:max-w-[120px]">
@@ -372,11 +389,16 @@ export function SafariTopCommandBar() {
                         </div>
                         <div className="space-y-1 mt-1">
                           {enabledModules.map((mod) => {
-                            const subjColor = SUBJECT_COLORS[mod.id]?.base || SUBJECT_CLUSTERS[mod.cluster].color;
+                            const subjColor = SUBJECT_COLORS[mod.id]?.base || SUBJECT_CLUSTERS[mod.cluster]?.color || "#ffffff";
                             return (
                               <button
                                 key={mod.id}
                                 onClick={() => {
+                                  soundEngine.playClick();
+                                  const store = useWorkspaceStore.getState();
+                                  if (!store.seenAppIntros[mod.id]) {
+                                    soundEngine.playSubjectIntro(mod.id);
+                                  }
                                   openModule(mod.id);
                                   setIsLauncherOpen(false);
                                 }}
@@ -427,16 +449,20 @@ export function SafariTopCommandBar() {
             </div>
           </div>
 
-          {/* B. Safari Smart Search Omnibar (Universal AI Search Trigger) */}
+          {/* B. Safari Smart Search Omnibar (Universal AI Search Trigger - Clear Siri Liquid Glass Design) */}
           <button
             data-tour="search-trigger"
             onClick={() => setIsSearchModalOpen(true)}
-            className="flex-1 min-w-[160px] h-8 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 hover:border-white/20 flex items-center justify-between px-3 text-xs text-white/60 hover:text-white transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.1)] group cursor-pointer"
+            className="flex-1 min-w-[160px] h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/20 hover:border-white/35 flex items-center justify-between px-3 text-xs text-white/70 hover:text-white transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md group cursor-pointer"
             title="Universal Search & Local AI Intelligence (⌘K)"
           >
             <div className="flex items-center gap-2 truncate">
-              <Search className="w-3.5 h-3.5 text-white/50 group-hover:text-white transition-colors" />
-              <span className="truncate text-white/50 group-hover:text-white/80">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 p-[1px] flex items-center justify-center shrink-0 shadow-[0_0_8px_rgba(168,85,247,0.4)]">
+                <div className="w-full h-full rounded-full bg-black/60 flex items-center justify-center">
+                  <Sparkles className="w-2.5 h-2.5 text-white" />
+                </div>
+              </div>
+              <span className="truncate text-white/70 group-hover:text-white">
                 Ask AI or search {enabledModules.length}{" "}
                 {enabledModules.length === 1 ? "subject" : "subjects"}...
               </span>
@@ -444,10 +470,10 @@ export function SafariTopCommandBar() {
 
             <div className="flex items-center gap-1.5 shrink-0">
               <span className="hidden lg:flex items-center gap-0.5 px-1.5 py-0.5 rounded-full bg-white/10 border border-white/20 text-[10px] font-mono text-white/90">
-                <Sparkles className="w-2.5 h-2.5" />
-                <span>AI</span>
+                <Sparkles className="w-2.5 h-2.5 text-purple-300" />
+                <span>Siri AI</span>
               </span>
-              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white/40">
+              <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-[10px] font-mono text-white/50">
                 ⌘K
               </kbd>
             </div>
@@ -455,39 +481,9 @@ export function SafariTopCommandBar() {
         </div>
 
         {/* ====================================================================
-            3. Right Region: Subject Breadcrumb & Quick Actions
+            3. Right Region: Search & Quick Utilities
            ==================================================================== */}
         <div className="flex items-center gap-2 shrink-0">
-          {/* Active Module Breadcrumb Pill (Click to replay module startup) */}
-          {primaryMeta && activeView === "workspace" && (
-            <button
-              type="button"
-              onClick={() => triggerAppIntro(primaryMeta.id)}
-              title={`Replay ${primaryMeta.shortTitle} Startup Animation`}
-              className="hidden xl:flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-white/[0.04] hover:bg-white/[0.10] border border-white/10 hover:border-white/25 text-xs text-white/70 transition-all cursor-pointer active:scale-95"
-            >
-              <span
-                className="w-1.5 h-1.5 rounded-full"
-                style={{
-                  backgroundColor:
-                    SUBJECT_COLORS[primaryMeta.id]?.base ||
-                    SUBJECT_CLUSTERS[primaryMeta.cluster].color,
-                }}
-              />
-              <span className="font-medium text-white/90">
-                {primaryMeta.shortTitle}
-              </span>
-              {primaryInstance?.customLabel && (
-                <>
-                  <ChevronRight className="w-3 h-3 text-white/30" />
-                  <span className="text-white/40 font-mono text-[11px] truncate max-w-[120px]">
-                    {primaryInstance.customLabel.split(":")[0]}
-                  </span>
-                </>
-              )}
-            </button>
-          )}
-
           {/* Quick Universal Search Trigger Icon */}
           <button
             onClick={() => setIsSearchModalOpen(true)}

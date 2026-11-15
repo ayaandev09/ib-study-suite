@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import { AppId } from "@/types/workspace";
 import { LiquidGlassLogo } from "@/components/reactdrops/liquid-glass-logo";
 import { RefractedText } from "@/components/reactdrops/refracted-text";
+import { soundEngine } from "@/lib/soundEngine";
 
 interface SubjectIntroTheme {
   title: string;
@@ -177,6 +178,7 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
         }
       }
       isDismissingRef.current = true;
+      soundEngine.stopSubjectIntro();
       onClose?.();
       onComplete?.();
     },
@@ -194,71 +196,20 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
     mountedAtRef.current = 0;
     autoCompletedRef.current = false;
 
-    let disposed = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let unlockHandler: (() => void) | null = null;
-    const audio = new Audio(`/audio/intro-${appId}.wav`);
-    audio.preload = "auto";
-    audio.volume = 0.88;
 
-    const tryPlay = () => {
-      if (disposed) return;
-      const playPromise = audio.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-          if (disposed || unlockHandler) return;
-          unlockHandler = () => {
-            if (!disposed) {
-              audio.play().catch(() => {});
-            }
-            if (unlockHandler) {
-              window.removeEventListener("pointerdown", unlockHandler);
-              unlockHandler = null;
-            }
-          };
-          window.addEventListener("pointerdown", unlockHandler, { once: true });
-        });
-      }
-    };
+    // Instant zero-latency audio-visual synchronization: trigger soundEngine immediately
+    mountedAtRef.current = performance.now();
+    soundEngine.playSubjectIntro(appId);
 
-    const rafId = requestAnimationFrame(() => {
-      if (disposed) return;
-      mountedAtRef.current = performance.now();
-      tryPlay();
-      timer = setTimeout(() => {
-        autoCompletedRef.current = true;
-        handleDismiss(true);
-      }, 2650);
-    });
+    timer = setTimeout(() => {
+      autoCompletedRef.current = true;
+      handleDismiss(true);
+    }, 2650);
 
     return () => {
-      disposed = true;
-      cancelAnimationFrame(rafId);
       if (timer) clearTimeout(timer);
-      if (unlockHandler) {
-        window.removeEventListener("pointerdown", unlockHandler);
-      }
-      if (!audio.paused) {
-        if (autoCompletedRef.current) {
-          const releaseAudio = () => {
-            audio.pause();
-            audio.currentTime = 0;
-          };
-          audio.addEventListener("ended", releaseAudio, { once: true });
-          setTimeout(releaseAudio, 900);
-        } else {
-          const fadeStep = () => {
-            if (audio.volume > 0.08) {
-              audio.volume = Math.max(0, audio.volume - 0.12);
-              setTimeout(fadeStep, 25);
-            } else {
-              audio.pause();
-              audio.currentTime = 0;
-            }
-          };
-          fadeStep();
-        }
-      }
+      soundEngine.stopSubjectIntro();
     };
   }, [isOpen, appId, handleDismiss]);
 

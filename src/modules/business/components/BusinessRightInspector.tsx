@@ -83,7 +83,7 @@ export function BusinessRightInspector({
   return (
     <aside
       data-tour="inspector"
-      className={`shrink-0 sticky top-[56px] rounded-3xl select-none overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 ${
+      className={`hidden xl:block shrink-0 sticky top-[56px] rounded-3xl select-none overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] z-10 ${
         !isOpen
           ? "w-0 max-w-0 p-0 ml-0 border-0 opacity-0 pointer-events-none"
           : "w-[320px] xl:w-[344px] ml-5 p-0 opacity-100"

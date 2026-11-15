@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import { AmbientAuroraCanvas } from "@/modules/biology/components/AmbientAuroraCanvas";
 import { SideNav } from "@/modules/biology/components/SideNav";
 import { SceneSwitcher } from "@/modules/biology/components/SceneSwitcher";
 import { HomeDashboard } from "@/modules/biology/components/HomeDashboard";
@@ -72,53 +73,59 @@ export default function IBBiologyStudyDashboardPage() {
     ALL_TOPICS.find((t) => t.id === activeTopicId) ?? ALL_TOPICS[0];
 
   return (
-    <div className="min-h-screen w-full max-w-[1760px] mx-auto px-5 sm:px-7 lg:px-8 py-4 flex items-start relative">
-      <SideNav />
+    <div className="relative min-h-screen w-full bg-[#060402] overflow-x-clip text-slate-100">
+      <AmbientAuroraCanvas />
+      <div className="w-full px-5 sm:px-7 lg:px-8 py-4 flex items-start mac-dashboard-shell relative z-10">
+        <SideNav />
 
-      <main className="flex-1 min-w-0">
-        <TopCommandBar />
+        <main
+          className="flex-1 min-w-0 w-full pb-36 flex flex-col transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
+          style={{ containerType: "inline-size" }}
+        >
+          <TopCommandBar />
 
-        {(viewMode === "home" || visitedViews["home"]) && (
-          <div className={viewMode === "home" ? "" : "hidden"} aria-hidden={viewMode !== "home"}>
-            <HomeDashboard />
-          </div>
-        )}
+          {(viewMode === "home" || visitedViews["home"]) && (
+            <div className={viewMode === "home" ? "" : "hidden"} aria-hidden={viewMode !== "home"}>
+              <HomeDashboard />
+            </div>
+          )}
 
-        {(viewMode === "focus" || visitedViews["focus"]) && (
-          <div className={viewMode === "focus" ? "" : "hidden"} aria-hidden={viewMode !== "focus"}>
-            <SceneSwitcher />
-            <TopicBentoCard topic={activeTopic} />
-          </div>
-        )}
+          {(viewMode === "focus" || visitedViews["focus"]) && (
+            <div className={viewMode === "focus" ? "" : "hidden"} aria-hidden={viewMode !== "focus"}>
+              <SceneSwitcher />
+              <TopicBentoCard topic={activeTopic} />
+            </div>
+          )}
 
-        {(viewMode === "stream" || visitedViews["stream"]) && (
-          <div className={viewMode === "stream" ? "" : "hidden"} aria-hidden={viewMode !== "stream"}>
-            <StudyMiniHomepage />
-          </div>
-        )}
+          {(viewMode === "stream" || visitedViews["stream"]) && (
+            <div className={viewMode === "stream" ? "" : "hidden"} aria-hidden={viewMode !== "stream"}>
+              <StudyMiniHomepage />
+            </div>
+          )}
 
-        {(viewMode === "matrix" || visitedViews["matrix"]) && (
-          <div className={viewMode === "matrix" ? "" : "hidden"} aria-hidden={viewMode !== "matrix"}>
-            <ThemeMatrixView />
-          </div>
-        )}
+          {(viewMode === "matrix" || visitedViews["matrix"]) && (
+            <div className={viewMode === "matrix" ? "" : "hidden"} aria-hidden={viewMode !== "matrix"}>
+              <ThemeMatrixView />
+            </div>
+          )}
 
-        {(viewMode === "lexicon" || visitedViews["lexicon"]) && (
-          <div className={viewMode === "lexicon" ? "" : "hidden"} aria-hidden={viewMode !== "lexicon"}>
-            <LexiconDossierView />
-          </div>
-        )}
+          {(viewMode === "lexicon" || visitedViews["lexicon"]) && (
+            <div className={viewMode === "lexicon" ? "" : "hidden"} aria-hidden={viewMode !== "lexicon"}>
+              <LexiconDossierView />
+            </div>
+          )}
 
-        {(viewMode === "revision" || visitedViews["revision"]) && (
-          <div className={viewMode === "revision" ? "" : "hidden"} aria-hidden={viewMode !== "revision"}>
-            <ActiveRecallRevisionView />
-          </div>
-        )}
-      </main>
+          {(viewMode === "revision" || visitedViews["revision"]) && (
+            <div className={viewMode === "revision" ? "" : "hidden"} aria-hidden={viewMode !== "revision"}>
+              <ActiveRecallRevisionView />
+            </div>
+          )}
+        </main>
 
-      <BiologyRightInspector />
-      <TimedExamSprintModal />
-      <JellySpotlightModal />
+        <BiologyRightInspector />
+        <TimedExamSprintModal />
+        <JellySpotlightModal />
+      </div>
     </div>
   );
 }

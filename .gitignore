@@ -12,6 +12,9 @@ Thumbs.db
 
 # Logs & temporary files
 *.log
+*.dmg
+*.msi
+*.exe
 npm-debug.log*
 yarn-debug.log*
 pnpm-debug.log*

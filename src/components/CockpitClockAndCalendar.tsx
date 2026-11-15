@@ -12,6 +12,7 @@ import {
   Sun,
 } from "lucide-react";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
+import { soundEngine } from "@/lib/soundEngine";
 
 export interface AppleCalendarEvent {
   id: string;
@@ -462,6 +463,7 @@ export const CockpitClockAndCalendar: React.FC = () => {
   const remainingCount = Math.max(0, (calendarData?.events?.length ?? 0) - 1);
 
   const handlePillClick = () => {
+    soundEngine.playClick();
     if (isNativeHost && (!calendarData || calendarData.status === "notDetermined")) {
       sendNativeCalendarAction("requestAccess");
       return;
@@ -512,9 +514,9 @@ export const CockpitClockAndCalendar: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col items-start md:items-end gap-2.5 shrink-0">
+    <div className="flex flex-col items-start md:items-end gap-2.5 w-full md:w-auto shrink-0">
       {/* Dynamic World Clocks (Liquid Glass Cockpit Clocks) */}
-      <div className={`grid ${clockSnapshots.length === 1 ? "grid-cols-1 min-w-[220px]" : clockSnapshots.length === 2 ? "grid-cols-2 sm:min-w-[430px]" : "grid-cols-2 lg:grid-cols-3 max-w-[660px]"} gap-2.5 w-full sm:w-auto`}>
+      <div className={`grid ${clockSnapshots.length === 1 ? "grid-cols-1 w-full sm:w-[260px]" : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"} gap-2.5 w-full max-w-full`}>
         {clockSnapshots.map(({ clock, snap, badge, palette }) => (
           <CityClockCard
             key={clock.id}
@@ -529,129 +531,140 @@ export const CockpitClockAndCalendar: React.FC = () => {
       </div>
 
       {/* Synced Apple Calendar Upcoming Events Pill (3D Interactive Tilt & Specular Glare) */}
-      <div className="relative" ref={popoverRef} style={{ perspective: 1000 }}>
-        {/* Soft Ambient Glow Aura behind pill */}
-        <div
-          className="pointer-events-none absolute -inset-1 rounded-full blur-xl transition-opacity duration-300"
-          style={{
-            opacity: pillTilt.isHovered ? 0.8 : 0.4,
-            background: nextEvent?.calendarColor
-              ? `radial-gradient(circle, ${nextEvent.calendarColor}40 0%, transparent 75%)`
-              : "radial-gradient(circle, rgba(56,189,248,0.3) 0%, transparent 75%)",
-          }}
-        />
-
-        <motion.button
-          type="button"
-          data-motion="true"
-          animate={{
-            rotateX: pillTilt.rotateX,
-            rotateY: pillTilt.rotateY,
-            scale: pillTilt.isHovered ? 1.03 : 1,
-          }}
-          whileTap={{ scale: 0.96 }}
-          transition={{ type: "spring", stiffness: 420, damping: 22, mass: 0.5 }}
-          onMouseMove={handlePillMouseMove}
-          onMouseLeave={handlePillMouseLeave}
-          onClick={handlePillClick}
-          className="relative group flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs transition-all cursor-pointer max-w-[390px] overflow-hidden select-none"
-          style={{
-            transformStyle: "preserve-3d",
-            backfaceVisibility: "hidden",
-            borderColor: pillTilt.isHovered
-              ? (nextEvent?.calendarColor ? `${nextEvent.calendarColor}60` : "rgba(56, 189, 248, 0.55)")
-              : "rgba(255, 255, 255, 0.16)",
-            background: nextEvent
-              ? `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, ${nextEvent.calendarColor}2b 0%, rgba(12, 17, 29, 0.88) 100%)`
-              : `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, rgba(56, 189, 248, 0.18) 0%, rgba(10, 14, 24, 0.9) 100%)`,
-            backdropFilter: "blur(20px) saturate(180%)",
-            WebkitBackdropFilter: "blur(20px) saturate(180%)",
-            boxShadow: pillTilt.isHovered
-              ? `0 16px 36px -8px rgba(0,0,0,0.7), 0 0 24px -2px ${nextEvent?.calendarColor ? `${nextEvent.calendarColor}45` : "rgba(56,189,248,0.35)"}, inset 0 1.5px 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.4)`
-              : "0 10px 24px -6px rgba(0,0,0,0.5), inset 0 1px 0.5px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)",
-          }}
-        >
-          {/* Specular Holographic Glare Sweep across the pill */}
+      <div className="relative z-50 w-full sm:w-auto" ref={popoverRef}>
+        {/* 3D Perspective Isolator ONLY for the interactive pill button */}
+        <div className="relative w-full sm:w-auto" style={{ perspective: 1000 }}>
+          {/* Soft Ambient Glow Aura behind pill */}
           <div
-            className="pointer-events-none absolute inset-0 transition-opacity duration-200"
+            className="pointer-events-none absolute -inset-1 rounded-full blur-xl transition-opacity duration-300"
             style={{
-              opacity: pillTilt.isHovered ? 1 : 0,
-              background: `radial-gradient(200px circle at ${pillTilt.glareX}% ${pillTilt.glareY}%, rgba(255,255,255,0.26), rgba(56,189,248,0.15) 35%, transparent 75%)`,
+              opacity: pillTilt.isHovered ? 0.85 : 0.45,
+              background: nextEvent?.calendarColor
+                ? `radial-gradient(circle, ${nextEvent.calendarColor}50 0%, transparent 75%)`
+                : "radial-gradient(circle, rgba(56,189,248,0.35) 0%, transparent 75%)",
             }}
           />
 
-          {/* Top-Edge Specular Glass Light Crescent */}
-          <div className="pointer-events-none absolute inset-x-2 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/45 to-transparent" />
-
-          {/* Glowing Status Orb Raised in 3D */}
-          <span
-            className="w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125"
-            style={{
-              transform: "translateZ(14px)",
-              backgroundColor: nextEvent?.calendarColor ?? "#38bdf8",
-              boxShadow: `0 0 12px ${nextEvent?.calendarColor ?? "#38bdf8"}, 0 0 4px #ffffff`,
+          <motion.button
+            type="button"
+            data-motion="true"
+            animate={{
+              rotateX: pillTilt.rotateX,
+              rotateY: pillTilt.rotateY,
+              scale: pillTilt.isHovered ? 1.035 : 1,
             }}
-          />
-
-          <div
-            className="flex items-center gap-2 min-w-0"
-            style={{ transform: "translateZ(12px)" }}
+            whileTap={{ scale: 0.96 }}
+            transition={{ type: "spring", stiffness: 420, damping: 22, mass: 0.5 }}
+            onMouseMove={handlePillMouseMove}
+            onMouseLeave={handlePillMouseLeave}
+            onClick={handlePillClick}
+            className="relative group flex items-center justify-between sm:justify-start gap-2.5 px-3 sm:px-4 py-2 rounded-full border text-xs transition-all cursor-pointer w-full sm:max-w-[390px] overflow-hidden select-none"
+            style={{
+              transformStyle: "preserve-3d",
+              backfaceVisibility: "hidden",
+              borderColor: pillTilt.isHovered
+                ? (nextEvent?.calendarColor ? `${nextEvent.calendarColor}70` : "rgba(56, 189, 248, 0.65)")
+                : "rgba(255, 255, 255, 0.18)",
+              background: nextEvent
+                ? `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, ${nextEvent.calendarColor}33 0%, rgba(12, 17, 29, 0.92) 100%)`
+                : `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, rgba(56, 189, 248, 0.22) 0%, rgba(10, 14, 24, 0.92) 100%)`,
+              backdropFilter: "blur(24px) saturate(180%)",
+              WebkitBackdropFilter: "blur(24px) saturate(180%)",
+              boxShadow: pillTilt.isHovered
+                ? `0 18px 40px -8px rgba(0,0,0,0.75), 0 0 28px -2px ${nextEvent?.calendarColor ? `${nextEvent.calendarColor}50` : "rgba(56,189,248,0.4)"}, inset 0 1.5px 1px 0 rgba(255,255,255,0.4), inset 0 -1px 0 rgba(0,0,0,0.4)`
+                : "0 10px 24px -6px rgba(0,0,0,0.55), inset 0 1px 0.5px 0 rgba(255,255,255,0.22), inset 0 -1px 0 rgba(0,0,0,0.3)",
+            }}
           >
-            <CalendarDays className="w-3.5 h-3.5 text-cyan-300/90 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+            {/* Specular Holographic Glare Sweep across the pill */}
+            <div
+              className="pointer-events-none absolute inset-0 transition-opacity duration-200"
+              style={{
+                opacity: pillTilt.isHovered ? 1 : 0,
+                background: `radial-gradient(220px circle at ${pillTilt.glareX}% ${pillTilt.glareY}%, rgba(255,255,255,0.32), rgba(56,189,248,0.18) 35%, transparent 75%)`,
+              }}
+            />
 
-            {!isNativeHost && !calendarData ? (
-              <span className="text-white/70 font-medium truncate">
-                Apple Calendar · Open in macOS App
-              </span>
-            ) : calendarData?.status === "notDetermined" ? (
-              <span className="text-cyan-200 font-semibold truncate flex items-center gap-1.5">
-                <span>Sync Apple Calendar</span>
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
-              </span>
-            ) : calendarData?.status === "denied" || calendarData?.status === "restricted" ? (
-              <span className="text-amber-200 font-semibold truncate">
-                Enable Apple Calendar Access
-              </span>
-            ) : nextEvent ? (
-              <div className="flex items-center gap-1.5 min-w-0">
-                <span className="text-white font-semibold truncate tracking-tight">
-                  {nextEvent.title}
+            {/* Top-Edge Specular Glass Light Crescent */}
+            <div className="pointer-events-none absolute inset-x-2 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/50 to-transparent" />
+
+            {/* Glowing Status Orb Raised in 3D */}
+            <span
+              className="w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125"
+              style={{
+                transform: "translateZ(14px)",
+                backgroundColor: nextEvent?.calendarColor ?? "#38bdf8",
+                boxShadow: `0 0 12px ${nextEvent?.calendarColor ?? "#38bdf8"}, 0 0 4px #ffffff`,
+              }}
+            />
+
+            <div
+              className="flex items-center gap-2 min-w-0"
+              style={{ transform: "translateZ(12px)" }}
+            >
+              <CalendarDays className="w-3.5 h-3.5 text-cyan-300/90 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+
+              {!isNativeHost && !calendarData ? (
+                <span className="text-white/70 font-medium truncate">
+                  Apple Calendar · Open in macOS App
                 </span>
-                <span className="text-white/30">•</span>
-                <span className="px-2 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/35 text-cyan-200 text-[10.5px] font-mono font-semibold whitespace-nowrap shrink-0 shadow-sm">
-                  {formatRelativeEventTime(nextEvent, now)}
+              ) : calendarData?.status === "notDetermined" ? (
+                <span className="text-cyan-200 font-semibold truncate flex items-center gap-1.5">
+                  <span>Sync Apple Calendar</span>
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
                 </span>
-                {remainingCount > 0 && (
-                  <span className="px-1.5 py-0.5 rounded-full bg-white/12 text-[10px] font-mono font-bold text-white/85 shrink-0 border border-white/10">
-                    +{remainingCount}
+              ) : calendarData?.status === "denied" || calendarData?.status === "restricted" ? (
+                <span className="text-amber-200 font-semibold truncate">
+                  Enable Apple Calendar Access
+                </span>
+              ) : nextEvent ? (
+                <div className="flex items-center gap-1.5 min-w-0">
+                  <span className="text-white font-semibold truncate tracking-tight">
+                    {nextEvent.title}
                   </span>
-                )}
-              </div>
-            ) : (
-              <span className="text-white/75 font-medium truncate">
-                Apple Calendar Synced · Free (7d)
-              </span>
-            )}
-          </div>
+                  <span className="text-white/30">•</span>
+                  <span className="px-2 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/35 text-cyan-200 text-[10.5px] font-mono font-semibold whitespace-nowrap shrink-0 shadow-sm">
+                    {formatRelativeEventTime(nextEvent, now)}
+                  </span>
+                  {remainingCount > 0 && (
+                    <span className="px-1.5 py-0.5 rounded-full bg-white/12 text-[10px] font-mono font-bold text-white/85 shrink-0 border border-white/10">
+                      +{remainingCount}
+                    </span>
+                  )}
+                </div>
+              ) : (
+                <span className="text-white/75 font-medium truncate">
+                  Apple Calendar Synced · Free (7d)
+                </span>
+              )}
+            </div>
 
-          <ChevronDown
-            style={{ transform: "translateZ(10px)" }}
-            className={`w-3.5 h-3.5 text-white/60 shrink-0 transition-transform duration-300 group-hover:text-white ${
-              isCalendarOpen ? "rotate-180" : ""
-            }`}
-          />
-        </motion.button>
+            <ChevronDown
+              style={{ transform: "translateZ(10px)" }}
+              className={`w-3.5 h-3.5 text-white/60 shrink-0 transition-transform duration-300 group-hover:text-white ${
+                isCalendarOpen ? "rotate-180" : ""
+              }`}
+            />
+          </motion.button>
+        </div>
 
-        {/* Upcoming Events Popover */}
+        {/* Upcoming Events Popover with Full-Screen Clickaway Dismissal */}
         <AnimatePresence>
           {isCalendarOpen && (
-            <motion.div
-              initial={{ opacity: 0, y: 8, scale: 0.97 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              exit={{ opacity: 0, y: 6, scale: 0.97 }}
-              transition={{ type: "spring", stiffness: 420, damping: 28 }}
-              className="absolute right-0 mt-2 w-[340px] sm:w-[370px] rounded-3xl bg-[#090d16]/95 border border-white/15 backdrop-blur-2xl shadow-[0_24px_60px_rgba(0,0,0,0.75),inset_0_1px_0_rgba(255,255,255,0.12)] p-4 z-50"
-            >
+            <>
+              <div
+                className="fixed inset-0 z-[9990] bg-black/40 backdrop-blur-[2px] transition-opacity cursor-default"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsCalendarOpen(false);
+                }}
+              />
+              <motion.div
+                initial={{ opacity: 0, y: 8, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: 6, scale: 0.97 }}
+                transition={{ type: "spring", stiffness: 420, damping: 28 }}
+                className="absolute right-0 mt-2 w-[calc(100vw-24px)] sm:w-[370px] max-w-[370px] rounded-3xl bg-[#080b12]/98 border border-white/20 backdrop-blur-3xl shadow-[0_30px_90px_rgba(0,0,0,0.95),0_0_40px_rgba(0,0,0,0.8),inset_0_1px_0_rgba(255,255,255,0.2)] p-4 z-[9999] pointer-events-auto"
+              >
               <div className="flex items-center justify-between pb-3 mb-3 border-b border-white/10">
                 <div className="flex items-center gap-2">
                   <CalendarDays className="w-4 h-4 text-cyan-300" />
@@ -746,7 +759,8 @@ export const CockpitClockAndCalendar: React.FC = () => {
                 </div>
               )}
             </motion.div>
-          )}
+          </>
+        )}
         </AnimatePresence>
       </div>
     </div>
