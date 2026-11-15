@@ -477,6 +477,40 @@ export const CockpitClockAndCalendar: React.FC = () => {
     setTimeout(() => setIsRefreshing(false), 1200);
   };
 
+  const [pillTilt, setPillTilt] = useState({
+    rotateX: 0,
+    rotateY: 0,
+    glareX: 50,
+    glareY: 50,
+    isHovered: false,
+  });
+
+  const handlePillMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const normX = (x / rect.width) * 2 - 1;
+    const normY = (y / rect.height) * 2 - 1;
+
+    setPillTilt({
+      rotateX: -normY * 8,
+      rotateY: normX * 8,
+      glareX: Math.round((x / rect.width) * 100),
+      glareY: Math.round((y / rect.height) * 100),
+      isHovered: true,
+    });
+  };
+
+  const handlePillMouseLeave = () => {
+    setPillTilt({
+      rotateX: 0,
+      rotateY: 0,
+      glareX: 50,
+      glareY: 50,
+      isHovered: false,
+    });
+  };
+
   return (
     <div className="flex flex-col items-start md:items-end gap-2.5 shrink-0">
       {/* Dynamic World Clocks (Liquid Glass Cockpit Clocks) */}
@@ -494,66 +528,115 @@ export const CockpitClockAndCalendar: React.FC = () => {
         ))}
       </div>
 
-      {/* Synced Apple Calendar Upcoming Events Pill */}
-      <div className="relative" ref={popoverRef}>
+      {/* Synced Apple Calendar Upcoming Events Pill (3D Interactive Tilt & Specular Glare) */}
+      <div className="relative" ref={popoverRef} style={{ perspective: 1000 }}>
+        {/* Soft Ambient Glow Aura behind pill */}
+        <div
+          className="pointer-events-none absolute -inset-1 rounded-full blur-xl transition-opacity duration-300"
+          style={{
+            opacity: pillTilt.isHovered ? 0.8 : 0.4,
+            background: nextEvent?.calendarColor
+              ? `radial-gradient(circle, ${nextEvent.calendarColor}40 0%, transparent 75%)`
+              : "radial-gradient(circle, rgba(56,189,248,0.3) 0%, transparent 75%)",
+          }}
+        />
+
         <motion.button
           type="button"
           data-motion="true"
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          transition={{ type: "spring", stiffness: 420, damping: 26 }}
+          animate={{
+            rotateX: pillTilt.rotateX,
+            rotateY: pillTilt.rotateY,
+            scale: pillTilt.isHovered ? 1.03 : 1,
+          }}
+          whileTap={{ scale: 0.96 }}
+          transition={{ type: "spring", stiffness: 420, damping: 22, mass: 0.5 }}
+          onMouseMove={handlePillMouseMove}
+          onMouseLeave={handlePillMouseLeave}
           onClick={handlePillClick}
-          className="group flex items-center gap-2.5 px-3.5 py-1.5 rounded-full bg-white/[0.06] hover:bg-white/[0.1] border border-white/14 backdrop-blur-xl shadow-[inset_0_1px_0_rgba(255,255,255,0.1),0_8px_24px_rgba(0,0,0,0.35)] text-xs transition-colors cursor-pointer max-w-[360px]"
+          className="relative group flex items-center gap-2.5 px-4 py-2 rounded-full border text-xs transition-all cursor-pointer max-w-[390px] overflow-hidden select-none"
           style={{
-            backgroundImage: nextEvent
-              ? `radial-gradient(circle at 12% 50%, ${nextEvent.calendarColor}24, transparent 58%)`
-              : "radial-gradient(circle at 12% 50%, rgba(56,189,248,0.14), transparent 58%)",
+            transformStyle: "preserve-3d",
+            backfaceVisibility: "hidden",
+            borderColor: pillTilt.isHovered
+              ? (nextEvent?.calendarColor ? `${nextEvent.calendarColor}60` : "rgba(56, 189, 248, 0.55)")
+              : "rgba(255, 255, 255, 0.16)",
+            background: nextEvent
+              ? `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, ${nextEvent.calendarColor}2b 0%, rgba(12, 17, 29, 0.88) 100%)`
+              : `radial-gradient(130% 100% at ${pillTilt.glareX}% 0%, rgba(56, 189, 248, 0.18) 0%, rgba(10, 14, 24, 0.9) 100%)`,
+            backdropFilter: "blur(20px) saturate(180%)",
+            WebkitBackdropFilter: "blur(20px) saturate(180%)",
+            boxShadow: pillTilt.isHovered
+              ? `0 16px 36px -8px rgba(0,0,0,0.7), 0 0 24px -2px ${nextEvent?.calendarColor ? `${nextEvent.calendarColor}45` : "rgba(56,189,248,0.35)"}, inset 0 1.5px 1px 0 rgba(255,255,255,0.35), inset 0 -1px 0 rgba(0,0,0,0.4)`
+              : "0 10px 24px -6px rgba(0,0,0,0.5), inset 0 1px 0.5px 0 rgba(255,255,255,0.2), inset 0 -1px 0 rgba(0,0,0,0.3)",
           }}
         >
-          <span
-            className="w-2 h-2 rounded-full shrink-0"
+          {/* Specular Holographic Glare Sweep across the pill */}
+          <div
+            className="pointer-events-none absolute inset-0 transition-opacity duration-200"
             style={{
-              backgroundColor: nextEvent?.calendarColor ?? "#38bdf8",
-              boxShadow: `0 0 10px ${nextEvent?.calendarColor ?? "#38bdf8"}`,
+              opacity: pillTilt.isHovered ? 1 : 0,
+              background: `radial-gradient(200px circle at ${pillTilt.glareX}% ${pillTilt.glareY}%, rgba(255,255,255,0.26), rgba(56,189,248,0.15) 35%, transparent 75%)`,
             }}
           />
-          <CalendarDays className="w-3.5 h-3.5 text-white/75 shrink-0" />
 
-          {!isNativeHost && !calendarData ? (
-            <span className="text-white/65 font-medium truncate">
-              Apple Calendar · Open in macOS App
-            </span>
-          ) : calendarData?.status === "notDetermined" ? (
-            <span className="text-cyan-200 font-medium truncate">
-              Sync Apple Calendar
-            </span>
-          ) : calendarData?.status === "denied" || calendarData?.status === "restricted" ? (
-            <span className="text-amber-200 font-medium truncate">
-              Enable Apple Calendar Access
-            </span>
-          ) : nextEvent ? (
-            <>
-              <span className="text-white/90 font-semibold truncate">
-                {nextEvent.title}
+          {/* Top-Edge Specular Glass Light Crescent */}
+          <div className="pointer-events-none absolute inset-x-2 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/45 to-transparent" />
+
+          {/* Glowing Status Orb Raised in 3D */}
+          <span
+            className="w-2.5 h-2.5 rounded-full shrink-0 transition-transform duration-300 group-hover:scale-125"
+            style={{
+              transform: "translateZ(14px)",
+              backgroundColor: nextEvent?.calendarColor ?? "#38bdf8",
+              boxShadow: `0 0 12px ${nextEvent?.calendarColor ?? "#38bdf8"}, 0 0 4px #ffffff`,
+            }}
+          />
+
+          <div
+            className="flex items-center gap-2 min-w-0"
+            style={{ transform: "translateZ(12px)" }}
+          >
+            <CalendarDays className="w-3.5 h-3.5 text-cyan-300/90 shrink-0 transition-transform duration-200 group-hover:scale-110" />
+
+            {!isNativeHost && !calendarData ? (
+              <span className="text-white/70 font-medium truncate">
+                Apple Calendar · Open in macOS App
               </span>
-              <span className="text-white/30">·</span>
-              <span className="text-cyan-200/90 font-medium whitespace-nowrap">
-                {formatRelativeEventTime(nextEvent, now)}
+            ) : calendarData?.status === "notDetermined" ? (
+              <span className="text-cyan-200 font-semibold truncate flex items-center gap-1.5">
+                <span>Sync Apple Calendar</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-pulse" />
               </span>
-              {remainingCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-white/10 text-[10px] font-semibold text-white/75 shrink-0">
-                  +{remainingCount}
+            ) : calendarData?.status === "denied" || calendarData?.status === "restricted" ? (
+              <span className="text-amber-200 font-semibold truncate">
+                Enable Apple Calendar Access
+              </span>
+            ) : nextEvent ? (
+              <div className="flex items-center gap-1.5 min-w-0">
+                <span className="text-white font-semibold truncate tracking-tight">
+                  {nextEvent.title}
                 </span>
-              )}
-            </>
-          ) : (
-            <span className="text-white/70 font-medium truncate">
-              Apple Calendar synced · No events (7d)
-            </span>
-          )}
+                <span className="text-white/30">•</span>
+                <span className="px-2 py-0.5 rounded-full bg-cyan-400/20 border border-cyan-300/35 text-cyan-200 text-[10.5px] font-mono font-semibold whitespace-nowrap shrink-0 shadow-sm">
+                  {formatRelativeEventTime(nextEvent, now)}
+                </span>
+                {remainingCount > 0 && (
+                  <span className="px-1.5 py-0.5 rounded-full bg-white/12 text-[10px] font-mono font-bold text-white/85 shrink-0 border border-white/10">
+                    +{remainingCount}
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className="text-white/75 font-medium truncate">
+                Apple Calendar Synced · Free (7d)
+              </span>
+            )}
+          </div>
 
           <ChevronDown
-            className={`w-3.5 h-3.5 text-white/50 shrink-0 transition-transform duration-200 ${
+            style={{ transform: "translateZ(10px)" }}
+            className={`w-3.5 h-3.5 text-white/60 shrink-0 transition-transform duration-300 group-hover:text-white ${
               isCalendarOpen ? "rotate-180" : ""
             }`}
           />
