@@ -52,6 +52,19 @@ const DEFAULT_SUBJECT_LEVELS: Record<string, "SL" | "HL"> = Object.fromEntries(
   ALL_SUBJECT_IDS.map((id) => [id, id === "german" ? "SL" : "HL"])
 );
 
+export interface WorldClockItem {
+  id: string;
+  city: string;
+  country: string;
+  timezone: string;
+  customLabel?: string;
+}
+
+export const DEFAULT_WORLD_CLOCKS: WorldClockItem[] = [
+  { id: "munich", city: "Munich", country: "Germany", timezone: "Europe/Berlin" },
+  { id: "islamabad", city: "Islamabad", country: "Pakistan", timezone: "Asia/Karachi" },
+];
+
 interface WorkspaceState {
   activeView: "dashboard" | "workspace";
   openInstances: ModuleInstance[];
@@ -70,8 +83,13 @@ interface WorkspaceState {
   navHistory: NavHistoryEntry[];
   navIndex: number;
   isRestoringHistory: boolean;
+  worldClocks: WorldClockItem[];
 
   // Actions
+  addWorldClock: (clock: WorldClockItem) => void;
+  removeWorldClock: (id: string) => void;
+  setWorldClocks: (clocks: WorldClockItem[]) => void;
+  resetWorldClocks: () => void;
   triggerAppIntro: (appId: AppId) => void;
   dismissAppIntro: () => void;
   setSettingsOpen: (open: boolean) => void;
@@ -137,6 +155,19 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       navHistory: [{ view: "dashboard", instanceId: null }],
       navIndex: 0,
       isRestoringHistory: false,
+      worldClocks: DEFAULT_WORLD_CLOCKS,
+
+      addWorldClock: (clock) => {
+        const current = get().worldClocks;
+        if (current.some((c) => c.id === clock.id || (c.city === clock.city && c.timezone === clock.timezone))) return;
+        set({ worldClocks: [...current, clock] });
+      },
+      removeWorldClock: (id) => {
+        const next = get().worldClocks.filter((c) => c.id !== id);
+        set({ worldClocks: next.length > 0 ? next : DEFAULT_WORLD_CLOCKS.slice(0, 1) });
+      },
+      setWorldClocks: (clocks) => set({ worldClocks: clocks }),
+      resetWorldClocks: () => set({ worldClocks: DEFAULT_WORLD_CLOCKS }),
 
       setSettingsOpen: (open) => set({ isSettingsOpen: open }),
       setReleaseNotesOpen: (open) => set({ isReleaseNotesOpen: open }),
@@ -737,9 +768,14 @@ export const useWorkspaceStore = create<WorkspaceState>()(
         sessionSnapshots: state.sessionSnapshots,
         enabledSubjects: state.enabledSubjects,
         subjectLevels: state.subjectLevels,
+        worldClocks: state.worldClocks,
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
+
+        if (!state.worldClocks || !Array.isArray(state.worldClocks) || state.worldClocks.length === 0) {
+          state.worldClocks = DEFAULT_WORLD_CLOCKS;
+        }
 
         const migratedSnapshots = (state.sessionSnapshots || []).map((snap) => {
           if (snap.id === "lit-comparative-paper2" || (snap.primaryAppId as string) === "macbeth" || (snap.secondaryAppId as string) === "macbeth") {

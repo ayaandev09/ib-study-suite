@@ -5,9 +5,9 @@ import { FORMULA_BANK, SYLLABUS_THEMES, ThemeId } from "@/modules/physics/data";
 import { useStudyStore } from "@/modules/physics/store/useStudyStore";
 import { MathFormula } from "./MathFormula";
 import { MathText, formatUnit } from "./MathText";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 import {
   Calculator,
-  Search,
   Bookmark,
   BookmarkCheck,
   Sparkles,
@@ -55,24 +55,24 @@ export const FormulaBankView: React.FC = () => {
           Exhaustive equation bank featuring KaTeX-typeset formulas from the official IB Physics Data Booklet. Each formula includes exact variable definitions, SI units, physical boundary conditions, and high-yield calculation tips.
         </p>
 
-        {/* Search & Filter Controls */}
-        <div className="flex flex-col sm:flex-row gap-3 mt-6">
-          <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search formulas by name, symbol (e.g. SUVAT, drift, pV, Doppler, Lorentz)..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-950/70 border border-white/10 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-cyan-500/50"
+        {/* Mini Section Search for Formulas */}
+        <div className="mt-6 flex flex-col sm:flex-row gap-3 items-stretch">
+          <div className="flex-1">
+            <MiniSectionSearch
+              query={search}
+              onQueryChange={setSearch}
+              placeholder="Search formulas by name, symbol (SUVAT, drift, pV, Doppler, Lorentz), or topic..."
+              totalCount={FORMULA_BANK.length}
+              filteredCount={filteredFormulas.length}
+              accentColor="#6366f1"
             />
           </div>
 
           <button
             onClick={() => setOnlyBookmarked(!onlyBookmarked)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-semibold cursor-pointer transition-all ${
+            className={`flex items-center justify-center gap-2 px-4 py-2 rounded-2xl text-xs font-semibold cursor-pointer transition-all shrink-0 h-[46px] ${
               onlyBookmarked
-                ? "bg-cyan-500 text-slate-950 font-bold shadow-lg shadow-amber-500/25"
+                ? "bg-cyan-500 text-slate-950 font-bold shadow-lg shadow-cyan-500/25"
                 : "bg-slate-900/80 text-slate-300 border border-white/10 hover:bg-slate-800"
             }`}
           >

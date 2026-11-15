@@ -1,11 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { BookMarked, Calculator, Search } from "lucide-react";
+import { BookMarked, Calculator } from "lucide-react";
 import { GEO_FORMULAS, GEO_GLOSSARY } from "@/modules/geography/data";
 import { useStudyStore } from "@/modules/geography/store/useStudyStore";
 import { MathText } from "./MathText";
 import { MathFormula } from "./MathFormula";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 export function LexiconDossierView() {
   const { levelFilter } = useStudyStore();
@@ -43,17 +44,16 @@ export function LexiconDossierView() {
             Quantitative formulas, spatial indices, and IB Geography command definitions.
           </p>
         </div>
-
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-teal-300 absolute left-3 top-1/2 -translate-y-1/2" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Filter formulas or terms..."
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-[#041111]/90 border border-teal-500/25 text-xs text-white placeholder:text-white/40 focus:outline-none focus:border-teal-400"
-          />
-        </div>
       </div>
+
+      <MiniSectionSearch
+        query={query}
+        onQueryChange={setQuery}
+        placeholder="Search geography models (Alonso, Butler, WEF nexus), equations, or demographic terms..."
+        totalCount={GEO_FORMULAS.length + GEO_GLOSSARY.length}
+        filteredCount={formulas.length + terms.length}
+        accentColor="#14b8a6"
+      />
 
       {/* Formulas Section */}
       <div className="space-y-3">

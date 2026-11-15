@@ -1,15 +1,43 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { Gem, Users, Sparkles, BookOpen } from "lucide-react";
 import {
   SYMBOLS_LEXICON,
   CHARACTERS_DOSSIER,
 } from "@/modules/orwell/data";
 import { NewspeakTranslatorSimulator } from "./NewspeakTranslatorSimulator";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 export const LexiconDossierView: React.FC = React.memo(() => {
   const [activeCategory, setActiveCategory] = useState<"lab" | "characters" | "symbols">("lab");
+  const [charQuery, setCharQuery] = useState("");
+  const [symbolQuery, setSymbolQuery] = useState("");
+
+  const filteredCharacters = useMemo(() => {
+    const q = charQuery.trim().toLowerCase();
+    if (!q) return CHARACTERS_DOSSIER;
+    return CHARACTERS_DOSSIER.filter(
+      (c) =>
+        c.name.toLowerCase().includes(q) ||
+        c.role.toLowerCase().includes(q) ||
+        c.psychologicalProfile.toLowerCase().includes(q) ||
+        c.partyStatus.toLowerCase().includes(q) ||
+        c.symbolicFunction.toLowerCase().includes(q)
+    );
+  }, [charQuery]);
+
+  const filteredSymbols = useMemo(() => {
+    const q = symbolQuery.trim().toLowerCase();
+    if (!q) return SYMBOLS_LEXICON;
+    return SYMBOLS_LEXICON.filter(
+      (s) =>
+        s.name.toLowerCase().includes(q) ||
+        s.meaning.toLowerCase().includes(q) ||
+        s.evolution.toLowerCase().includes(q) ||
+        s.category.toLowerCase().includes(q)
+    );
+  }, [symbolQuery]);
 
   return (
     <div className="space-y-6">
@@ -60,23 +88,34 @@ export const LexiconDossierView: React.FC = React.memo(() => {
 
       {/* ==================== 2. CHARACTER DOSSIERS ==================== */}
       {activeCategory === "characters" && (
-        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6">
-          <div className="flex items-center gap-3 mb-5">
-            <span className="p-2 rounded-xl bg-rose-500/15 border border-rose-400/30 text-rose-300">
-              <Users className="w-5 h-5" />
-            </span>
-            <div>
-              <h2 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-[-0.01em]">
-                Miniluv Psychological &amp; Character Dossiers
-              </h2>
-              <p className="font-sans text-[15px] text-white/70">
-                Class caste, psychological profiles, and ideological functions
-              </p>
+        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <span className="p-2 rounded-xl bg-rose-500/15 border border-rose-400/30 text-rose-300">
+                <Users className="w-5 h-5" />
+              </span>
+              <div>
+                <h2 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-[-0.01em]">
+                  Miniluv Psychological &amp; Character Dossiers
+                </h2>
+                <p className="font-sans text-[15px] text-white/70">
+                  Class caste, psychological profiles, and ideological functions
+                </p>
+              </div>
             </div>
           </div>
 
+          <MiniSectionSearch
+            query={charQuery}
+            onQueryChange={setCharQuery}
+            placeholder="Search characters by name, party status, psychological profile, or role..."
+            totalCount={CHARACTERS_DOSSIER.length}
+            filteredCount={filteredCharacters.length}
+            accentColor="#f43f5e"
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
-            {CHARACTERS_DOSSIER.map((char) => (
+            {filteredCharacters.map((char) => (
               <div
                 key={char.id}
                 className="liquid-glass-bento rounded-[24px] p-6 bg-black/35 border border-white/10 flex flex-col justify-between space-y-4 hover:border-rose-400/35 transition-all"
@@ -120,8 +159,8 @@ export const LexiconDossierView: React.FC = React.memo(() => {
 
       {/* ==================== 3. SYMBOLS & MOTIFS LEXICON ==================== */}
       {activeCategory === "symbols" && (
-        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6">
-          <div className="flex items-center gap-3 mb-5">
+        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6 space-y-5">
+          <div className="flex items-center gap-3">
             <span className="p-2 rounded-xl bg-rose-500/15 border border-rose-400/30 text-rose-300">
               <Gem className="w-5 h-5" />
             </span>
@@ -135,8 +174,17 @@ export const LexiconDossierView: React.FC = React.memo(() => {
             </div>
           </div>
 
+          <MiniSectionSearch
+            query={symbolQuery}
+            onQueryChange={setSymbolQuery}
+            placeholder="Search symbols by name (paperweight, thrush, nursery rhyme, golden country), meaning, or category..."
+            totalCount={SYMBOLS_LEXICON.length}
+            filteredCount={filteredSymbols.length}
+            accentColor="#f43f5e"
+          />
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-            {SYMBOLS_LEXICON.map((sym) => (
+            {filteredSymbols.map((sym) => (
               <div
                 key={sym.id}
                 className="liquid-glass-bento rounded-[24px] p-6 bg-black/35 border border-white/10 flex flex-col justify-between space-y-4 hover:border-rose-400/35 transition-all"

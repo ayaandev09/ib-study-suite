@@ -11,6 +11,7 @@ import {
 } from "@/modules/business/data";
 import { useStudyStore } from "@/modules/business/store/useStudyStore";
 import { MathFormula } from "./MathFormula";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 import {
   Calculator,
   Users,
@@ -69,6 +70,7 @@ const UNIT_FILTERS = [
 
 export const LexiconDossierView = React.memo(function LexiconDossierView() {
   const searchQuery = useStudyStore((state) => state.searchQuery);
+  const setSearchQuery = useStudyStore((state) => state.setSearchQuery);
   const [activeTab, setActiveTab] = useState<DossierTab>("formulas");
   const [selectedLetter, setSelectedLetter] = useState<string>("ALL");
   const [selectedUnit, setSelectedUnit] = useState<string>("ALL");
@@ -206,6 +208,34 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
           </div>
         </div>
       </section>
+
+      {/* Universal Mini Search Across Formulas, Theorists & Glossary */}
+      <MiniSectionSearch
+        query={searchQuery}
+        onQueryChange={setSearchQuery}
+        placeholder={
+          activeTab === "formulas"
+            ? "Search quantitative formulas by name (ARR, NPV, Break-Even, Acid Test), code, or variables..."
+            : activeTab === "theorists"
+            ? "Search theorists by name (Taylor, Maslow, Herzberg, Pink, Handy, Ansoff, Porter), core model, or evaluation..."
+            : "Search 412 glossary terms by keyword, definition, or exam tip..."
+        }
+        totalCount={
+          activeTab === "formulas"
+            ? FORMULA_BANK.length
+            : activeTab === "theorists"
+            ? THEORISTS_DOSSIER.length
+            : GLOSSARY_TERMS.length
+        }
+        filteredCount={
+          activeTab === "formulas"
+            ? filteredFormulas.length
+            : activeTab === "theorists"
+            ? filteredTheorists.length
+            : filteredGlossary.length
+        }
+        accentColor="#2563eb"
+      />
 
       {/* =====================================================================
           TAB 1: FORMULAS BANK

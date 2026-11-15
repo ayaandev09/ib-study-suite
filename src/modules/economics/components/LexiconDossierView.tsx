@@ -4,6 +4,7 @@ import React, { useState, useMemo } from "react";
 import { GLOSSARY_TERMS, FORMULA_BANK, GlossaryTerm, FormulaItem } from "@/modules/economics/data";
 import { MathFormula } from "./MathFormula";
 import { LivingEconomicsDiagramSimulator } from "./LivingEconomicsDiagramSimulator";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 import {
   BookOpen,
@@ -140,6 +141,16 @@ export const LexiconDossierView: React.FC = () => {
           </p>
         </div>
       </div>
+
+      {/* Mini Section Search for Formulas & Glossary */}
+      <MiniSectionSearch
+        query={searchQuery}
+        onQueryChange={setSearchQuery}
+        placeholder="Search economic definitions (PED, externalities, monetary policy, Gini) or formulas..."
+        totalCount={GLOSSARY_TERMS.length}
+        filteredCount={filteredTerms.length}
+        accentColor="#0ea5e9"
+      />
 
       {/* Formula Bank Accordion */}
       <div className="liquid-glass-bento rounded-[24px] border border-white/10 overflow-hidden">

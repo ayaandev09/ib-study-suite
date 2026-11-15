@@ -13,13 +13,10 @@ import {
   HelpCircle,
   Eye,
   BookOpen,
-  Microscope,
   FlaskConical,
   Clock,
-  Check,
-  ChevronDown,
   Layers,
-  Lightbulb,
+  Check,
 } from "lucide-react";
 import { TopicData, BIOLOGY_CONCEPTS } from "@/modules/biology/data";
 import { useStudyStore } from "@/modules/biology/store/useStudyStore";
@@ -36,11 +33,10 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
     toggleTopicBookmark,
     goToNextTopic,
     goToPrevTopic,
-    studyLensMode,
     levelFilter,
   } = useStudyStore();
 
-  const [revealedHints, setRevealedHints] = useState<Record<string, boolean>>({});
+  const [studioMode, setStudioMode] = useState<"theory" | "digest" | "traps">("theory");
   const [revealedAnswers, setRevealedAnswers] = useState<Record<string, boolean>>({});
 
   const isCompleted = !!completedTopics[topic.id];
@@ -51,17 +47,20 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
     return true;
   });
 
+  const toggleAnswer = (key: string) => {
+    setRevealedAnswers((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   return (
-    <motion.article
+    <article
       key={topic.id}
-      initial={{ opacity: 0, y: 12 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ type: "spring", mass: 1, stiffness: 220, damping: 26 }}
       className="max-w-5xl mx-auto space-y-6 pb-20"
     >
-      {/* 1. Hero Bento Header */}
-      <div className="liquid-glass-bento rounded-3xl p-6 sm:p-8 space-y-5 relative overflow-hidden border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
-        <div className="flex flex-wrap items-center justify-between gap-4">
+      {/* =====================================================================
+          1. ZEN HEADER: Topic Title, Metadata & Completion
+          ===================================================================== */}
+      <div className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 relative overflow-hidden border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-xl bg-emerald-500/20 border border-emerald-400/40 text-xs font-mono font-bold text-emerald-300">
               {topic.displayCode}
@@ -91,7 +90,6 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
               onClick={goToPrevTopic}
               className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 text-white/75 hover:text-white cursor-pointer transition-colors"
               title="Previous Topic"
-              aria-label="Previous Topic"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
@@ -100,7 +98,6 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
               onClick={goToNextTopic}
               className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 text-white/75 hover:text-white cursor-pointer transition-colors"
               title="Next Topic"
-              aria-label="Next Topic"
             >
               <ChevronRight className="w-4 h-4" />
             </button>
@@ -113,7 +110,6 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
                   : "bg-white/[0.06] border-white/15 text-white/60 hover:text-white"
               }`}
               title="Bookmark Topic"
-              aria-label="Bookmark Topic"
             >
               <Bookmark className="w-4 h-4" />
             </button>
@@ -132,35 +128,157 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
+        <div className="space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug font-sans">
             {topic.title}
           </h1>
-          <p className="text-sm sm:text-base text-white/65 leading-relaxed">
+          <p className="text-sm text-white/65 leading-relaxed font-sans">
             {topic.subtitle}
           </p>
         </div>
-
-        <div className="rounded-2xl bg-white/[0.03] border border-white/10 p-4 sm:p-5 text-sm text-white/90 leading-relaxed">
-          <MathText text={topic.summary} />
-        </div>
       </div>
 
-      {/* 2. Core Digest / Primer (Scannable Bento Split) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        {/* Left Bento: High-Yield Key Takeaways */}
-        <div className="md:col-span-7 liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-3">
+      {/* =====================================================================
+          2. STUDIO MODE SWITCHER: 3 Clean Focused Tabs
+          ===================================================================== */}
+      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl">
+        <button
+          onClick={() => setStudioMode("theory")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "theory"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
+        >
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Core Syllabus &amp; Theory</span>
+          <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] font-mono">
+            {filteredSubSections.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => setStudioMode("digest")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "digest"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-emerald-500" />
+          <span>60s High-Yield Digest &amp; Formulas</span>
+        </button>
+
+        <button
+          onClick={() => setStudioMode("traps")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "traps"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
+        >
+          <AlertTriangle className="w-3.5 h-3.5 text-amber-500" />
+          <span>Exam Traps &amp; Inquiry</span>
+          <span className="px-1.5 py-0.2 rounded-full bg-white/20 text-[10px] font-mono">
+            {topic.checkUnderstanding?.length || 0}
+          </span>
+        </button>
+      </div>
+
+      {/* =====================================================================
+          3. ACTIVE STUDIO VIEW
+          ===================================================================== */}
+      {studioMode === "theory" && (
+        <section className="space-y-5">
+          {/* Summary Narrative */}
+          <div className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 border border-white/10 space-y-3">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+              Topic Conceptual Overview
+            </h3>
+            <div className="text-sm sm:text-[15px] text-white/90 leading-[1.8] font-sans">
+              <MathText text={topic.summary} />
+            </div>
+          </div>
+
+          {/* Structured Sub-Sections */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-xs font-mono uppercase tracking-[0.18em] text-emerald-300/85">
+                Syllabus Mechanisms &amp; Experimental Evidence
+              </h2>
+              <span className="text-[11px] font-mono text-white/45">
+                {filteredSubSections.filter((s) => completedSubSections[`${topic.id}:${s.id}`]).length} /{" "}
+                {filteredSubSections.length} completed
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              {filteredSubSections.map((sub) => {
+                const subDone = !!completedSubSections[`${topic.id}:${sub.id}`];
+                return (
+                  <div
+                    key={sub.id}
+                    className={`liquid-glass-card rounded-[28px] p-6 sm:p-7 space-y-4 border transition-all duration-300 ${
+                      subDone
+                        ? "border-emerald-500/35 bg-emerald-950/[0.05]"
+                        : "border-white/10 hover:border-emerald-400/25"
+                    }`}
+                  >
+                    <div className="flex items-start justify-between gap-3 border-b border-white/8 pb-3">
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-lg bg-white/10 text-white/80 font-semibold">
+                            {sub.marker}
+                          </span>
+                          {sub.isHLOnly && (
+                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-lime-500/20 border border-lime-400/35 text-lime-300 font-semibold">
+                              HL ONLY
+                            </span>
+                          )}
+                        </div>
+                        <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
+                          {sub.title}
+                        </h3>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => toggleSubSectionComplete(topic.id, sub.id)}
+                        className={`p-2 rounded-xl border cursor-pointer transition-all ${
+                          subDone
+                            ? "bg-emerald-500 text-black border-emerald-400"
+                            : "bg-white/[0.04] text-white/35 hover:text-white border-white/10"
+                        }`}
+                        title={subDone ? "Mark Incomplete" : "Mark Complete"}
+                      >
+                        <Check className="w-4 h-4 stroke-[2.5]" />
+                      </button>
+                    </div>
+
+                    <div className="text-sm sm:text-[15px] text-white/85 leading-[1.8] font-sans">
+                      <MathText text={sub.content} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {studioMode === "digest" && (
+        <section className="space-y-5">
+          {/* Speed-read Takeaways */}
+          <div className="liquid-glass-card rounded-[28px] p-6 sm:p-7 space-y-4 border border-white/10">
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-emerald-300">
               <Sparkles className="w-4 h-4" />
               <span>High-Yield Core Takeaways</span>
             </div>
 
-            <div className="space-y-2.5">
+            <div className="space-y-3">
               {topic.speedReadBullets.map((bullet, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl bg-white/[0.03] border border-white/8 p-3.5 flex items-start gap-3 text-xs sm:text-sm text-white/85 leading-relaxed"
+                  className="rounded-2xl bg-white/[0.03] border border-white/8 p-4 flex items-start gap-3 text-xs sm:text-sm text-white/85 leading-relaxed"
                 >
                   <span className="mt-1.5 h-2 w-2 rounded-full bg-emerald-400 shrink-0 shadow-[0_0_8px_rgba(52,211,153,0.5)]" />
                   <div className="flex-1">
@@ -171,360 +289,155 @@ export function TopicBentoCard({ topic }: { topic: TopicData }) {
             </div>
           </div>
 
-          <div className="pt-2 text-[11px] font-mono text-emerald-300/70 flex items-center justify-between border-t border-white/8">
-            <span>Essential IB Syllabus Mechanisms</span>
-            <span>Paper 1 &amp; 2 Core</span>
-          </div>
-        </div>
-
-        {/* Right Bento: 5-Minute Conceptual Primer */}
-        <div className="md:col-span-5 liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4 flex flex-col justify-between">
-          <div className="space-y-3">
+          {/* 5-Min Primer */}
+          <div className="liquid-glass-card rounded-[28px] p-6 sm:p-7 space-y-3 border border-white/10">
             <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-300">
               <BookOpen className="w-4 h-4" />
               <span>5-Minute Conceptual Primer</span>
             </div>
-
-            <div className="text-xs sm:text-sm text-white/80 leading-relaxed space-y-2.5">
+            <div className="text-sm sm:text-[15px] text-white/85 leading-[1.8] font-sans">
               <MathText text={topic.primer5Min} />
             </div>
           </div>
 
-          <div className="pt-2 border-t border-white/8 text-[11px] font-mono text-cyan-300/70">
-            Strategic Scope: {topic.strategicImportance}
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Essential Formulas & Principles */}
-      {(topic.primaryFormulas.length > 0 || topic.conceptTracking.length > 0) && (
-        <div className="liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-lime-300">
-            <FlaskConical className="w-4 h-4" />
-            <span>Essential Formulas &amp; Unifying Principles</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-            {/* Formulas Column */}
-            {topic.primaryFormulas.length > 0 && (
-              <div className={`${topic.conceptTracking.length > 0 ? "md:col-span-6" : "md:col-span-12"} space-y-2.5`}>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-white/50 block">
-                  Primary Formulas &amp; Equations
-                </span>
-                {topic.primaryFormulas.map((formula, idx) => (
-                  <div
-                    key={idx}
-                    className="rounded-2xl bg-black/55 border border-emerald-400/25 px-4 py-3 overflow-x-auto text-center"
-                  >
-                    <MathFormula formula={formula} displayMode={false} className="text-sm text-emerald-200" />
-                  </div>
-                ))}
+          {/* Formulas & Unifying Principles */}
+          {(topic.primaryFormulas.length > 0 || topic.conceptTracking.length > 0) && (
+            <div className="liquid-glass-card rounded-[28px] p-6 sm:p-7 space-y-4 border border-white/10">
+              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-lime-300">
+                <FlaskConical className="w-4 h-4" />
+                <span>Essential Formulas &amp; Unifying Principles</span>
               </div>
-            )}
 
-            {/* Unifying Themes Column */}
-            {topic.conceptTracking.length > 0 && (
-              <div className={`${topic.primaryFormulas.length > 0 ? "md:col-span-6" : "md:col-span-12"} space-y-2.5`}>
-                <span className="text-[11px] font-mono uppercase tracking-wider text-white/50 block">
-                  Cross-Theme Unifying Concepts
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {topic.conceptTracking.map((ct) => {
-                    const c = BIOLOGY_CONCEPTS[ct.conceptId];
-                    if (!c) return null;
-                    return (
+              {topic.primaryFormulas.length > 0 && (
+                <div className="space-y-2.5">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-white/50 block">
+                    Equations &amp; Mathematical Formulations
+                  </span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {topic.primaryFormulas.map((formula, idx) => (
                       <div
-                        key={ct.conceptId}
-                        className="px-3 py-2 rounded-xl text-xs border flex items-center gap-2"
-                        style={{
-                          backgroundColor: c.badgeBg,
-                          borderColor: c.badgeBorder,
-                          color: c.badgeText,
-                        }}
+                        key={idx}
+                        className="rounded-2xl bg-black/55 border border-emerald-400/25 px-4 py-3.5 text-center shadow-inner"
                       >
-                        <span className="font-semibold">{c.shortName}</span>
-                        <span className="text-white/70 text-[11px]">· {ct.manifestation}</span>
+                        <MathFormula formula={formula} displayMode={false} className="text-sm text-emerald-200" />
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
-          </div>
-        </div>
+              )}
+
+              {topic.conceptTracking.length > 0 && (
+                <div className="space-y-2.5 pt-2 border-t border-white/8">
+                  <span className="text-[11px] font-mono uppercase tracking-wider text-white/50 block">
+                    Cross-Theme Concepts
+                  </span>
+                  <div className="flex flex-wrap gap-2">
+                    {topic.conceptTracking.map((ct) => {
+                      const c = BIOLOGY_CONCEPTS[ct.conceptId];
+                      if (!c) return null;
+                      return (
+                        <div
+                          key={ct.conceptId}
+                          className="px-3 py-2 rounded-xl text-xs border flex items-center gap-2"
+                          style={{
+                            backgroundColor: c.badgeBg,
+                            borderColor: c.badgeBorder,
+                            color: c.badgeText,
+                          }}
+                        >
+                          <span className="font-semibold">{c.shortName}</span>
+                          <span className="text-white/70 text-[11px]">· {ct.manifestation}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </section>
       )}
 
-      {/* 4. Structured Sub-Sections / Syllabus Points */}
-      {studyLensMode !== "primer" && filteredSubSections.length > 0 && (
-        <div className="space-y-4">
-          <div className="flex items-center justify-between px-1">
-            <h2 className="text-xs font-mono uppercase tracking-[0.18em] text-emerald-300/85">
-              Syllabus Points &amp; Subunit Mechanisms
-            </h2>
-            <span className="text-[11px] font-mono text-white/45">
-              {filteredSubSections.filter((s) => completedSubSections[`${topic.id}:${s.id}`]).length} /{" "}
-              {filteredSubSections.length} completed
-            </span>
-          </div>
+      {studioMode === "traps" && (
+        <section className="space-y-5">
+          {/* Active Inquiry Questions */}
+          <div className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 border border-white/10 space-y-4">
+            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                <HelpCircle className="w-4 h-4" />
+              </span>
+              <div>
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  Teacher Will Ask — Discussion &amp; Retrieval
+                </h3>
+                <p className="text-xs text-white/50">
+                  Anticipated classroom discussion questions with model evaluation criteria
+                </p>
+              </div>
+            </div>
 
-          <div className="space-y-3.5">
-            {filteredSubSections.map((sub) => {
-              const subDone = !!completedSubSections[`${topic.id}:${sub.id}`];
-              return (
-                <div
-                  key={sub.id}
-                  className={`liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-3.5 border transition-all duration-300 ${
-                    subDone
-                      ? "border-emerald-500/35 bg-emerald-950/[0.04]"
-                      : "border-white/10 hover:border-emerald-400/25"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[11px] font-mono px-2.5 py-0.5 rounded-lg bg-white/10 text-white/80 font-semibold">
-                          {sub.marker}
-                        </span>
-                        {sub.isHLOnly && (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-lg bg-lime-500/20 border border-lime-400/35 text-lime-300 font-semibold">
-                            HL ONLY
-                          </span>
+            <div className="space-y-3">
+              {(topic.checkUnderstanding || []).map((iq) => {
+                const isOpen = !!revealedAnswers[iq.id];
+                return (
+                  <div
+                    key={iq.id}
+                    className="rounded-2xl p-4 bg-white/[0.03] border border-white/10 space-y-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-xs sm:text-sm font-semibold text-white leading-relaxed">
+                        {iq.question}
+                      </p>
+                      <button
+                        onClick={() => toggleAnswer(iq.id)}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-mono text-emerald-300 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] transition-colors shrink-0 cursor-pointer"
+                      >
+                        {isOpen ? "Hide Evaluation" : "Reveal Evaluation"}
+                      </button>
+                    </div>
+
+                    {isOpen && (
+                      <div className="p-3 rounded-xl bg-black/40 border border-emerald-400/20 text-xs text-slate-200 leading-relaxed font-sans space-y-1">
+                        <div>
+                          <strong className="text-emerald-300">Model Answer: </strong>
+                          {iq.modelAnswer}
+                        </div>
+                        {iq.hints && iq.hints.length > 0 && (
+                          <div className="text-white/60 text-[11px]">
+                            <strong className="text-white/80">Key Hints: </strong>
+                            {iq.hints.join(" • ")}
+                          </div>
                         )}
                       </div>
-                      <h3 className="text-base sm:text-lg font-bold text-white tracking-tight">
-                        {sub.title}
-                      </h3>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toggleSubSectionComplete(topic.id, sub.id)}
-                      className={`p-2 rounded-xl border cursor-pointer transition-colors shrink-0 ${
-                        subDone
-                          ? "bg-emerald-500/25 border-emerald-400/40 text-emerald-300"
-                          : "bg-white/5 border-white/10 text-white/40 hover:text-white"
-                      }`}
-                      title="Mark subunit complete"
-                      aria-label={`Mark ${sub.marker} complete`}
-                    >
-                      <CheckCircle2 className="w-4 h-4" />
-                    </button>
+                    )}
                   </div>
-
-                  <p className="text-xs sm:text-sm text-white/85 leading-relaxed">
-                    <MathText text={sub.content} />
-                  </p>
-
-                  {sub.keyFormulaOrFramework && (
-                    <div className="rounded-2xl bg-black/60 border border-emerald-400/25 px-4 py-3 overflow-x-auto text-center">
-                      <MathFormula formula={sub.keyFormulaOrFramework} displayMode className="text-emerald-200" />
-                    </div>
-                  )}
-
-                  <div className="rounded-2xl bg-emerald-500/[0.07] border border-emerald-400/20 p-3.5 text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
-                    <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-300 font-bold block mb-1">
-                      Analytical Exam Takeaway:
-                    </span>
-                    <MathText text={sub.analyticalTakeaway} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
-
-      {/* 5. Real-World Case Connections & Examiner Traps (Split Bento) */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-4">
-        {/* Real-World Case Studies */}
-        <div className="md:col-span-6 liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-cyan-300">
-            <Microscope className="w-4 h-4" />
-            <span>Real-World Biological Applications</span>
+                );
+              })}
+            </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-white/80 leading-relaxed">
-            {topic.analysis.realWorldConnections}
-          </p>
-
-          {topic.cases.length > 0 && (
-            <div className="space-y-3 pt-1">
-              {topic.cases.map((c) => (
+          {/* Common Exam Pitfalls & Traps */}
+          <div className="p-6 rounded-[28px] bg-emerald-950/20 border border-emerald-400/30 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-emerald-300">
+              <AlertTriangle className="w-4 h-4" />
+              <span>Common Student Misconceptions &amp; Mark Scheme Pitfalls</span>
+            </div>
+            <div className="space-y-2.5">
+              {(topic.analysis?.commonMisconceptions || topic.examBlueprint?.pitfallsToAvoid || []).map((p: string, pIdx: number) => (
                 <div
-                  key={c.id}
-                  className="rounded-2xl bg-white/[0.03] border border-white/8 p-4 space-y-2"
+                  key={pIdx}
+                  className="rounded-xl p-3.5 bg-black/30 border border-emerald-400/20 text-xs sm:text-sm text-slate-200 leading-relaxed"
                 >
-                  <div className="flex flex-wrap items-center justify-between gap-2">
-                    <h4 className="text-sm font-bold text-white">{c.title}</h4>
-                    <span className="text-[11px] font-mono text-cyan-300/80">
-                      {c.domainOrContext}
-                    </span>
-                  </div>
-                  <p className="text-xs text-white/75 leading-relaxed">
-                    <MathText text={c.biologicalMechanism} />
-                  </p>
-                  <div className="text-xs font-mono text-emerald-300/90 bg-emerald-500/10 border border-emerald-400/20 rounded-xl px-3 py-2">
-                    <MathText text={c.quantitativeInsight} />
-                  </div>
+                  <strong className="text-emerald-300 font-mono text-[11px] uppercase mr-1.5">
+                    Pitfall {pIdx + 1}:
+                  </strong>
+                  <MathText text={p} />
                 </div>
               ))}
             </div>
-          )}
-        </div>
-
-        {/* Examiner Traps & Blueprint */}
-        <div className="md:col-span-6 liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-rose-300">
-            <AlertTriangle className="w-4 h-4" />
-            <span>Examiner Traps ({topic.examBlueprint.commandTerm})</span>
           </div>
-
-          <div className="rounded-2xl bg-white/[0.03] border border-white/8 p-4 space-y-2">
-            <span className="text-[10px] font-mono uppercase text-white/45 block">
-              Paper 2 Structured Prompt:
-            </span>
-            <p className="text-xs sm:text-sm font-semibold text-white">
-              {topic.examBlueprint.paper2StructuredPrompt}
-            </p>
-            <p className="text-xs text-white/75 leading-relaxed">
-              {topic.examBlueprint.idealSolutionBreakdown.keyMarkSchemePoints}
-            </p>
-          </div>
-
-          <div className="text-xs sm:text-sm text-amber-100/90 bg-amber-500/10 border border-amber-400/25 rounded-2xl p-4 leading-relaxed">
-            <span className="font-mono uppercase text-[10px] font-bold text-amber-300 block mb-1">
-              Paper 1 Distractor Trap:
-            </span>
-            {topic.examBlueprint.paper1TrapPattern}
-          </div>
-
-          {topic.analysis.commonMisconceptions.length > 0 && (
-            <div className="space-y-2 pt-1">
-              <span className="text-[10px] font-mono uppercase tracking-wider text-white/45 block">
-                Common Student Errors to Avoid:
-              </span>
-              <ul className="space-y-1.5">
-                {topic.analysis.commonMisconceptions.map((m, i) => (
-                  <li
-                    key={i}
-                    className="text-xs text-white/80 flex items-start gap-2 leading-relaxed"
-                  >
-                    <span className="text-rose-400 font-bold shrink-0">×</span>
-                    <span>{m}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* 6. Quick Self-Check / Active Retrieval */}
-      {topic.checkUnderstanding.length > 0 && (
-        <div className="liquid-glass-card rounded-3xl p-5 sm:p-6 space-y-4">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-lime-300">
-            <HelpCircle className="w-4 h-4" />
-            <span>Active Retrieval &amp; Mark Scheme Self-Check</span>
-          </div>
-
-          <div className="space-y-3.5">
-            {topic.checkUnderstanding.map((cu) => {
-              const showHint = !!revealedHints[cu.id];
-              const showAns = !!revealedAnswers[cu.id];
-              return (
-                <div
-                  key={cu.id}
-                  className="rounded-2xl bg-white/[0.02] border border-white/8 p-5 space-y-3"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span className="px-2 py-0.5 rounded-md bg-white/10 text-[10px] font-mono text-white/70 uppercase">
-                      {cu.promptType}
-                    </span>
-                  </div>
-
-                  <p className="text-xs sm:text-sm font-medium text-white leading-relaxed">
-                    <MathText text={cu.question} />
-                  </p>
-
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRevealedHints((p) => ({ ...p, [cu.id]: !p[cu.id] }))
-                      }
-                      className="px-3 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 text-xs text-white/80 cursor-pointer transition-colors"
-                    >
-                      {showHint ? "Hide Hint" : "Show Hint"}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        setRevealedAnswers((p) => ({
-                          ...p,
-                          [cu.id]: !p[cu.id],
-                        }))
-                      }
-                      className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/20 hover:bg-emerald-500/30 border border-emerald-400/35 text-xs text-emerald-200 font-medium cursor-pointer transition-colors"
-                    >
-                      <Eye className="w-3.5 h-3.5" />
-                      <span>{showAns ? "Hide Mark Scheme" : "Reveal Model Answer"}</span>
-                    </button>
-                  </div>
-
-                  {showHint && (
-                    <div className="rounded-xl bg-white/[0.04] border border-white/10 p-3.5 text-xs text-white/75 leading-relaxed">
-                      💡 {cu.hints.join(" · ")}
-                    </div>
-                  )}
-
-                  {showAns && (
-                    <div className="rounded-2xl bg-emerald-950/30 border border-emerald-400/30 p-4 space-y-2.5">
-                      <p className="text-xs sm:text-sm text-white/90 leading-relaxed">
-                        <MathText text={cu.modelAnswer} />
-                      </p>
-                      {cu.keyTermsToInclude.length > 0 && (
-                        <div className="flex flex-wrap gap-1.5 pt-1">
-                          {cu.keyTermsToInclude.map((kt) => (
-                            <span
-                              key={kt}
-                              className="px-2 py-0.5 rounded-md bg-black/50 border border-emerald-400/30 text-[10px] font-mono text-emerald-300"
-                            >
-                              ✓ {kt}
-                            </span>
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </div>
+        </section>
       )}
-
-      {/* 7. Bottom Complete & Next Action */}
-      <div className="pt-2 flex items-center justify-between gap-3 relative z-20">
-        <button
-          type="button"
-          onClick={goToPrevTopic}
-          className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/12 text-xs font-medium text-white/80 hover:text-white cursor-pointer transition-colors"
-        >
-          <ChevronLeft className="w-4 h-4" />
-          <span>Previous Topic</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => {
-            if (!isCompleted) toggleTopicCompletion(topic.id);
-            goToNextTopic();
-          }}
-          className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold cursor-pointer transition-all shadow-[0_4px_20px_rgba(16,185,129,0.3)] hover:scale-[1.02] active:scale-[0.98]"
-        >
-          <span>Complete {topic.displayCode} &amp; Continue</span>
-          <ArrowRight className="w-4 h-4" />
-        </button>
-      </div>
-    </motion.article>
+    </article>
   );
 }

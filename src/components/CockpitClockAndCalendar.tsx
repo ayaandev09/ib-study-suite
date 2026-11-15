@@ -11,6 +11,7 @@ import {
   RefreshCw,
   Sun,
 } from "lucide-react";
+import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 
 export interface AppleCalendarEvent {
   id: string;
@@ -432,9 +433,30 @@ export const CockpitClockAndCalendar: React.FC = () => {
     };
   }, [isCalendarOpen]);
 
-  const munich = getZoneSnapshot(now, "Europe/Berlin");
-  const islamabad = getZoneSnapshot(now, "Asia/Karachi");
-  const pktOffset = getHourOffsetLabel(now, "Europe/Berlin", "Asia/Karachi");
+  const { worldClocks } = useWorkspaceStore();
+
+  const clockSnapshots = (worldClocks && worldClocks.length > 0 ? worldClocks : [
+    { id: "munich", city: "Munich", country: "Germany", timezone: "Europe/Berlin" },
+    { id: "islamabad", city: "Islamabad", country: "Pakistan", timezone: "Asia/Karachi" },
+  ]).map((clock, index) => {
+    const snap = getZoneSnapshot(now, clock.timezone);
+    const baseTz = worldClocks?.[0]?.timezone || "Europe/Berlin";
+    const offset = index === 0 ? snap.tzShort || "" : getHourOffsetLabel(now, baseTz, clock.timezone);
+    const colorPalette = [
+      { hex: "#38bdf8", glow: "rgba(56, 189, 248, 0.25)", border: "border-cyan-300/30" },
+      { hex: "#34d399", glow: "rgba(52, 211, 153, 0.24)", border: "border-emerald-300/30" },
+      { hex: "#fbbf24", glow: "rgba(251, 191, 36, 0.24)", border: "border-amber-300/30" },
+      { hex: "#e879f9", glow: "rgba(232, 121, 249, 0.24)", border: "border-fuchsia-300/30" },
+      { hex: "#fb7185", glow: "rgba(251, 113, 133, 0.24)", border: "border-rose-300/30" },
+    ];
+    const palette = colorPalette[index % colorPalette.length];
+    return {
+      clock,
+      snap,
+      badge: offset ? `${snap.tzShort || ""} ${offset}`.trim() : snap.tzShort || "",
+      palette,
+    };
+  });
 
   const nextEvent = calendarData?.events?.[0] ?? null;
   const remainingCount = Math.max(0, (calendarData?.events?.length ?? 0) - 1);
@@ -457,24 +479,19 @@ export const CockpitClockAndCalendar: React.FC = () => {
 
   return (
     <div className="flex flex-col items-start md:items-end gap-2.5 shrink-0">
-      {/* Dual-Timezone Liquid Glass Cockpit Clocks (equal-width grid) */}
-      <div className="grid grid-cols-2 gap-2.5 w-full sm:w-auto sm:min-w-[430px]">
-        <CityClockCard
-          city="Munich"
-          badge={munich.tzShort || "CET"}
-          snapshot={munich}
-          accentHex="#38bdf8"
-          glowRgba="rgba(56, 189, 248, 0.25)"
-          borderClass="border-cyan-300/30"
-        />
-        <CityClockCard
-          city="Islamabad"
-          badge={`${islamabad.tzShort || "PKT"} · ${pktOffset}`}
-          snapshot={islamabad}
-          accentHex="#34d399"
-          glowRgba="rgba(52, 211, 153, 0.24)"
-          borderClass="border-emerald-300/30"
-        />
+      {/* Dynamic World Clocks (Liquid Glass Cockpit Clocks) */}
+      <div className={`grid ${clockSnapshots.length === 1 ? "grid-cols-1 min-w-[220px]" : clockSnapshots.length === 2 ? "grid-cols-2 sm:min-w-[430px]" : "grid-cols-2 lg:grid-cols-3 max-w-[660px]"} gap-2.5 w-full sm:w-auto`}>
+        {clockSnapshots.map(({ clock, snap, badge, palette }) => (
+          <CityClockCard
+            key={clock.id}
+            city={clock.city}
+            badge={badge}
+            snapshot={snap}
+            accentHex={palette.hex}
+            glowRgba={palette.glow}
+            borderClass={palette.border}
+          />
+        ))}
       </div>
 
       {/* Synced Apple Calendar Upcoming Events Pill */}

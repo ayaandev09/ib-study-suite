@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import {
-  Compass,
   CheckCircle2,
   Circle,
   BookOpen,
@@ -11,980 +9,326 @@ import {
   HelpCircle,
   MapPin,
   FileText,
-  X,
-  ExternalLink,
   ChevronRight,
   ChevronLeft,
-  Filter,
-  Flame,
-  Zap,
-  Bookmark,
-  GraduationCap,
-  StickyNote,
-  AlertCircle,
   AlertTriangle,
-  Layers,
   ArrowRight,
   Check,
+  Languages,
 } from "lucide-react";
 import { useGermanStudyStore } from "@/modules/german/store/useGermanStudyStore";
 import { IB_THEMES, ALL_SUBTOPICS } from "@/modules/german/data/themes";
 import { GERMAN_ENTRY_TICKETS } from "@/modules/german/data/revisionData";
-import { AcademicNotesSurface } from "@/modules/german/components/AcademicNotesSurface";
-import { Subtopic, ThemeId } from "@/modules/german/data/types";
-import { RecallFlipCard } from "@/modules/german/components/RecallFlipCard";
 
 export function ThemesBentoView() {
   const {
     activeTopicId,
-    setActiveTopic,
     completedTopics,
     toggleTopicComplete,
-    activeThemeFilter,
-    setActiveThemeFilter,
-    searchQuery,
-    topicNotes,
-    setTopicNote,
     goToPrevTopic,
     goToNextTopic,
-    studyGoal,
-    setStudyGoal,
     setViewMode,
   } = useGermanStudyStore();
 
-  const [selectedModalSubtopic, setSelectedModalSubtopic] = useState<Subtopic | null>(null);
-  const [showScratchpad, setShowScratchpad] = useState(false);
+  const [studioMode, setStudioMode] = useState<"theory" | "digest" | "traps">("theory");
+  const [revealedAnswers, setRevealedAnswers] = useState<Record<number, boolean>>({});
 
-  // Active topic data
   const activeTopic = ALL_SUBTOPICS.find((s) => s.id === activeTopicId) || ALL_SUBTOPICS[0];
   const activeTheme = IB_THEMES.find((t) => t.id === activeTopic.themeId) || IB_THEMES[0];
   const isActiveCompleted = completedTopics.includes(activeTopic.id);
-  const activeNote = topicNotes[activeTopic.id] || "";
   const matchingTicket =
     GERMAN_ENTRY_TICKETS.find(
       (t) => t.id === activeTopic.id || t.topicId === activeTopic.id
     ) || GERMAN_ENTRY_TICKETS[0];
 
-  // Filtered topics for the bento matrix
-  const filteredTopics = ALL_SUBTOPICS.filter((sub) => {
-    const matchesFilter =
-      activeThemeFilter === "all" || activeThemeFilter === sub.themeId;
-    const matchesSearch =
-      !searchQuery ||
-      sub.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sub.englishTitle.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sub.code.includes(searchQuery) ||
-      sub.overview.toLowerCase().includes(searchQuery.toLowerCase());
-    return matchesFilter && matchesSearch;
-  });
-
-  const handleSelectTopic = (topicId: string) => {
-    setActiveTopic(topicId);
-    if (typeof window !== "undefined") {
-      window.scrollTo({ top: 0, behavior: "smooth" });
-    }
+  const toggleAnswer = (idx: number) => {
+    setRevealedAnswers((prev) => ({ ...prev, [idx]: !prev[idx] }));
   };
 
   return (
-    <div className="space-y-6 liquid-view-enter pb-12">
+    <article
+      id={`german-topic-${activeTopic.id}`}
+      className="max-w-5xl mx-auto space-y-6 pb-20 liquid-view-enter"
+    >
       {/* =====================================================================
-          THEME CONTEXT BANNER - 100% FULL-WIDTH NATIVE CARD (MACBETH MATCH)
+          1. ZEN HEADER: Title, Unit, Reading Time & Completion
           ===================================================================== */}
-      <div className="liquid-glass-bento rounded-3xl p-5 border border-white/15 shadow-xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl space-y-3">
-        <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
-          <div className="flex items-center gap-2.5 min-w-0">
-            <div className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30 shrink-0">
-              <BookOpen className="w-4 h-4" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[10px] font-mono font-bold tracking-wider text-violet-400 uppercase block">
-                THEMA {activeTheme.themeNumber} ÜBERBLICK
-              </span>
-              <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
-                {activeTheme.title} · {activeTheme.englishTitle}
-              </h2>
-            </div>
+      <div
+        className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 relative overflow-hidden border border-white/12 shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+        style={{ borderColor: `${activeTheme.color}45` }}
+      >
+        <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-center gap-2">
+            <span
+              className="px-3 py-1 rounded-xl text-xs font-mono font-bold"
+              style={{
+                backgroundColor: `${activeTheme.color}25`,
+                color: activeTheme.color,
+                border: `1px solid ${activeTheme.color}50`,
+              }}
+            >
+              {activeTopic.displayCode}
+            </span>
+            <span className="px-2.5 py-1 rounded-xl text-[11px] font-mono font-semibold bg-white/10 border border-white/15 text-white/80">
+              Thema {activeTheme.themeNumber}: {activeTheme.title}
+            </span>
+            <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-violet-500/15 text-violet-300 border border-violet-400/30 flex items-center gap-1.5">
+              <MapPin className="w-3.5 h-3.5 text-violet-400" />
+              {activeTopic.culturalSpotlight.region}
+            </span>
           </div>
-          <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-violet-400/15 text-violet-300 border border-violet-400/30 shrink-0">
-            {activeTheme.subtopics.length} Subthemen
-          </span>
-        </div>
 
-        <p className="text-xs sm:text-sm text-slate-200/90 leading-relaxed w-full">
-          {activeTheme.description}
-        </p>
-
-        <div className="pt-1 flex flex-wrap items-center gap-2">
-          <span className="text-[11px] font-mono text-slate-400 mr-1">Schwerpunkte:</span>
-          {activeTheme.subtopics.map((sub) => (
+          {/* Prev/Next & Completion Button */}
+          <div className="flex items-center gap-2">
             <button
-              key={sub.id}
-              onClick={() => handleSelectTopic(sub.id)}
-              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all cursor-pointer ${
-                sub.id === activeTopic.id
-                  ? "bg-violet-500/25 border-violet-400/60 text-white shadow-sm"
-                  : "bg-white/5 border-white/10 text-slate-300 hover:text-white hover:bg-white/10"
+              type="button"
+              onClick={goToPrevTopic}
+              className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 text-white/75 hover:text-white cursor-pointer transition-colors"
+              title="Vorheriges Thema"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={goToNextTopic}
+              className="p-2 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/15 text-white/75 hover:text-white cursor-pointer transition-colors"
+              title="Nächstes Thema"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleTopicComplete(activeTopic.id)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-xl border text-xs font-semibold cursor-pointer transition-all ${
+                isActiveCompleted
+                  ? "bg-emerald-500/25 border-emerald-400/50 text-emerald-200 shadow-[0_0_16px_rgba(16,185,129,0.25)]"
+                  : "bg-white/[0.08] hover:bg-white/[0.16] border-white/15 text-white/85"
               }`}
             >
-              {sub.displayCode} {sub.title}
+              <CheckCircle2 className={`w-3.5 h-3.5 ${isActiveCompleted ? "text-emerald-400" : "text-white/40"}`} />
+              <span>{isActiveCompleted ? "Thema gemeistert" : "Als gemeistert markieren"}</span>
             </button>
-          ))}
+          </div>
+        </div>
+
+        <div className="space-y-1.5">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug font-sans">
+            {activeTopic.title}
+          </h1>
+          <p className="text-sm font-medium font-sans" style={{ color: `${activeTheme.color}dd` }}>
+            {activeTopic.englishTitle}
+          </p>
         </div>
       </div>
 
       {/* =====================================================================
-          1. ACTIVE FOCUS SUBTOPIC BENTO STACK (TIERED HIERARCHY)
+          2. STUDIO MODE SWITCHER: 3 Clean Focused Tabs
           ===================================================================== */}
-      <section className="space-y-5" id="active-subtopic-focus">
-        {/* ==================== TIER 1: HERO ==================== */}
-        <div
-          className="liquid-glass-bento rounded-3xl p-5 sm:p-6 relative overflow-hidden transition-all duration-300 border border-white/10"
-          style={{
-            borderColor: `${activeTheme.color}45`,
-          }}
+      <div className="flex flex-wrap items-center gap-2 p-1.5 rounded-2xl bg-white/[0.04] border border-white/10 backdrop-blur-xl">
+        <button
+          onClick={() => setStudioMode("theory")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "theory"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
         >
-          {/* Specular Radial Glow in Theme Color */}
-          <div
-            className="pointer-events-none absolute -top-24 -right-24 w-80 h-80 rounded-full blur-3xl opacity-30 transition-all duration-500"
-            style={{
-              background: `radial-gradient(circle, ${activeTheme.color}, transparent 70%)`,
-            }}
-          />
+          <BookOpen className="w-3.5 h-3.5" />
+          <span>Thema &amp; Textkompetenz</span>
+        </button>
 
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 relative z-10">
-            <div>
-              <div className="flex flex-wrap items-center gap-2 mb-2.5">
-                <span
-                  className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl shadow-sm"
-                  style={{
-                    backgroundColor: `${activeTheme.color}28`,
-                    color: activeTheme.color,
-                    border: `1px solid ${activeTheme.color}60`,
-                  }}
-                >
-                  {activeTopic.displayCode}
-                </span>
+        <button
+          onClick={() => setStudioMode("digest")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "digest"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-fuchsia-400" />
+          <span>60s Takeaways &amp; Redemittel</span>
+        </button>
 
-                <span
-                  className="font-mono text-xs px-2.5 py-1 rounded-xl border"
-                  style={{
-                    backgroundColor: `${activeTheme.color}15`,
-                    color: "#f8fafc",
-                    borderColor: `${activeTheme.color}35`,
-                  }}
-                >
-                  THEMA {activeTheme.themeNumber}: {activeTheme.title.toUpperCase()}
-                </span>
+        <button
+          onClick={() => setStudioMode("traps")}
+          className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+            studioMode === "traps"
+              ? "bg-white text-black shadow-md font-bold"
+              : "text-white/65 hover:text-white hover:bg-white/[0.06]"
+          }`}
+        >
+          <HelpCircle className="w-3.5 h-3.5 text-amber-500" />
+          <span>Mündliche Prüfung &amp; Fallen</span>
+        </button>
 
-                <span className="font-mono text-[11px] font-semibold px-2.5 py-1 rounded-xl bg-white/[0.06] text-slate-300 border border-white/10">
-                  {activeTopic.level}
-                </span>
-
-                <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-violet-500/15 text-violet-300 border border-violet-400/30 flex items-center gap-1.5">
-                  <MapPin className="w-3.5 h-3.5 text-violet-400" />
-                  {activeTopic.culturalSpotlight.region}
-                </span>
-
-                <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-white/[0.06] text-slate-300 border border-white/10 flex items-center gap-1">
-                  <Sparkles className="w-3 h-3 text-amber-400" />
-                  10 min Lernzeit
-                </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1 font-sans">
-                {activeTopic.title}
-              </h1>
-              <p
-                className="text-sm font-medium tracking-wide font-sans"
-                style={{ color: `${activeTheme.color}dd` }}
-              >
-                {activeTopic.englishTitle}
-              </p>
-            </div>
-
-            {/* Prev/Next Controls + Mastered Toggle */}
-            <div className="flex items-center gap-2 shrink-0">
-              <div className="flex items-center gap-1 mr-1">
-                <button
-                  onClick={goToPrevTopic}
-                  title="Vorheriges Thema (Previous Topic)"
-                  className="p-2.5 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer active:scale-95 transition-all"
-                >
-                  <ChevronLeft className="w-4 h-4" />
-                </button>
-                <button
-                  onClick={goToNextTopic}
-                  title="Nächstes Thema (Next Topic)"
-                  className="p-2.5 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer active:scale-95 transition-all"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </button>
-              </div>
-
-              <button
-                onClick={() => {
-                  toggleTopicComplete(activeTopic.id);
-                  if (typeof navigator !== "undefined" && navigator.vibrate) {
-                    navigator.vibrate(20);
-                  }
-                }}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs font-bold transition-all duration-200 cursor-pointer active:scale-95 select-none ${
-                  isActiveCompleted
-                    ? "bg-emerald-500/25 border border-emerald-400/50 text-emerald-200 shadow-[0_0_20px_-4px_rgba(16,185,129,0.5)]"
-                    : "bg-white/10 hover:bg-emerald-500/20 text-white border border-white/20 hover:border-emerald-400/40"
-                }`}
-              >
-                {isActiveCompleted ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-                ) : (
-                  <Circle className="w-4 h-4 text-slate-300" />
-                )}
-                <span>
-                  {isActiveCompleted ? "Thema gemeistert" : "Als gemeistert markieren"}
-                </span>
-              </button>
-            </div>
-          </div>
-
-          {/* Quick Mode & Revision Hub Shortcuts */}
-          <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 relative z-10">
-            <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
-              <button
-                onClick={() => setStudyGoal("learn")}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                  studyGoal === "learn"
-                    ? "bg-violet-500/25 border border-violet-400/40 text-violet-200 shadow-[0_0_15px_-3px_rgba(168,85,247,0.4)]"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                <GraduationCap className="w-4 h-4 text-violet-400" />
-                <span>Lehrplan-Vertiefung (Guided Study)</span>
-              </button>
-
-              <button
-                onClick={() => setStudyGoal("revise")}
-                className={`flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                  studyGoal === "revise"
-                    ? "bg-rose-500/25 border border-rose-400/40 text-rose-200 shadow-[0_0_15px_-3px_rgba(239,68,68,0.4)]"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                <Zap className="w-4 h-4 text-rose-400" />
-                <span>Prüfungs-Sprint (Exam Cram)</span>
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => setViewMode("revision")}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-fuchsia-300 hover:text-white bg-fuchsia-500/15 hover:bg-fuchsia-500/25 border border-fuchsia-400/30 transition-all cursor-pointer"
-              >
-                <span>Revision Hub Entry Ticket</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </button>
-
-              <button
-                onClick={() => setShowScratchpad((prev) => !prev)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer border ${
-                  showScratchpad
-                    ? "bg-violet-500/20 text-violet-200 border-violet-400/40"
-                    : "bg-white/5 text-slate-300 border-white/10 hover:bg-white/10"
-                }`}
-              >
-                <StickyNote className="w-3.5 h-3.5 text-violet-400" />
-                <span>{showScratchpad ? "Notizen zu" : "Notizblock"}</span>
-              </button>
-
-              <button
-                onClick={() => setSelectedModalSubtopic(activeTopic)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 transition-all cursor-pointer"
-              >
-                <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
-                <span>Dossier</span>
-              </button>
-            </div>
-          </div>
+        <div className="ml-auto pr-2 hidden sm:block">
+          <button
+            onClick={() => setViewMode("revision")}
+            className="text-[11px] font-mono text-fuchsia-300 hover:text-white transition-colors cursor-pointer flex items-center gap-1"
+          >
+            <span>Revision Hub</span>
+            <ArrowRight className="w-3 h-3" />
+          </button>
         </div>
+      </div>
 
-        {/* Optional Scratchpad Card */}
-        {showScratchpad && (
-          <div className="animate-in fade-in duration-200">
-            <AcademicNotesSurface
-              note={activeNote}
-              onChange={(text) => setTopicNote(activeTopic.id, text)}
-              title="Persönlicher Revisions-Notizblock"
-              itemCode={activeTopic.displayCode}
-              accentColor="#a855f7"
-              minRows={5}
-            />
-          </div>
-        )}
-
-        {/* ==================== TIER 2: CORE DIGEST (3 Clean Rounded Bullet Cards) ==================== */}
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30">
-                <Sparkles className="w-4 h-4" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-white tracking-tight">
-                  Kernsynthese &amp; Themen-Digest
-                </h2>
-                <p className="text-xs text-slate-400">
-                  Die drei tragenden Säulen für Paper 1, Paper 2 und das Individual Oral
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {/* Card 1: Core Synthesis */}
-            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-3.5 h-3.5" />
-                  </span>
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
-                    1. Themenschwerpunkt
-                  </span>
-                </div>
-                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
-                  {matchingTicket.sixtySecondSummary}
-                </p>
-              </div>
-              <div className="pt-2 border-t border-white/5 text-[11px] text-slate-400 italic font-mono">
-                IB Fokus: {activeTopic.displayCode} • {activeTopic.level}
-              </div>
-            </div>
-
-            {/* Card 2: Cultural DACH Context */}
-            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-7 h-7 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/30 flex items-center justify-center shrink-0">
-                    <MapPin className="w-3.5 h-3.5" />
-                  </span>
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-fuchsia-300">
-                    2. DACH-Kontext (Kriterium B2)
-                  </span>
-                </div>
-                <h4 className="text-xs sm:text-sm font-bold text-white mb-1">
-                  {activeTopic.culturalSpotlight.title} ({activeTopic.culturalSpotlight.region})
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
-                  {activeTopic.culturalSpotlight.description}
-                </p>
-              </div>
-              <div className="pt-2 border-t border-white/5 text-[11px] text-fuchsia-300/80 font-mono">
-                Authentischer Kulturanker
-              </div>
-            </div>
-
-            {/* Card 3: IB Writing & Text Type Strategy */}
-            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
-              <div>
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="w-7 h-7 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30 flex items-center justify-center shrink-0">
-                    <FileText className="w-3.5 h-3.5" />
-                  </span>
-                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-violet-300">
-                    3. Textsorten-Strategie (Paper 1)
-                  </span>
-                </div>
-                <div className="space-y-1">
-                  <span className="text-xs font-bold text-violet-300 block">
-                    Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
-                  </span>
-                  <span className="text-[11px] text-slate-400 font-mono block">
-                    Register: {activeTopic.sampleEssayPrompts[0]?.register}
-                  </span>
-                  <p className="text-xs text-slate-200 italic font-serif leading-snug pt-1">
-                    „{activeTopic.sampleEssayPrompts[0]?.prompt}“
-                  </p>
-                </div>
-              </div>
-              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-violet-300/80 font-mono">
-                <span>250–400 (SL) / 450–600 (HL)</span>
-                <button
-                  onClick={() => setViewMode("textsorten")}
-                  className="hover:underline flex items-center gap-0.5 text-white"
-                >
-                  <span>Format</span>
-                  <ArrowRight className="w-3 h-3" />
-                </button>
-              </div>
-            </div>
-          </div>
-
-          {/* Full Thematic Narrative Prose Card (Open without Collapsed Wall) */}
-          <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
-            <div className="flex items-center justify-between border-b border-white/10 pb-3">
-              <div className="flex items-center gap-2">
-                <BookOpen className="w-4 h-4 text-violet-400" />
-                <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                  Ausführlicher Themendiskurs &amp; gesellschaftlicher Kontext
-                </h3>
-              </div>
-              <span className="text-xs text-slate-400 font-mono">
-                {activeTopic.displayCode} Synthese
-              </span>
-            </div>
-            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+      {/* =====================================================================
+          3. ACTIVE STUDIO VIEW
+          ===================================================================== */}
+      {studioMode === "theory" && (
+        <section className="space-y-5">
+          {/* Main Reading Overview */}
+          <div className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 border border-white/10 space-y-4">
+            <h3 className="text-xs font-mono font-bold uppercase tracking-wider text-fuchsia-300">
+              Thematische Übersicht &amp; Leitfragen
+            </h3>
+            <p className="text-sm sm:text-[15.5px] text-white/90 leading-[1.8] font-sans">
               {activeTopic.overview}
             </p>
           </div>
-        </div>
 
-        {/* ==================== TIER 3: KEY VOCABULARY & REDEMITTEL ==================== */}
-        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
-            <div className="flex items-center gap-2.5">
-              <span className="p-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30">
-                <BookOpen className="w-4 h-4" />
-              </span>
-              <div>
-                <h2 className="text-base font-bold text-white tracking-tight">
-                  Schlüsselwortschatz &amp; Idiomatische Redemittel
-                </h2>
-                <p className="text-xs text-slate-400">
-                  C1/B2 Kernbegriffe im Satzkontext und erprobte Debatten-Sprachmittel
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => setViewMode("redemittel")}
-              className="flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold text-sky-300 hover:text-white bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 transition-all cursor-pointer"
-            >
-              <span>Redemittel Dossier</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Column 1: Schlüsselwortschatz */}
-            <div className="space-y-2.5">
-              <div className="text-xs font-bold font-mono uppercase tracking-wider text-sky-300">
-                Themenspezifischer Wortschatz ({activeTopic.vocabBullets.length} Begriffe)
-              </div>
-              <div className="space-y-2">
-                {activeTopic.vocabBullets.map((v, i) => (
-                  <div
-                    key={i}
-                    className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-400/40 transition-colors space-y-1"
-                  >
-                    <div className="flex items-baseline justify-between gap-2">
-                      <span className="font-bold text-sky-200 text-xs sm:text-sm font-sans">
-                        {v.german}
-                      </span>
-                      <span className="text-[11px] text-slate-400 italic shrink-0">
-                        {v.english}
-                      </span>
-                    </div>
-                    <p className="text-xs text-slate-300 italic leading-snug">
-                      „{v.context}“
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Column 2: Redemittel & Grammar Formula */}
-            <div className="space-y-3">
-              <div className="text-xs font-bold font-mono uppercase tracking-wider text-fuchsia-300">
-                Empfohlene Redemittel für Diskussionen &amp; Aufsätze
-              </div>
-
-              <div className="space-y-2">
-                {matchingTicket.redemittel.map((r, idx) => (
-                  <div
-                    key={idx}
-                    className="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-1"
-                  >
-                    <span className="font-bold text-fuchsia-200 text-xs sm:text-sm block">
-                      {r.phrase}
-                    </span>
-                    <span className="text-[11px] text-slate-400 italic block mb-1">
-                      {r.meaning}
-                    </span>
-                    <p className="text-xs text-slate-300 leading-snug">
-                      „{r.example}“
-                    </p>
-                  </div>
-                ))}
-              </div>
-
-              {/* Grammar Formula Box */}
-              <div className="p-3.5 rounded-2xl bg-violet-500/10 border border-violet-400/30 space-y-1.5">
-                <div className="text-[11px] font-bold text-violet-300 uppercase tracking-wider flex items-center gap-1.5">
-                  <Sparkles className="w-3.5 h-3.5 text-violet-400" />
-                  Kriterium A Grammatik-Schwerpunkt: {matchingTicket.keyGrammar.title}
-                </div>
-                <code className="text-xs font-mono text-violet-100 block bg-black/40 px-2.5 py-1 rounded-lg">
-                  {matchingTicket.keyGrammar.formula}
-                </code>
-                <p className="text-xs text-slate-200 leading-relaxed pt-0.5">
-                  <strong className="text-violet-300">Prüfungstipp:</strong> {matchingTicket.keyGrammar.tip}
-                </p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ==================== TIER 4: DISCUSSION & EXAM TRAPS ==================== */}
-        <section className="space-y-4">
+          {/* Cultural Spotlight DACH */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Card 1: Teacher Will Ask / Mündliche Diskussionsfragen */}
-            <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
-              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                <span className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30">
-                  <HelpCircle className="w-4 h-4" />
-                </span>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                    Fragen des Lehrers (Mündliche Prüfungsdebatten)
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Schlüsselkontroversen für das Individual Oral und Unterrichtsgespräche
-                  </p>
-                </div>
+            <div className="liquid-glass-card rounded-[28px] p-6 border border-white/10 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-violet-300">
+                <MapPin className="w-4 h-4" />
+                <span>DACH-Kulturanker ({activeTopic.culturalSpotlight.region})</span>
               </div>
-
-              <ul className="space-y-2.5 pt-1">
-                {(matchingTicket?.teacherDiscussionQuestions || activeTopic.keyDebates).map((debate, i) => (
-                  <li
-                    key={i}
-                    className="text-xs sm:text-sm text-slate-200 pl-3 border-l-2 border-violet-400/60 leading-relaxed font-sans"
-                  >
-                    {debate}
-                  </li>
-                ))}
-              </ul>
+              <h4 className="text-sm font-bold text-white">
+                {activeTopic.culturalSpotlight.title}
+              </h4>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {activeTopic.culturalSpotlight.description}
+              </p>
             </div>
 
-            {/* Card 2: Common Misconceptions / Pitfalls */}
-            <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-rose-500/25 bg-gradient-to-br from-rose-500/10 to-transparent space-y-3">
-              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
-                <span className="p-2 rounded-xl bg-rose-500/25 text-rose-300 border border-rose-400/40">
-                  <AlertTriangle className="w-4 h-4" />
-                </span>
-                <div>
-                  <h3 className="text-sm sm:text-base font-bold text-rose-200 tracking-tight">
-                    Häufige Grammatik- &amp; Prüfungsfallen
-                  </h3>
-                  <p className="text-xs text-rose-300/70">
-                    Typische Fehlerquellen in Wortstellung, Kasus und Register vermeiden
-                  </p>
-                </div>
+            {/* Paper 1 Text Type Strategy */}
+            <div className="liquid-glass-card rounded-[28px] p-6 border border-white/10 space-y-3">
+              <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-sky-300">
+                <FileText className="w-4 h-4" />
+                <span>Paper 1 Textsorten-Strategie</span>
               </div>
-
-              <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed font-sans pt-1">
-                {matchingTicket.commonMisconceptions}
+              <div className="text-xs font-bold text-white">
+                Empfohlene Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
+              </div>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {activeTopic.sampleEssayPrompts[0]?.prompt}
               </p>
             </div>
           </div>
+        </section>
+      )}
 
-          {/* Banner: IB Criterion Success Strategy */}
-          <div className="liquid-glass-bento rounded-3xl p-5 border border-violet-500/30 bg-gradient-to-r from-violet-500/15 via-fuchsia-500/15 to-transparent flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2.5">
-              <GraduationCap className="w-5 h-5 text-violet-300 shrink-0" />
+      {studioMode === "digest" && (
+        <section className="space-y-5">
+          {/* 60s Takeaway */}
+          <div className="liquid-glass-card rounded-[28px] p-6 sm:p-7 space-y-3 border border-white/10">
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-fuchsia-300 font-bold">
+              <Sparkles className="w-4 h-4" />
+              <span>60-Sekunden Zusammenfassung</span>
+            </div>
+            <p className="text-sm sm:text-[15px] text-white/90 leading-[1.8] font-sans">
+              {matchingTicket.sixtySecondSummary}
+            </p>
+          </div>
+
+          {/* Grammar & Redemittel */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="liquid-glass-card rounded-[28px] p-6 border border-white/10 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-wider text-violet-300 font-bold block">
+                Kriterium A: {matchingTicket.keyGrammar?.title || "Grammatik-Formel"}
+              </span>
+              <div className="p-3.5 rounded-2xl bg-black/50 border border-violet-400/20 font-mono text-xs text-violet-200">
+                {matchingTicket.keyGrammar?.formula}
+              </div>
+              {matchingTicket.keyGrammar?.tip && (
+                <p className="text-xs text-white/60 font-sans">
+                  {matchingTicket.keyGrammar.tip}
+                </p>
+              )}
+            </div>
+
+            <div className="liquid-glass-card rounded-[28px] p-6 border border-white/10 space-y-3">
+              <span className="text-xs font-mono uppercase tracking-wider text-fuchsia-300 font-bold block">
+                Wichtige Redemittel ({matchingTicket.redemittel?.length || 0})
+              </span>
+              <div className="space-y-2">
+                {(matchingTicket.redemittel || []).map((r, rIdx) => (
+                  <div key={rIdx} className="text-xs text-slate-200 font-sans">
+                    <strong className="text-fuchsia-300">{r.phrase}</strong>: {r.meaning}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {studioMode === "traps" && (
+        <section className="space-y-5">
+          {/* Discussion & Oral Exam Questions */}
+          <div className="liquid-glass-bento rounded-[28px] p-6 sm:p-7 border border-white/10 space-y-4">
+            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30">
+                <HelpCircle className="w-4 h-4" />
+              </span>
               <div>
-                <span className="text-xs font-mono font-bold uppercase tracking-wider text-violet-300 block">
-                  IB German B Kriterium-Erfolgsschlüssel
-                </span>
-                <p className="text-xs sm:text-sm text-white font-medium">
-                  Kriterium A: Kasusendungen &amp; Nebensatz-Verbstellung fehlerfrei halten • Kriterium B: DACH-Kulturkontext integrieren • Kriterium C: Textsortenkonventionen einhalten.
+                <h3 className="text-base font-bold text-white tracking-tight">
+                  Mündliche Prüfung (Individual Oral) — Debattenfragen
+                </h3>
+                <p className="text-xs text-white/50">
+                  Lehrerfragen zur Vorbereitung auf das mündliche Prüfungsgespräch
                 </p>
               </div>
             </div>
 
-            <button
-              onClick={() => setViewMode("pruefung")}
-              className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-violet-200 hover:text-white bg-violet-500/20 hover:bg-violet-500/30 border border-violet-400/40 transition-all cursor-pointer whitespace-nowrap"
-            >
-              Prüfungs-Leitfaden ➔
-            </button>
+            <div className="space-y-3">
+              {(matchingTicket.teacherDiscussionQuestions || []).map((q, idx) => {
+                const isOpen = !!revealedAnswers[idx];
+                return (
+                  <div
+                    key={idx}
+                    className="rounded-2xl p-4 bg-white/[0.03] border border-white/10 space-y-2.5"
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <p className="text-xs sm:text-sm font-semibold text-white leading-relaxed">
+                        Q{idx + 1}: {q}
+                      </p>
+                      <button
+                        onClick={() => toggleAnswer(idx)}
+                        className="px-2.5 py-1 rounded-lg text-[11px] font-mono text-fuchsia-300 hover:text-white bg-white/[0.06] hover:bg-white/[0.12] transition-colors shrink-0 cursor-pointer"
+                      >
+                        {isOpen ? "Antwort ausblenden" : "Musterantwort"}
+                      </button>
+                    </div>
+
+                    {isOpen && (
+                      <div className="p-3 rounded-xl bg-black/40 border border-violet-400/20 text-xs text-slate-200 leading-relaxed font-sans">
+                        <strong className="text-violet-300">Antwort-Perspektive: </strong>
+                        Verbinde persönliche Meinungsäußerung mit authentischen DACH-Beispielen unter Verwendung von Konnektoren und Konjunktiv II.
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Common Pitfalls */}
+          <div className="p-6 rounded-[28px] bg-rose-950/20 border border-rose-400/30 space-y-3">
+            <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-rose-300">
+              <AlertTriangle className="w-4 h-4" />
+              <span>Häufige Schülerfehler &amp; Kriterium-Fallen</span>
+            </div>
+            <div className="rounded-xl p-3.5 bg-black/30 border border-rose-400/20 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+              <strong className="text-rose-300 font-mono text-[11px] uppercase mr-1.5">
+                Achtung:
+              </strong>
+              {matchingTicket.commonMisconceptions}
+            </div>
           </div>
         </section>
-
-        {/* ==================== TIER 5: ACTIVE RECALL / SELF-CHECK ==================== */}
-        <div>
-          <RecallFlipCard
-            moduleCode={activeTopic.displayCode}
-            title={`${activeTopic.displayCode} · ${activeTopic.title}`}
-            prompt={matchingTicket?.teacherDiscussionQuestions?.[0] || activeTopic.overview}
-            answer={`Kultureller DACH-Schwerpunkt: ${activeTopic.culturalSpotlight.title} (${activeTopic.culturalSpotlight.region}) — ${activeTopic.culturalSpotlight.description}`}
-            accent={activeTheme.color}
-            secondary="#9333ea"
-            meta={`ACTIVE RECALL · THEMA ${activeTheme.themeNumber}`}
-          />
-        </div>
-      </section>
-
-      {/* =====================================================================
-          2. ALL 25 SUBTOPICS BENTO MATRIX (THEME-TINTED CARDS)
-          ===================================================================== */}
-      <section className="space-y-4 pt-4 border-t border-white/10">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <div>
-            <h2 className="text-lg font-bold text-white tracking-tight flex items-center gap-2">
-              <Layers className="w-5 h-5 text-violet-400" />
-              <span>Alle 25 IB German B Lehrplanthemen (Bento Matrix)</span>
-            </h2>
-            <p className="text-xs text-slate-400">
-              Wähle ein Thema aus, um es im oberen Dashboard zu fokussieren. Jede Themenkarte ist farblich nach IB-Thema abgestimmt.
-            </p>
-          </div>
-
-          <span className="text-xs font-mono text-violet-300/80 font-bold px-3 py-1 rounded-xl bg-violet-500/10 border border-violet-400/20 self-start sm:self-auto">
-            {filteredTopics.length} von 25 Themen verfügbar
-          </span>
-        </div>
-
-        {/* Theme Filter Pill Bar */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
-          <button
-            onClick={() => setActiveThemeFilter("all")}
-            className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-              activeThemeFilter === "all"
-                ? "bg-violet-500 text-slate-950 shadow-md shadow-violet-500/20 font-extrabold"
-                : "liquid-glass-pill text-slate-400 hover:text-white"
-            }`}
-          >
-            Alle 5 Themen (25)
-          </button>
-          {IB_THEMES.map((theme) => {
-            const isActive = activeThemeFilter === theme.id;
-            return (
-              <button
-                key={theme.id}
-                onClick={() => setActiveThemeFilter(theme.id)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? "bg-violet-500 text-slate-950 shadow-md shadow-violet-500/20 font-extrabold"
-                    : "liquid-glass-pill text-slate-400 hover:text-white"
-                }`}
-              >
-                <span
-                  className="w-2 h-2 rounded-full"
-                  style={{ backgroundColor: theme.color }}
-                />
-                <span>
-                  {theme.title} ({theme.subtopics.length})
-                </span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Themed 25-Subtopics Bento Grid */}
-        <div className="bento-adaptive-3 gap-3.5">
-          {filteredTopics.map((sub) => {
-            const isCompleted = completedTopics.includes(sub.id);
-            const isCurrentActive = sub.id === activeTopic.id;
-            const theme = IB_THEMES.find((t) => t.id === sub.themeId) || IB_THEMES[0];
-
-            return (
-              <motion.div
-                key={sub.id}
-                whileHover={{ y: -3, transition: { duration: 0.2 } }}
-                onClick={() => handleSelectTopic(sub.id)}
-                className={`p-4 sm:p-5 rounded-3xl border flex flex-col justify-between relative overflow-hidden group cursor-pointer transition-all duration-300 ${
-                  isCurrentActive
-                    ? "ring-2 shadow-2xl"
-                    : "hover:shadow-xl"
-                }`}
-                style={{
-                  borderColor: isCurrentActive
-                    ? theme.color
-                    : `${theme.color}40`,
-                  background: isCurrentActive
-                    ? `linear-gradient(145deg, ${theme.color}26 0%, rgba(20, 26, 46, 0.88) 50%, rgba(4, 8, 20, 0.98) 100%)`
-                    : `linear-gradient(145deg, ${theme.color}15 0%, rgba(15, 23, 42, 0.72) 50%, rgba(2, 6, 23, 0.94) 100%)`,
-                  boxShadow: isCurrentActive
-                    ? `0 20px 44px -8px rgba(0, 0, 0, 0.92), 0 0 30px -4px ${theme.color}45, inset 0 1.5px 2px rgba(255, 255, 255, 0.4)`
-                    : `0 14px 34px -8px rgba(0, 0, 0, 0.85), 0 0 20px -6px ${theme.color}20`,
-                }}
-              >
-                {/* Specular Radial Highlight on Top Corner */}
-                <div
-                  className="pointer-events-none absolute -top-16 -right-16 w-44 h-44 rounded-full blur-2xl opacity-25 group-hover:opacity-40 transition-opacity"
-                  style={{
-                    background: `radial-gradient(circle, ${theme.color}, transparent 70%)`,
-                  }}
-                />
-
-                {/* Top Meta Header */}
-                <div>
-                  <div className="flex items-center justify-between mb-2.5">
-                    <div className="flex items-center gap-1.5">
-                      <span
-                        className="text-[9px] font-mono font-bold tracking-widest px-2.5 py-0.5 rounded-full uppercase"
-                        style={{
-                          backgroundColor: `${theme.color}25`,
-                          color: theme.color,
-                          border: `1px solid ${theme.color}55`,
-                        }}
-                      >
-                        {sub.displayCode} • {theme.title}
-                      </span>
-
-                      {isCurrentActive && (
-                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-violet-400 text-slate-950">
-                          IM FOKUS
-                        </span>
-                      )}
-                    </div>
-
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleTopicComplete(sub.id);
-                        if (typeof navigator !== "undefined" && navigator.vibrate) {
-                          navigator.vibrate(15);
-                        }
-                      }}
-                      title={
-                        isCompleted
-                          ? "Als unvollständig markieren"
-                          : "Als gemeistert markieren"
-                      }
-                      className="p-1 text-slate-400 hover:text-violet-300 transition-transform active:scale-90"
-                    >
-                      {isCompleted ? (
-                        <CheckCircle2 className="w-5 h-5 text-emerald-400" />
-                      ) : (
-                        <Circle className="w-5 h-5 text-slate-500 group-hover:text-slate-300" />
-                      )}
-                    </button>
-                  </div>
-
-                  <h3 className="text-base font-bold text-white mb-0.5 group-hover:text-violet-200 transition-colors">
-                    {sub.title}
-                  </h3>
-                  <p
-                    className="text-xs font-medium mb-2.5"
-                    style={{ color: `${theme.color}cc` }}
-                  >
-                    {sub.englishTitle}
-                  </p>
-
-                  <p className="text-xs text-slate-300/90 leading-relaxed line-clamp-3 mb-4">
-                    {sub.overview}
-                  </p>
-                </div>
-
-                {/* Bottom Cultural Badge & Action */}
-                <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px]">
-                  <div className="flex items-center gap-1.5 text-slate-300">
-                    <MapPin
-                      className="w-3.5 h-3.5 shrink-0"
-                      style={{ color: theme.color }}
-                    />
-                    <span className="truncate max-w-[130px] font-medium">
-                      {sub.culturalSpotlight.region}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedModalSubtopic(sub);
-                      }}
-                      className="text-slate-400 hover:text-white px-2 py-0.5 rounded-lg hover:bg-white/10 transition-colors font-mono text-[10px]"
-                      title="Dossier im Popup öffnen"
-                    >
-                      Dossier
-                    </button>
-                    <span
-                      className="font-bold flex items-center gap-0.5 group-hover:translate-x-1 transition-transform"
-                      style={{ color: theme.color }}
-                    >
-                      <span>Öffnen</span>
-                      <ChevronRight className="w-3.5 h-3.5" />
-                    </span>
-                  </div>
-                </div>
-              </motion.div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* =====================================================================
-          3. FULLSCREEN SUBTOPIC DOSSIER MODAL
-          ===================================================================== */}
-      <AnimatePresence>
-        {selectedModalSubtopic && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-[#020308]/85 backdrop-blur-md select-none">
-            <motion.div
-              initial={{ opacity: 0, scale: 0.95, y: 10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.95, y: 10 }}
-              className="w-full max-w-2xl max-h-[85vh] rounded-3xl bg-slate-900 border border-violet-400/40 shadow-2xl flex flex-col overflow-hidden text-left"
-            >
-              {/* Modal Header */}
-              <div className="p-4 sm:p-6 border-b border-white/10 flex items-start justify-between bg-black/40">
-                <div>
-                  <span className="text-[10px] font-mono font-bold tracking-widest text-violet-400 uppercase block mb-1">
-                    {selectedModalSubtopic.displayCode} • {selectedModalSubtopic.level}
-                  </span>
-                  <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
-                    {selectedModalSubtopic.title}
-                  </h2>
-                  <p className="text-xs text-violet-300 font-medium">
-                    {selectedModalSubtopic.englishTitle}
-                  </p>
-                </div>
-
-                <button
-                  onClick={() => setSelectedModalSubtopic(null)}
-                  className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              {/* Modal Body */}
-              <div className="p-4 sm:p-6 overflow-y-auto space-y-5 custom-scrollbar text-xs sm:text-sm">
-                {/* Overview */}
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-1.5">
-                    Themenüberblick &amp; IB Kontext
-                  </h4>
-                  <p className="text-slate-300 leading-relaxed bg-white/5 p-3.5 rounded-2xl border border-white/5">
-                    {selectedModalSubtopic.overview}
-                  </p>
-                </div>
-
-                {/* Cultural Spotlight DACH */}
-                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-500/10 to-red-500/10 border border-violet-400/30">
-                  <div className="flex items-center gap-2 text-violet-300 font-bold mb-1">
-                    <MapPin className="w-4 h-4 text-violet-400" />
-                    <span>
-                      Kultureller Schwerpunkt: {selectedModalSubtopic.culturalSpotlight.title} ({selectedModalSubtopic.culturalSpotlight.region})
-                    </span>
-                  </div>
-                  <p className="text-slate-300 leading-relaxed text-xs">
-                    {selectedModalSubtopic.culturalSpotlight.description}
-                  </p>
-                </div>
-
-                {/* Key Debates */}
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-2">
-                    Zentrale Kontroversen &amp; Debatten
-                  </h4>
-                  <div className="space-y-2">
-                    {selectedModalSubtopic.keyDebates.map((debate, i) => (
-                      <div
-                        key={i}
-                        className="p-3 rounded-xl bg-black/40 border border-white/5 flex items-start gap-2 text-slate-300"
-                      >
-                        <HelpCircle className="w-4 h-4 text-violet-400 shrink-0 mt-0.5" />
-                        <span>{debate}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Vocabulary Bullets */}
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-2">
-                    Schlüsselwortschatz &amp; Kontexte
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {selectedModalSubtopic.vocabBullets.map((v, i) => (
-                      <div
-                        key={i}
-                        className="p-2.5 rounded-xl bg-white/5 border border-white/5"
-                      >
-                        <div className="flex items-baseline justify-between mb-0.5">
-                          <span className="font-bold text-violet-200">
-                            {v.german}
-                          </span>
-                          <span className="text-[10px] text-slate-400 italic">
-                            {v.english}
-                          </span>
-                        </div>
-                        <p className="text-[11px] text-slate-400 italic leading-snug">
-                          „{v.context}“
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Sample Essay Prompts */}
-                <div>
-                  <h4 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold mb-2">
-                    Muster-Prüfungsaufgabe (Paper 1)
-                  </h4>
-                  {selectedModalSubtopic.sampleEssayPrompts.map((p, i) => (
-                    <div
-                      key={i}
-                      className="p-3.5 rounded-2xl bg-black/50 border border-white/10 space-y-1.5"
-                    >
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className="font-mono text-violet-400 font-bold">
-                          Empfohlene Textsorte: {p.textTypeSuggestion}
-                        </span>
-                        <span className="text-slate-400">
-                          Register: {p.register}
-                        </span>
-                      </div>
-                      <p className="text-slate-200 italic font-serif text-sm">
-                        „{p.prompt}“
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Modal Footer */}
-              <div className="p-4 border-t border-white/10 bg-black/40 flex items-center justify-between">
-                <button
-                  onClick={() => toggleTopicComplete(selectedModalSubtopic.id)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    completedTopics.includes(selectedModalSubtopic.id)
-                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-400/40"
-                      : "bg-white/5 hover:bg-white/10 text-slate-300 border border-white/10"
-                  }`}
-                >
-                  <CheckCircle2 className="w-4 h-4" />
-                  <span>
-                    {completedTopics.includes(selectedModalSubtopic.id)
-                      ? "Thema gemeistert"
-                      : "Als gemeistert markieren"}
-                  </span>
-                </button>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      handleSelectTopic(selectedModalSubtopic.id);
-                      setSelectedModalSubtopic(null);
-                    }}
-                    className="px-4 py-2 rounded-xl bg-violet-500/20 hover:bg-violet-500/30 text-violet-200 border border-violet-400/40 font-bold text-xs transition-colors cursor-pointer"
-                  >
-                    Im Dashboard fokussieren
-                  </button>
-
-                  <button
-                    onClick={() => setSelectedModalSubtopic(null)}
-                    className="px-4 py-2 rounded-xl bg-violet-500 hover:bg-violet-400 text-slate-950 font-bold text-xs transition-colors cursor-pointer"
-                  >
-                    Schließen
-                  </button>
-                </div>
-              </div>
-            </motion.div>
-          </div>
-        )}
-      </AnimatePresence>
-    </div>
+      )}
+    </article>
   );
 }

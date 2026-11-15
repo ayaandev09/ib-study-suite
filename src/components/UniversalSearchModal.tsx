@@ -19,11 +19,17 @@ import {
   Calculator,
   Lightbulb,
   CornerDownLeft,
+  Flame,
+  CheckCircle2,
+  ExternalLink,
+  Layers,
+  Compass,
 } from "lucide-react";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import {
   searchUniversalSuite,
   AIAnswerResult,
+  SearchResultItem,
 } from "@/lib/universalSearchEngine";
 import { AppId } from "@/types/workspace";
 import { MODULE_CATALOG } from "@/data/modulesMeta";
@@ -37,11 +43,11 @@ interface UniversalSearchModalProps {
 const EXAMPLE_PROMPTS = [
   "Explain chemiosmosis",
   "Compare mitosis and meiosis",
-  "Unit 5.1 Business Management",
-  "Why does Winston buy the paperweight",
   "Price elasticity of demand formula",
   "Conservation of momentum formula",
+  "Why does Winston buy the paperweight",
   "What is Konjunktiv II in German",
+  "Unit 5.1 Business Management",
 ];
 
 function sanitizeLatexForSearch(raw: string): string {
@@ -88,7 +94,6 @@ function KatexFormula({
 
 function RichInlineText({ text }: { text: string }) {
   if (!text) return null;
-  // Split on $...$ inline math first, then **bold** and *italic*
   const mathParts = text.split(/(\$[^$]+\$)/g);
   return (
     <>
@@ -138,7 +143,7 @@ export function UniversalSearchModal({
   const [activeFilter, setActiveFilter] = useState<"all" | AppId>("all");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const inputRef = useRef<HTMLInputElement>(null);
-  const itemRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const listContainerRef = useRef<HTMLDivElement>(null);
 
   const { launchOrActivateModule, setWorkspaceView, enabledSubjects } = useWorkspaceStore();
 
@@ -159,10 +164,8 @@ export function UniversalSearchModal({
     }
   }, [isOpen, initialQuery]);
 
-  // Defer expensive search & synthesis so input typing stays 100% synchronous at 120fps
   const deferredQuery = useDeferredValue(query);
 
-  // Compute Search Results & AI Synthesis (restricted to enabled subjects)
   const searchResults = useMemo(() => {
     const raw = searchUniversalSuite(deferredQuery);
     const items = raw.items.filter((item) =>
@@ -175,24 +178,23 @@ export function UniversalSearchModal({
     return { ...raw, items, aiAnswer };
   }, [deferredQuery, enabledSubjects]);
 
-  // Filter items by subject tab & cap rendered rows for instant WKWebView scrolling
   const filteredItems = useMemo(() => {
     if (activeFilter === "all") return searchResults.items;
     return searchResults.items.filter((item) => item.appId === activeFilter);
   }, [searchResults.items, activeFilter]);
 
-  const MAX_RENDERED_RESULTS = 40;
+  const MAX_RENDERED_RESULTS = 50;
   const visibleItems = useMemo(
     () => filteredItems.slice(0, MAX_RENDERED_RESULTS),
     [filteredItems]
   );
 
-  // Reset selection when query or filter changes
   useEffect(() => {
     setSelectedIndex(0);
   }, [deferredQuery, activeFilter]);
 
-  // Jump to specific item in subject module
+  const selectedItem: SearchResultItem | undefined = visibleItems[selectedIndex];
+
   const handleJumpToItem = useCallback(
     (item: {
       appId: AppId;
@@ -220,7 +222,6 @@ export function UniversalSearchModal({
     [launchOrActivateModule, setWorkspaceView, onClose]
   );
 
-  // Global Keyboard Navigation (Esc, ArrowUp, ArrowDown, Enter)
   useEffect(() => {
     if (!isOpen) return;
 
@@ -235,7 +236,6 @@ export function UniversalSearchModal({
         e.preventDefault();
         setSelectedIndex((prev) => {
           const next = Math.min(prev + 1, Math.max(0, visibleItems.length - 1));
-          itemRefs.current[next]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
           return next;
         });
         return;
@@ -245,7 +245,6 @@ export function UniversalSearchModal({
         e.preventDefault();
         setSelectedIndex((prev) => {
           const next = Math.max(prev - 1, 0);
-          itemRefs.current[next]?.scrollIntoView({ block: "nearest", behavior: "smooth" });
           return next;
         });
         return;
@@ -296,7 +295,7 @@ export function UniversalSearchModal({
   const getSubjectIcon = (appId: AppId) => {
     switch (appId) {
       case "biology":
-        return <Dna className="w-4 h-4 text-green-400" />;
+        return <Dna className="w-4 h-4 text-emerald-400" />;
       case "orwell":
         return <BookOpen className="w-4 h-4 text-rose-400" />;
       case "business":
@@ -312,33 +311,48 @@ export function UniversalSearchModal({
     }
   };
 
+  const getItemCategoryIcon = (category: string) => {
+    switch (category) {
+      case "formula":
+        return <Calculator className="w-3.5 h-3.5 text-cyan-400" />;
+      case "quote":
+        return <Quote className="w-3.5 h-3.5 text-rose-400" />;
+      case "trap":
+        return <Flame className="w-3.5 h-3.5 text-amber-400" />;
+      case "question":
+        return <Lightbulb className="w-3.5 h-3.5 text-yellow-400" />;
+      case "glossary":
+        return <BookOpen className="w-3.5 h-3.5 text-teal-400" />;
+      default:
+        return <Layers className="w-3.5 h-3.5 text-white/60" />;
+    }
+  };
+
   if (!isOpen) return null;
 
-  const aiAccent = searchResults.aiAnswer
-    ? getSubjectColor(searchResults.aiAnswer.subjectId)
-    : "#38bdf8";
+  const activeColor = selectedItem ? getSubjectColor(selectedItem.appId) : "#38bdf8";
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-start justify-center pt-10 sm:pt-14 px-4 bg-black/75">
+      <div className="fixed inset-0 z-50 flex items-start justify-center pt-8 sm:pt-12 px-4 bg-black/80 backdrop-blur-xl">
         {/* Backdrop click to close */}
         <div className="absolute inset-0" onClick={onClose} />
 
         {/* Spotlight Liquid Glass Container */}
         <motion.div
-          initial={{ opacity: 0, scale: 0.97, y: -12 }}
+          initial={{ opacity: 0, scale: 0.98, y: -10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          exit={{ opacity: 0, scale: 0.97, y: -12 }}
-          transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 w-full max-w-4xl max-h-[84vh] flex flex-col rounded-[28px] border border-white/[0.16] bg-[#0b0d12]/95 backdrop-blur-md shadow-[0_32px_100px_rgba(0,0,0,0.95),inset_0_1px_0_rgba(255,255,255,0.16)] overflow-hidden"
+          exit={{ opacity: 0, scale: 0.98, y: -10 }}
+          transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+          className="relative z-10 w-full max-w-5xl h-[86vh] flex flex-col rounded-[32px] border border-white/20 bg-[#090b10]/95 backdrop-blur-3xl shadow-[0_32px_120px_rgba(0,0,0,0.95),inset_0_1px_1px_rgba(255,255,255,0.2)] overflow-hidden"
           onClick={(e) => e.stopPropagation()}
         >
           {/* =================================================================
-              1. Spotlight Omnibar Input
+              1. Spotlight Omnibar Header
               ================================================================= */}
-          <div className="flex items-center gap-3.5 px-6 py-4 border-b border-white/[0.08] bg-white/[0.02]">
-            <div className="w-9 h-9 rounded-xl bg-white/[0.07] border border-white/[0.12] flex items-center justify-center shrink-0">
-              <Search className="w-4 h-4 text-white/85" />
+          <div className="flex items-center gap-3.5 px-6 py-4 border-b border-white/10 bg-white/[0.02] shrink-0">
+            <div className="w-10 h-10 rounded-2xl bg-white/[0.08] border border-white/15 flex items-center justify-center shrink-0 shadow-inner">
+              <Search className="w-4 h-4 text-cyan-300" />
             </div>
 
             <div className="relative flex-1 min-w-0">
@@ -347,8 +361,8 @@ export function UniversalSearchModal({
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ask local IB AI anything — explain, compare, formulas, quotes, or units..."
-                className="w-full bg-transparent text-base sm:text-[17px] text-white placeholder-white/35 focus:outline-none font-sans tracking-[-0.01em]"
+                placeholder="Ask local IB AI anything — explain, compare, formulas, quotes, or syllabus units..."
+                className="w-full bg-transparent text-base sm:text-lg font-medium text-white placeholder-white/35 focus:outline-none font-sans tracking-tight"
               />
             </div>
 
@@ -358,412 +372,281 @@ export function UniversalSearchModal({
                   setQuery("");
                   inputRef.current?.focus();
                 }}
-                className="p-1.5 rounded-full hover:bg-white/10 text-white/45 hover:text-white transition-colors"
+                className="p-1.5 rounded-full hover:bg-white/10 text-white/45 hover:text-white transition-colors cursor-pointer"
                 title="Clear query"
               >
                 <X className="w-4 h-4" />
               </button>
             )}
 
-            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white/[0.06] border border-white/[0.1] text-[11px] font-mono text-white/45">
+            <div className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white/[0.06] border border-white/10 text-[11px] font-mono text-white/45">
               <kbd>Esc</kbd>
             </div>
           </div>
 
           {/* =================================================================
-              2. Cleanly Wrapped Example Prompt Chips (Zero Clipping)
+              2. Filter Strip & Subject Pills
               ================================================================= */}
-          {!query && (
-            <div className="px-6 py-3 border-b border-white/[0.06] bg-white/[0.015] flex flex-wrap items-center gap-2">
-              <span className="text-[11px] font-semibold uppercase tracking-wider text-white/40 flex items-center gap-1.5 mr-1">
-                <Sparkles className="w-3 h-3 text-sky-400" />
-                Try Asking
-              </span>
-              {EXAMPLE_PROMPTS.map((prompt) => (
-                <button
-                  key={prompt}
-                  onClick={() => setQuery(prompt)}
-                  className="px-3 py-1 rounded-full text-xs font-sans text-white/75 hover:text-white bg-white/[0.05] hover:bg-white/[0.11] border border-white/[0.09] hover:border-white/20 transition-all cursor-pointer"
-                >
-                  {prompt}
-                </button>
-              ))}
+          <div className="px-6 py-2.5 border-b border-white/8 bg-black/30 flex flex-wrap items-center justify-between gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                onClick={() => setActiveFilter("all")}
+                className={`px-3 py-1 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+                  activeFilter === "all"
+                    ? "bg-white text-black shadow-md"
+                    : "text-white/60 hover:text-white hover:bg-white/[0.07]"
+                }`}
+              >
+                All Subjects
+                <span className="text-[10px] opacity-75 font-mono ml-1">
+                  ({searchResults.items.length})
+                </span>
+              </button>
+
+              {Object.values(MODULE_CATALOG)
+                .filter((mod) => enabledSubjects.includes(mod.id))
+                .map((mod) => {
+                  const count = searchResults.items.filter((i) => i.appId === mod.id).length;
+                  const isActive = activeFilter === mod.id;
+                  const color = getSubjectColor(mod.id);
+                  return (
+                    <button
+                      key={mod.id}
+                      onClick={() => setActiveFilter(mod.id)}
+                      className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
+                        isActive
+                          ? "bg-white/15 text-white border border-white/30"
+                          : "text-white/55 hover:text-white hover:bg-white/[0.06] border border-transparent"
+                      }`}
+                      style={
+                        isActive
+                          ? {
+                              borderColor: `${color}60`,
+                              backgroundColor: `${color}20`,
+                              boxShadow: `0 0 16px ${color}25`,
+                            }
+                          : undefined
+                      }
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: color }}
+                      />
+                      <span>{mod.shortTitle}</span>
+                      <span className="text-[10px] opacity-55 font-mono">
+                        ({count})
+                      </span>
+                    </button>
+                  );
+                })}
             </div>
-          )}
 
-          {/* =================================================================
-              3. Subject Filter Pills (Accurate Counts, Clean Wrapping)
-              ================================================================= */}
-          <div className="px-6 py-2.5 border-b border-white/[0.08] bg-black/25 flex flex-wrap items-center gap-1.5">
-            <button
-              onClick={() => setActiveFilter("all")}
-              className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                activeFilter === "all"
-                  ? "bg-white/15 text-white border border-white/25 shadow-[0_0_14px_rgba(255,255,255,0.12)]"
-                  : "text-white/50 hover:text-white hover:bg-white/[0.06] border border-transparent"
-              }`}
-            >
-              All Subjects{" "}
-              <span className="text-[11px] opacity-65 font-mono ml-0.5">
-                ({searchResults.items.length})
-              </span>
-            </button>
-
-            {Object.values(MODULE_CATALOG)
-              .filter((mod) => enabledSubjects.includes(mod.id))
-              .map((mod) => {
-              const count = searchResults.items.filter(
-                (i) => i.appId === mod.id
-              ).length;
-              const isActive = activeFilter === mod.id;
-              const color = getSubjectColor(mod.id);
-              return (
-                <button
-                  key={mod.id}
-                  onClick={() => setActiveFilter(mod.id)}
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                    isActive
-                      ? "bg-white/15 text-white border border-white/25"
-                      : "text-white/55 hover:text-white hover:bg-white/[0.06] border border-transparent"
-                  }`}
-                  style={
-                    isActive
-                      ? {
-                          borderColor: `${color}55`,
-                          backgroundColor: `${color}1a`,
-                          boxShadow: `0 0 14px ${color}22`,
-                        }
-                      : undefined
-                  }
-                >
-                  <span
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{ backgroundColor: color }}
-                  />
-                  <span>{mod.shortTitle}</span>
-                  <span className="text-[10px] opacity-55 font-mono">
-                    ({count})
-                  </span>
-                </button>
-              );
-            })}
+            <div className="hidden lg:flex items-center gap-3 text-[11px] text-white/40 font-mono">
+              <span>↑↓ Navigate</span>
+              <span>·</span>
+              <span>↵ Open</span>
+            </div>
           </div>
 
           {/* =================================================================
-              4. Scrollable Content Area: AI Answer + Search Matches
+              3. Main Search Canvas: Two-Pane Split View
               ================================================================= */}
-          <div
-            className="flex-1 overflow-y-auto px-6 py-5 space-y-5"
-            style={{ contain: "content" }}
-          >
-            {/* -------------------------------------------------------------
-                A. LOCAL AI SYNTHESIZED ANSWER CARD
-                ------------------------------------------------------------- */}
-            {searchResults.aiAnswer && (
-              <motion.div
-                key={searchResults.aiAnswer.title}
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.2 }}
-                className="rounded-2xl p-5 sm:p-6 border border-white/[0.14] relative overflow-hidden space-y-4 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]"
-                style={{
-                  background: `radial-gradient(100% 100% at 0% 0%, ${aiAccent}14, transparent 60%), linear-gradient(160deg, rgba(255,255,255,0.045) 0%, rgba(12,13,18,0.85) 100%)`,
-                }}
-              >
-                {/* AI Header */}
-                <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2.5 border-b border-white/[0.08] pb-3.5">
-                  <div className="flex items-start gap-3">
-                    <div
-                      className="w-8 h-8 rounded-xl border flex items-center justify-center shrink-0 mt-0.5"
-                      style={{
-                        borderColor: `${aiAccent}45`,
-                        backgroundColor: `${aiAccent}18`,
-                        color: aiAccent,
-                      }}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                    </div>
-                    <div className="space-y-0.5">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-[11px] font-semibold text-white/70 font-mono tracking-wide uppercase">
-                          {searchResults.aiAnswer.badge}
-                        </span>
-                        {searchResults.aiAnswer.confidenceLabel && (
-                          <span
-                            className="px-2 py-0.5 rounded-full text-[10px] font-mono border"
-                            style={{
-                              borderColor: `${aiAccent}40`,
-                              backgroundColor: `${aiAccent}15`,
-                              color: aiAccent,
-                            }}
-                          >
-                            {searchResults.aiAnswer.confidenceLabel}
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
-                        {searchResults.aiAnswer.title}
-                      </h3>
-                      <p className="text-xs text-white/50">
-                        {searchResults.aiAnswer.subtitle}
-                      </p>
-                    </div>
+          <div className="flex-1 min-h-0 flex flex-col md:flex-row overflow-hidden">
+            {/* Left Pane: Result List */}
+            <div
+              ref={listContainerRef}
+              className="w-full md:w-[45%] border-b md:border-b-0 md:border-r border-white/10 overflow-y-auto p-3 space-y-1.5 shrink-0"
+            >
+              {!query && (
+                <div className="p-3 space-y-3">
+                  <div className="flex items-center gap-1.5 text-xs font-mono font-semibold uppercase tracking-wider text-cyan-300">
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Popular High-Yield Prompts</span>
                   </div>
-                </div>
-
-                {/* Synthesized Explanation */}
-                <div className="text-[13.5px] sm:text-sm text-white/90 leading-relaxed font-sans bg-black/30 rounded-xl p-4 border border-white/[0.08]">
-                  <p>
-                    <RichInlineText text={searchResults.aiAnswer.summary} />
-                  </p>
-                </div>
-
-                {/* KaTeX Formula Card */}
-                {searchResults.aiAnswer.keyFormula && (
-                  <div className="p-3.5 rounded-xl bg-white/[0.035] border border-white/[0.09] space-y-1.5">
-                    <span className="text-[10px] uppercase tracking-wider text-white/45 font-semibold flex items-center gap-1.5 font-mono">
-                      <Calculator className="w-3.5 h-3.5 text-cyan-400" />
-                      Key Formulation
-                    </span>
-                    <div className="text-cyan-200 py-1 overflow-x-auto">
-                      <KatexFormula math={searchResults.aiAnswer.keyFormula} block={false} className="text-sm sm:text-base" />
-                    </div>
-                  </div>
-                )}
-
-                {/* Key Quotes (1984 / German Literature) */}
-                {searchResults.aiAnswer.keyQuotes &&
-                  searchResults.aiAnswer.keyQuotes.length > 0 && (
-                    <div className="space-y-2">
-                      <span className="text-[10px] uppercase tracking-wider text-white/45 font-semibold flex items-center gap-1.5 font-mono">
-                        <Quote className="w-3.5 h-3.5 text-cyan-400" />
-                        Textual Evidence & Quotes
-                      </span>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
-                        {searchResults.aiAnswer.keyQuotes.map((q, idx) => (
-                          <div
-                            key={idx}
-                            className="p-3 rounded-xl bg-white/[0.035] border border-white/[0.08] space-y-1.5"
-                          >
-                            <p className="text-xs italic text-white/90 leading-relaxed">
-                              &ldquo;{q.quote}&rdquo;
-                            </p>
-                            <div className="text-[10px] text-white/45 font-mono flex items-center justify-between gap-2">
-                              <span className="truncate">{q.speaker}</span>
-                              <span className="truncate opacity-75">{q.context}</span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                {/* Key Takeaways */}
-                <div className="space-y-2">
-                  <span className="text-[10px] uppercase tracking-wider text-white/45 font-semibold font-mono">
-                    Key Syllabus Takeaways
-                  </span>
-                  <div className="space-y-1.5">
-                    {searchResults.aiAnswer.highlights.map((bullet, idx) => (
-                      <div
-                        key={idx}
-                        className="flex items-start gap-2.5 text-xs sm:text-[13px] text-white/80 leading-relaxed"
+                  <div className="flex flex-col gap-1.5">
+                    {EXAMPLE_PROMPTS.map((prompt) => (
+                      <button
+                        key={prompt}
+                        onClick={() => setQuery(prompt)}
+                        className="text-left px-3.5 py-2 rounded-xl text-xs text-white/80 hover:text-white bg-white/[0.03] hover:bg-white/[0.08] border border-white/8 hover:border-white/20 transition-all cursor-pointer flex items-center justify-between group"
                       >
-                        <span
-                          className="w-1.5 h-1.5 rounded-full mt-2 shrink-0"
-                          style={{ backgroundColor: aiAccent }}
-                        />
-                        <span>
-                          <RichInlineText text={bullet} />
-                        </span>
-                      </div>
+                        <span>{prompt}</span>
+                        <ArrowRight className="w-3.5 h-3.5 text-white/30 group-hover:text-white group-hover:translate-x-0.5 transition-all" />
+                      </button>
                     ))}
                   </div>
                 </div>
+              )}
 
-                {/* IB Exam / Mark Scheme Tip */}
-                {searchResults.aiAnswer.examTip && (
-                  <div className="flex items-start gap-2.5 p-3 rounded-xl bg-amber-500/[0.07] border border-amber-400/20 text-xs text-amber-100/90 leading-relaxed">
-                    <Lightbulb className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <span className="font-semibold text-amber-300 mr-1.5">
-                        IB Exam Tip:
-                      </span>
-                      <span>
-                        <RichInlineText text={searchResults.aiAnswer.examTip} />
-                      </span>
+              {query && visibleItems.length === 0 && (
+                <div className="py-16 text-center text-white/40 text-xs space-y-2 p-4">
+                  <p className="font-semibold text-white/60">No matches found for &ldquo;{query}&rdquo;</p>
+                  <p>Try searching by topic code, syllabus keyword, or formula symbol.</p>
+                </div>
+              )}
+
+              {visibleItems.map((item, idx) => {
+                const color = getSubjectColor(item.appId);
+                const isSelected = idx === selectedIndex;
+                return (
+                  <div
+                    key={item.id}
+                    onMouseEnter={() => setSelectedIndex(idx)}
+                    onClick={() => handleJumpToItem(item)}
+                    className={`flex items-center justify-between gap-3 p-3 rounded-2xl cursor-pointer transition-all border ${
+                      isSelected
+                        ? "bg-white/[0.12] border-white/25 shadow-lg text-white"
+                        : "bg-white/[0.02] hover:bg-white/[0.06] border-white/[0.06] text-white/80"
+                    }`}
+                  >
+                    <div className="flex items-start gap-2.5 min-w-0">
+                      <div
+                        className="p-1.5 rounded-lg border shrink-0 mt-0.5"
+                        style={{
+                          borderColor: `${color}35`,
+                          backgroundColor: `${color}15`,
+                        }}
+                      >
+                        {getSubjectIcon(item.appId)}
+                      </div>
+
+                      <div className="min-w-0 space-y-0.5">
+                        <div className="flex items-center gap-1.5">
+                          <span
+                            className="px-1.5 py-0.2 rounded text-[9.5px] font-mono font-semibold"
+                            style={{
+                              backgroundColor: `${color}20`,
+                              color: color,
+                            }}
+                          >
+                            {item.badge}
+                          </span>
+                          <span className="text-[10px] text-white/45 font-mono truncate">
+                            {item.subjectTitle}
+                          </span>
+                        </div>
+
+                        <div className="text-xs font-semibold truncate text-white">
+                          {item.title}
+                        </div>
+
+                        <p className="text-[11px] text-white/50 line-clamp-1 leading-snug">
+                          {item.snippet}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="shrink-0 flex items-center">
+                      {isSelected && (
+                        <div
+                          className="w-2 h-2 rounded-full"
+                          style={{
+                            backgroundColor: color,
+                            boxShadow: `0 0 10px ${color}`,
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
-                )}
+                );
+              })}
+            </div>
 
-                {/* Follow-up Questions + Jump-to-Source Actions */}
-                <div className="pt-3 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-t border-white/[0.08]">
-                  {searchResults.aiAnswer.followUpQuestions &&
-                    searchResults.aiAnswer.followUpQuestions.length > 0 && (
-                      <div className="flex flex-wrap items-center gap-1.5">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-white/35 mr-1">
-                          Follow-up:
-                        </span>
-                        {searchResults.aiAnswer.followUpQuestions.map((fq) => (
-                          <button
-                            key={fq}
-                            onClick={() => setQuery(fq)}
-                            className="px-2.5 py-1 rounded-full bg-white/[0.05] hover:bg-white/[0.12] border border-white/[0.09] text-[11px] text-white/70 hover:text-white transition-colors cursor-pointer"
-                          >
-                            {fq}
-                          </button>
-                        ))}
+            {/* Right Pane: Live Intelligence Inspector Preview */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col justify-between bg-black/20">
+              {/* If Local AI Synthesis is Available */}
+              {searchResults.aiAnswer ? (
+                <div className="space-y-4">
+                  <div className="p-5 rounded-2xl border border-white/15 bg-gradient-to-br from-white/[0.06] to-transparent space-y-3.5 shadow-xl">
+                    <div className="flex items-center gap-2 text-xs font-mono font-bold text-cyan-300 uppercase tracking-wider">
+                      <Sparkles className="w-4 h-4" />
+                      <span>Local AI Curriculum Synthesis</span>
+                    </div>
+
+                    <h3 className="text-base sm:text-lg font-bold text-white leading-snug">
+                      {searchResults.aiAnswer.title}
+                    </h3>
+
+                    <div className="text-xs sm:text-sm text-white/85 leading-relaxed bg-black/40 rounded-xl p-3.5 border border-white/8">
+                      <RichInlineText text={searchResults.aiAnswer.summary} />
+                    </div>
+
+                    {searchResults.aiAnswer.keyFormula && (
+                      <div className="p-3 rounded-xl bg-white/[0.04] border border-white/10 text-center">
+                        <KatexFormula math={searchResults.aiAnswer.keyFormula} block />
                       </div>
                     )}
 
-                  <div className="flex flex-wrap items-center gap-2 shrink-0">
-                    {searchResults.aiAnswer.relatedSources &&
-                      searchResults.aiAnswer.relatedSources.length > 1 &&
-                      searchResults.aiAnswer.relatedSources.slice(1, 2).map((src) => (
-                        <button
-                          key={src.targetId}
-                          onClick={() =>
-                            handleJumpToItem({
-                              appId: src.appId,
-                              targetId: src.targetId,
-                              viewMode: src.viewMode,
-                              title: src.label,
-                            })
-                          }
-                          className="px-3 py-2 rounded-xl bg-white/[0.07] hover:bg-white/[0.14] border border-white/[0.12] text-white/85 text-xs font-medium transition-all cursor-pointer max-w-[200px] truncate"
-                        >
-                          {src.label}
-                        </button>
-                      ))}
-
-                    <button
-                      onClick={() =>
-                        handleJumpToItem({
-                          appId: searchResults.aiAnswer!.subjectId,
-                          targetId: searchResults.aiAnswer!.targetId,
-                          viewMode: searchResults.aiAnswer!.viewMode,
-                          title: searchResults.aiAnswer!.title,
-                        })
-                      }
-                      className="flex items-center gap-2 px-4 py-2 rounded-xl bg-white hover:bg-white/90 text-black font-semibold text-xs transition-all shadow-[0_0_20px_rgba(255,255,255,0.18)] cursor-pointer"
-                    >
-                      <span>{searchResults.aiAnswer.actionText}</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-              </motion.div>
-            )}
-
-            {/* -------------------------------------------------------------
-                B. MATCHING SEARCH RESULTS LIST
-                ------------------------------------------------------------- */}
-            <div className="space-y-2.5">
-              <div className="flex items-center justify-between text-[11px] text-white/40 font-mono px-1">
-                <span>
-                  {query
-                    ? `Matching Notes & Concepts (${filteredItems.length})`
-                    : "Curated Across All 6 IB Modules"}
-                </span>
-                <span className="hidden sm:inline-flex items-center gap-1.5">
-                  <span>↑↓ Navigate</span>
-                  <span>·</span>
-                  <span>↵ Open</span>
-                </span>
-              </div>
-
-              {filteredItems.length === 0 ? (
-                <div className="py-12 text-center text-white/45 text-sm space-y-2 rounded-2xl border border-white/[0.06] bg-white/[0.015]">
-                  <p>
-                    No matching topics or notes found for &ldquo;{query}&rdquo;.
-                  </p>
-                  <p className="text-xs text-white/30">
-                    Try asking a question (e.g. &ldquo;explain chemiosmosis&rdquo;), a unit
-                    (&ldquo;unit 5.1&rdquo;), or a concept (&ldquo;Konjunktiv II&rdquo;).
-                  </p>
-                </div>
-              ) : (
-                <div className="grid grid-cols-1 gap-2">
-                  {visibleItems.map((item, idx) => {
-                    const color = getSubjectColor(item.appId);
-                    const isSelected = idx === selectedIndex;
-                    return (
-                      <div
-                        key={item.id}
-                        ref={(el) => {
-                          itemRefs.current[idx] = el;
-                        }}
-                        onMouseEnter={() => setSelectedIndex(idx)}
-                        onClick={() => handleJumpToItem(item)}
-                        className={`group flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-2xl cursor-pointer transition-all border ${
-                          isSelected
-                            ? "bg-white/[0.09] border-white/25 shadow-[0_4px_20px_rgba(0,0,0,0.4)]"
-                            : "bg-white/[0.03] hover:bg-white/[0.07] border-white/[0.07] hover:border-white/[0.16]"
-                        }`}
-                      >
-                        <div className="flex items-start gap-3.5 min-w-0">
-                          <div
-                            className="p-2 rounded-xl border shrink-0 mt-0.5"
-                            style={{
-                              borderColor: `${color}30`,
-                              backgroundColor: `${color}12`,
-                            }}
-                          >
-                            {getSubjectIcon(item.appId)}
-                          </div>
-
-                          <div className="min-w-0 space-y-1">
-                            <div className="flex items-center gap-2">
-                              <span
-                                className="px-2 py-0.5 rounded-md text-[10px] font-mono font-medium border"
-                                style={{
-                                  borderColor: `${color}40`,
-                                  backgroundColor: `${color}14`,
-                                  color: color,
-                                }}
-                              >
-                                {item.badge}
-                              </span>
-                              <span className="text-[11px] text-white/40 font-mono truncate">
-                                {item.subjectTitle}
-                              </span>
-                            </div>
-
-                            <h4 className="text-sm font-semibold text-white group-hover:text-white transition-colors truncate">
-                              {item.title}
-                            </h4>
-
-                            <p className="text-xs text-white/55 line-clamp-2 leading-relaxed">
-                              {item.snippet}
-                            </p>
-
-                            {item.formulaLatex && (
-                              <div className="text-xs text-cyan-300 pt-0.5 overflow-x-auto">
-                                <KatexFormula math={item.formulaLatex} />
-                              </div>
-                            )}
-                          </div>
-                        </div>
-
-                        <div
-                          className={`flex items-center gap-1.5 transition-colors self-end sm:self-center shrink-0 ${
-                            isSelected
-                              ? "text-white"
-                              : "text-white/35 group-hover:text-white/80"
-                          }`}
-                        >
-                          {isSelected ? (
-                            <CornerDownLeft className="w-3.5 h-3.5 opacity-80" />
-                          ) : (
-                            <span className="text-xs font-mono hidden sm:inline">
-                              Open
-                            </span>
-                          )}
-                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                    {searchResults.aiAnswer.examTip && (
+                      <div className="flex items-start gap-2 p-3 rounded-xl bg-amber-500/10 border border-amber-400/20 text-xs text-amber-200">
+                        <Lightbulb className="w-4 h-4 text-amber-300 shrink-0 mt-0.5" />
+                        <div>
+                          <strong className="text-amber-300">Exam Trap: </strong>
+                          <RichInlineText text={searchResults.aiAnswer.examTip} />
                         </div>
                       </div>
-                    );
-                  })}
+                    )}
+                  </div>
+                </div>
+              ) : selectedItem ? (
+                /* Selected Item Detailed Inspector */
+                <div className="space-y-5">
+                  <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="px-2.5 py-1 rounded-xl text-xs font-mono font-bold"
+                        style={{
+                          backgroundColor: `${activeColor}25`,
+                          color: activeColor,
+                          border: `1px solid ${activeColor}40`,
+                        }}
+                      >
+                        {selectedItem.badge}
+                      </span>
+                      <span className="text-xs font-mono text-white/50">
+                        {selectedItem.subjectTitle}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                      {selectedItem.title}
+                    </h2>
+                  </div>
+
+                  {/* Formula Display if Available */}
+                  {selectedItem.formulaLatex && (
+                    <div className="p-5 rounded-2xl bg-black/60 border border-white/15 text-center shadow-inner">
+                      <KatexFormula math={selectedItem.formulaLatex} block className="text-lg text-cyan-200" />
+                    </div>
+                  )}
+
+                  {/* Text Snippet / Definition / Explanation */}
+                  <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 text-xs sm:text-sm text-white/85 leading-relaxed">
+                    <RichInlineText text={selectedItem.snippet} />
+                  </div>
+                </div>
+              ) : (
+                <div className="py-20 text-center text-white/35 space-y-2">
+                  <Compass className="w-8 h-8 mx-auto text-white/20" />
+                  <p className="text-xs font-mono">Select any search result to inspect details</p>
+                </div>
+              )}
+
+              {/* Bottom Jump Button */}
+              {selectedItem && (
+                <div className="pt-4 mt-6 border-t border-white/10 flex items-center justify-between">
+                  <div className="text-[11px] font-mono text-white/40">
+                    Press <kbd className="px-1.5 py-0.5 rounded bg-white/10 text-white/70">↵</kbd> to open directly
+                  </div>
+                  <button
+                    onClick={() => handleJumpToItem(selectedItem)}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-2xl bg-white hover:bg-white/90 text-black font-bold text-xs transition-all shadow-[0_0_24px_rgba(255,255,255,0.25)] cursor-pointer active:scale-95"
+                  >
+                    <span>Open in {selectedItem.subjectTitle}</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
                 </div>
               )}
             </div>

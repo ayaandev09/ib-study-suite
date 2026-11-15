@@ -6,12 +6,12 @@ import {
   MessageSquareQuote,
   Copy,
   Check,
-  Search,
   Sparkles,
   Zap,
   Award,
 } from "lucide-react";
 import { REDEMITTEL_DATABASE } from "@/modules/german/data/redemittel";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 export function RedemittelDossierView() {
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -57,36 +57,15 @@ export function RedemittelDossierView() {
 
   return (
     <div className="space-y-4 liquid-view-enter">
-      {/* Search & Filter Bar */}
-      <div className="p-4 rounded-3xl bg-slate-900/60 border border-white/10 flex flex-col sm:flex-row gap-3 items-center justify-between">
-        <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Redemittel durchsuchen..."
-            className="w-full bg-black/40 border border-white/10 rounded-xl pl-9 pr-3 py-2 font-sans text-[13.5px] text-white placeholder-slate-500 focus:outline-none focus:border-fuchsia-400/50 transition-colors"
-          />
-        </div>
-
-        {/* Tier Pills */}
-        <div className="flex items-center gap-1.5 overflow-x-auto w-full sm:w-auto no-scrollbar">
-          {tiers.map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setActiveTier(t.id)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-sans font-semibold transition-all cursor-pointer whitespace-nowrap ${
-                activeTier === t.id
-                  ? "bg-fuchsia-500 text-slate-950 shadow-md shadow-fuchsia-500/20"
-                  : "bg-white/5 text-slate-400 hover:text-white border border-white/5"
-              }`}
-            >
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* Mini Section Search & Filters */}
+      <MiniSectionSearch
+        query={searchQuery}
+        onQueryChange={setSearchQuery}
+        placeholder="Redemittel durchsuchen (z.B. Meiner Meinung nach, Einerseits, Im Gegensatz zu)..."
+        totalCount={REDEMITTEL_DATABASE.length}
+        filteredCount={filtered.length}
+        accentColor="#d946ef"
+      />
 
       {/* Category Pills */}
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">

@@ -2,8 +2,9 @@
 
 import React, { useState, useMemo } from "react";
 import { GLOSSARY_TERMS, SYLLABUS_THEMES, ThemeId } from "@/modules/physics/data";
-import { BookOpen, Search, Sparkles, Filter, CheckCircle2 } from "lucide-react";
+import { BookOpen, Sparkles, Filter, CheckCircle2 } from "lucide-react";
 import { MathText, formatUnit } from "./MathText";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 export const LexiconDossierView: React.FC = () => {
   const [search, setSearch] = useState("");
@@ -41,15 +42,15 @@ export const LexiconDossierView: React.FC = () => {
           Comprehensive lexicon of official IB Physics SL / HL definitions. Includes vector vs scalar classifications, fundamental SI derived units, mathematical formulas, and exact mark scheme requirements.
         </p>
 
-        {/* Search Input */}
-        <div className="relative mt-5 max-w-xl">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
+        {/* Mini Section Search */}
+        <div className="mt-5">
+          <MiniSectionSearch
+            query={search}
+            onQueryChange={setSearch}
             placeholder="Search key terms (e.g. displacement, EMF, albedo, SHM, half-life)..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-slate-950/70 border border-white/10 font-sans text-[13.5px] text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-400/50"
+            totalCount={GLOSSARY_TERMS.length}
+            filteredCount={filteredTerms.length}
+            accentColor="#6366f1"
           />
         </div>
 

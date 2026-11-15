@@ -282,56 +282,8 @@ export default function Orwell1984LiquidShellPage() {
 
             {/* ==================== VIEW 1: FOCUS CHAPTER BENTO ==================== */}
             {(viewMode === "focus" || visitedViews["focus"]) && (
-              <div className={viewMode === "focus" ? "space-y-5" : "hidden"} aria-hidden={viewMode !== "focus"}>
+              <div className={viewMode === "focus" ? "space-y-4" : "hidden"} aria-hidden={viewMode !== "focus"}>
                 <SceneSwitcher />
-                {/* Book Part Context Banner - 100% Full-Width Bulletproof Native Card */}
-                <div className="liquid-glass-bento rounded-3xl p-5 mb-5 border border-white/15 shadow-xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl space-y-3">
-                  <div className="flex items-center justify-between gap-3 border-b border-white/10 pb-3">
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <div className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30 shrink-0">
-                        <BookOpen className="w-4 h-4" />
-                      </div>
-                      <div className="min-w-0">
-                        <span className="text-xs font-mono font-bold tracking-wider text-rose-400 uppercase block">
-                          Book Part Overview
-                        </span>
-                        <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
-                          {activeBookPart.title}
-                        </h2>
-                      </div>
-                    </div>
-                    <span className="px-3 py-1 rounded-full text-xs font-mono font-bold bg-rose-400/15 text-rose-300 border border-rose-400/30 shrink-0">
-                      {activeBookPart.chapters.length} Chapters
-                    </span>
-                  </div>
-
-                  <p className="text-xs sm:text-sm text-slate-200/90 leading-relaxed w-full">
-                    {activeBookPart.overview}
-                  </p>
-
-                  {activeBookPart.dominantThemes && activeBookPart.dominantThemes.length > 0 && (
-                    <div className="pt-1 flex flex-wrap items-center gap-2">
-                      <span className="text-[11px] font-mono text-slate-400 mr-1">Key Themes:</span>
-                      {activeBookPart.dominantThemes.map((tId) => {
-                        const t = THEMES_TAXONOMY[tId];
-                        if (!t) return null;
-                        return (
-                          <span
-                            key={tId}
-                            className="px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-all hover:brightness-110 cursor-default"
-                            style={{
-                              backgroundColor: t.badgeBg,
-                              borderColor: t.badgeBorder,
-                              color: t.badgeText,
-                            }}
-                          >
-                            {t.shortName || t.name}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
 
                 {/* Active Chapter Bento Grid with Buttery Smooth Swap */}
                 <div key={activeChapter.id} data-tour="study-bento" className="liquid-chapter-swap">

@@ -3,7 +3,8 @@
 import React, { useState } from "react";
 import { BIO_FORMULAS, BIO_GLOSSARY_TERMS } from "@/modules/biology/data";
 import { MathFormula } from "./MathFormula";
-import { Calculator, BookOpen, Search } from "lucide-react";
+import { Calculator, BookOpen } from "lucide-react";
+import { MiniSectionSearch } from "@/components/MiniSectionSearch";
 
 export function LexiconDossierView() {
   const [tab, setTab] = useState<"formulas" | "glossary">("formulas");
@@ -13,32 +14,36 @@ export function LexiconDossierView() {
     (f) =>
       f.name.toLowerCase().includes(query.toLowerCase()) ||
       f.topicCode.toLowerCase().includes(query.toLowerCase()) ||
-      f.variables.toLowerCase().includes(query.toLowerCase())
+      f.variables.toLowerCase().includes(query.toLowerCase()) ||
+      f.category.toLowerCase().includes(query.toLowerCase())
   );
 
   const filteredTerms = BIO_GLOSSARY_TERMS.filter(
     (g) =>
       g.term.toLowerCase().includes(query.toLowerCase()) ||
       g.definition.toLowerCase().includes(query.toLowerCase()) ||
-      g.topicRef.toLowerCase().includes(query.toLowerCase())
+      g.topicRef.toLowerCase().includes(query.toLowerCase()) ||
+      g.category.toLowerCase().includes(query.toLowerCase())
   );
 
   return (
-    <div className="space-y-5 pb-16">
+    <div className="space-y-6 pb-16">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
           <h2 className="font-sans text-xl sm:text-2xl font-bold text-white tracking-[-0.01em]">
             Glossary &amp; Practical Lab Skills
           </h2>
           <p className="font-sans text-[15px] text-white/75 leading-[1.65] mt-0.5">
-            Quantitative equations (Ψ, Hardy–Weinberg, χ², Simpson&apos;s D) &amp;
-            NOS / Command Terms.
+            Quantitative equations (Ψ, Hardy–Weinberg, χ², Simpson&apos;s D) &amp; NOS / Command Terms.
           </p>
         </div>
 
         <div className="flex items-center gap-1 bg-white/[0.06] border border-white/10 rounded-2xl p-1 text-xs font-sans">
           <button
-            onClick={() => setTab("formulas")}
+            onClick={() => {
+              setTab("formulas");
+              setQuery("");
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors ${
               tab === "formulas"
                 ? "bg-green-500/20 border border-green-400/40 text-green-200 font-semibold"
@@ -46,10 +51,13 @@ export function LexiconDossierView() {
             }`}
           >
             <Calculator className="w-3.5 h-3.5" />
-            Equations &amp; Stats
+            Equations &amp; Stats ({BIO_FORMULAS.length})
           </button>
           <button
-            onClick={() => setTab("glossary")}
+            onClick={() => {
+              setTab("glossary");
+              setQuery("");
+            }}
             className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl cursor-pointer transition-colors ${
               tab === "glossary"
                 ? "bg-green-500/20 border border-green-400/40 text-green-200 font-semibold"
@@ -57,21 +65,23 @@ export function LexiconDossierView() {
             }`}
           >
             <BookOpen className="w-3.5 h-3.5" />
-            Bio &amp; NOS Lexicon
+            Bio &amp; NOS Lexicon ({BIO_GLOSSARY_TERMS.length})
           </button>
         </div>
       </div>
 
-      <div className="relative">
-        <Search className="w-4 h-4 text-white/40 absolute left-3.5 top-1/2 -translate-y-1/2" />
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Filter equations, statistical tests, or NOS terms..."
-          className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-black/50 border border-white/15 font-sans text-[13.5px] text-white placeholder-white/40 focus:outline-none focus:border-green-400/50"
-        />
-      </div>
+      <MiniSectionSearch
+        query={query}
+        onQueryChange={setQuery}
+        placeholder={
+          tab === "formulas"
+            ? "Search equations by name, symbol (Ψ, Hardy-Weinberg, χ²), topic code, or variable..."
+            : "Search glossary terms by keyword, definition, or syllabus reference..."
+        }
+        totalCount={tab === "formulas" ? BIO_FORMULAS.length : BIO_GLOSSARY_TERMS.length}
+        filteredCount={tab === "formulas" ? filteredFormulas.length : filteredTerms.length}
+        accentColor="#22c55e"
+      />
 
       {tab === "formulas" && (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -111,9 +121,7 @@ export function LexiconDossierView() {
                 </div>
               </div>
               <div className="border-l-2 border-green-400/60 pl-4 py-3 pr-4 rounded-r-2xl bg-white/[0.035] font-sans text-[14.5px] leading-[1.65] text-white/85">
-                <span className="font-semibold text-green-300">
-                  Exam Tip:{" "}
-                </span>
+                <span className="font-semibold text-green-300">Exam Tip: </span>
                 {f.examTip}
               </div>
             </div>
