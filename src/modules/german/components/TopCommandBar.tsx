@@ -55,6 +55,11 @@ export function TopCommandBar({
       icon: <LayoutGrid className="w-3.5 h-3.5" />,
     },
     {
+      id: "revision",
+      label: "Revision Hub",
+      icon: <Zap className="w-3.5 h-3.5" />,
+    },
+    {
       id: "grammatik",
       label: "Grammatik",
       icon: <Sparkles className="w-3.5 h-3.5" />,

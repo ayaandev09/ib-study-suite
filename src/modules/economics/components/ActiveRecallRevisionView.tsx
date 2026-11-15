@@ -5,15 +5,17 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   GLOSSARY_TERMS,
   FORMULA_BANK,
-  THEORISTS_DOSSIER,
   KEY_CONCEPTS,
   DIAGRAMS_DOSSIER,
   HIGH_YIELD_EXAM_QUESTIONS,
+  SYLLABUS_UNITS,
   GlossaryTerm,
   FormulaItem,
-  TheoristSchool,
   DiagramDossier,
   UnitId,
+  TopicData,
+  ALL_TOPICS,
+  ExamQuestionCard,
 } from "@/modules/economics/data";
 import { useStudyStore, FlashcardDeckType } from "@/modules/economics/store/useStudyStore";
 import { MathFormula } from "./MathFormula";
@@ -37,6 +39,12 @@ import {
   Eye,
   FileText,
   Compass,
+  ArrowRight,
+  Search,
+  AlertTriangle,
+  HelpCircle,
+  TrendingUp,
+  Target,
 } from "lucide-react";
 
 interface FlashcardItem {
@@ -59,13 +67,33 @@ export const ActiveRecallRevisionView: React.FC = () => {
     masteredFlashcards,
     toggleFlashcardMastered,
     resetFlashcardProgress,
+    setActiveTopic,
+    setViewMode,
   } = useStudyStore();
 
+  const [mainTab, setMainTab] = useState<"entry-tickets" | "flashcards">("entry-tickets");
+
+  // Entry Ticket Summaries state
+  const [selectedEntryUnit, setSelectedEntryUnit] = useState<string>("all");
+  const [entrySearchQuery, setEntrySearchQuery] = useState("");
+
+  const filteredEntryTopics = useMemo(() => {
+    return ALL_TOPICS.filter((t) => {
+      const matchesUnit = selectedEntryUnit === "all" || t.unitId === selectedEntryUnit;
+      const matchesQuery =
+        !entrySearchQuery ||
+        t.title.toLowerCase().includes(entrySearchQuery.toLowerCase()) ||
+        t.displayCode.toLowerCase().includes(entrySearchQuery.toLowerCase()) ||
+        t.subtitle.toLowerCase().includes(entrySearchQuery.toLowerCase());
+      return matchesUnit && matchesQuery;
+    });
+  }, [selectedEntryUnit, entrySearchQuery]);
+
+  // Flashcards state
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [unitFilter, setUnitFilter] = useState<string>("all");
-  const [viewMode, setViewMode] = useState<"card" | "sheet">("card");
-  const [shuffledSeed, setShuffledSeed] = useState<number>(0);
+  const [viewModeState, setViewModeState] = useState<"card" | "sheet">("card");
 
   // Compile deck items based on active deck
   const rawDeckItems: FlashcardItem[] = useMemo(() => {
@@ -92,8 +120,7 @@ export const ActiveRecallRevisionView: React.FC = () => {
                 </ol>
               </div>
               <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs text-purple-200">
-                <strong className="text-purple-300">Exam Analysis:</strong>{" "}
-                {d.examAnalysis}
+                <strong className="text-purple-300">Exam Analysis:</strong> {d.examAnalysis}
               </div>
               {d.id && (
                 <div className="mt-2">
@@ -121,12 +148,10 @@ export const ActiveRecallRevisionView: React.FC = () => {
                 <MathFormula math={f.formula} block />
               </div>
               <div className="text-sm text-slate-200 leading-relaxed">
-                <strong className="text-emerald-300 font-mono">Benchmarks:</strong>{" "}
-                {f.benchmarkGuidance}
+                <strong className="text-emerald-300 font-mono">Benchmarks:</strong> {f.benchmarkGuidance}
               </div>
               <div className="p-3 rounded-xl bg-slate-950/70 border border-white/5 text-sm text-slate-200 leading-relaxed">
-                <strong className="text-sky-300 font-mono">Worked Example:</strong>{" "}
-                {f.workedExample}
+                <strong className="text-sky-300 font-mono">Worked Example:</strong> {f.workedExample}
               </div>
             </div>
           ),
@@ -135,7 +160,7 @@ export const ActiveRecallRevisionView: React.FC = () => {
 
       case "glossary":
         return GLOSSARY_TERMS.map((g) => ({
-          id: `fc-term-${g.term.toLowerCase().replace(/\\s+/g, "-")}`,
+          id: `fc-term-${g.term.toLowerCase().replace(/\s+/g, "-")}`,
           deck: "glossary" as FlashcardDeckType,
           title: g.term,
           badge: g.unit,
@@ -159,472 +184,565 @@ export const ActiveRecallRevisionView: React.FC = () => {
         }));
 
       case "concepts":
-        return [
-          ...KEY_CONCEPTS.map((k) => ({
-            id: `fc-concept-${k.id}`,
-            deck: "concepts" as FlashcardDeckType,
-            title: k.name,
-            badge: "Key Concept",
-            badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
-            frontPrompt: `Explain the IB Key Concept of "${k.name}". How does it operate as a core economic mechanism?`,
-            frontSubtext: "Overarching Syllabus Lens",
-            backContent: (
-              <div className="space-y-3 text-left">
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  {k.description}
-                </p>
-                <div className="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs text-slate-300">
-                  <strong className="text-sky-300 font-mono">Core Mechanism:</strong>{" "}
-                  {k.coreMechanism}
-                </div>
-                <div className="p-2.5 rounded-xl bg-purple-950/30 border border-purple-500/20 text-xs text-purple-200">
-                  <strong className="text-purple-300">Paper 1/2 Tip:</strong>{" "}
-                  {k.examTips}
-                </div>
-              </div>
-            ),
-            unit: "All Units",
-          })),
-          ...THEORISTS_DOSSIER.map((th) => ({
-            id: `fc-theorist-${th.id}`,
-            deck: "concepts" as FlashcardDeckType,
-            title: th.name,
-            badge: th.school,
-            badgeColor: "bg-sky-500/20 text-sky-300 border-sky-500/30",
-            frontPrompt: `What is the core economic doctrine and assumption set of ${th.name} (${th.school})?`,
-            frontSubtext: `Era: ${th.era}`,
-            backContent: (
-              <div className="space-y-3 text-left">
-                <p className="text-xs text-slate-200 leading-relaxed">
-                  {th.coreDoctrine}
-                </p>
-                <div className="p-2.5 rounded-xl bg-slate-900 border border-white/10 text-xs text-slate-300">
-                  <strong className="text-sky-300 font-mono">Assumptions:</strong>{" "}
-                  {th.keyAssumptions.join(" • ")}
-                </div>
-                <div className="p-2.5 rounded-xl bg-emerald-950/30 border border-emerald-500/20 text-xs text-emerald-200">
-                  <strong className="text-emerald-300">Real-World Case:</strong>{" "}
-                  {th.realWorldExample}
-                </div>
-              </div>
-            ),
-            unit: "Theory",
-          })),
-        ];
-
-      case "exam-questions":
-        return HIGH_YIELD_EXAM_QUESTIONS.map((eq) => ({
-          id: `fc-eq-${eq.id}`,
-          deck: "exam-questions" as FlashcardDeckType,
-          title: eq.commandTerm,
-          badge: eq.unit,
-          badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
-          frontPrompt: eq.question,
-          frontSubtext: `Key Concept: ${eq.keyConcept} | ${eq.guidance}`,
+        return KEY_CONCEPTS.map((c) => ({
+          id: `fc-concept-${c.id}`,
+          deck: "concepts" as FlashcardDeckType,
+          title: c.name,
+          badge: c.shortName,
+          badgeColor: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30",
+          frontPrompt: `Explain the IB Economics key concept: "${c.name}". How does it manifest across micro and macro?`,
+          frontSubtext: `Key Concept Framework`,
           backContent: (
             <div className="space-y-3 text-left">
-              <span className="font-mono text-[10px] uppercase font-bold text-rose-300 block">
-                Model Answer Structure & Evaluation:
-              </span>
-              <ul className="text-xs text-slate-200 space-y-1.5 list-disc list-inside">
-                {eq.modelAnswerStructure.map((st, sIdx) => (
-                  <li key={sIdx}>{st}</li>
-                ))}
-              </ul>
+              <div className="p-4 rounded-xl bg-indigo-950/30 border border-indigo-500/20 text-sm text-slate-100 leading-relaxed">
+                <strong className="text-indigo-300 font-mono block mb-1 text-xs uppercase">
+                  Core Mechanism:
+                </strong>
+                {c.coreMechanism}
+              </div>
+              <div className="p-3 rounded-xl bg-slate-900 border border-white/10 text-xs sm:text-sm text-slate-300">
+                <strong className="text-sky-300 font-bold">Paper 1 Essay Tip:</strong> {c.examTips}
+              </div>
             </div>
           ),
-          unit: eq.unit,
+          unit: "All Units",
         }));
 
+      case "exam-questions":
       default:
-        return [];
+        return HIGH_YIELD_EXAM_QUESTIONS.map((q) => ({
+          id: `fc-exam-${q.id}`,
+          deck: "exam-questions" as FlashcardDeckType,
+          title: q.commandTerm,
+          badge: `${q.marks} Marks`,
+          badgeColor: "bg-rose-500/20 text-rose-300 border-rose-500/30",
+          frontPrompt: q.question,
+          frontSubtext: `${q.commandTerm} • Concept: ${q.keyConcept}`,
+          backContent: (
+            <div className="space-y-3 text-left">
+              <div className="p-3 rounded-xl bg-rose-950/20 border border-rose-500/20 text-xs text-rose-200">
+                <strong className="text-rose-300 font-bold block mb-1">
+                  Mark Scheme &amp; Command Term Directive:
+                </strong>
+                {q.guidance}
+              </div>
+              <div className="space-y-1.5 text-xs text-slate-200">
+                <span className="font-mono text-[10px] uppercase font-bold text-slate-400 block">
+                  Exemplar Answer Architecture:
+                </span>
+                {q.modelAnswerStructure.map((step, sIdx) => (
+                  <div key={sIdx} className="p-2 rounded-xl bg-slate-900 border border-white/5 pl-2.5">
+                    <strong className="text-sky-300">Step {sIdx + 1}:</strong> {step}
+                  </div>
+                ))}
+              </div>
+            </div>
+          ),
+          unit: q.unit,
+        }));
     }
   }, [activeFlashcardDeck]);
 
-  // Apply unit filter & shuffle
-  const filteredCards = useMemo(() => {
-    let list = rawDeckItems;
-    if (unitFilter !== "all") {
-      list = list.filter((c) =>
-        c.unit.toLowerCase().includes(unitFilter.toLowerCase())
-      );
-    }
-    if (shuffledSeed > 0) {
-      list = [...list].sort(() => Math.sin(shuffledSeed) - 0.5);
-    }
-    return list;
-  }, [rawDeckItems, unitFilter, shuffledSeed]);
-
-  const activeCard = filteredCards[currentIndex] || filteredCards[0];
-  const isMastered = activeCard ? !!masteredFlashcards[activeCard.id] : false;
-
-  const masteredCount = useMemo(() => {
-    return filteredCards.filter((c) => !!masteredFlashcards[c.id]).length;
-  }, [filteredCards, masteredFlashcards]);
-
-  const handleNext = useCallback(() => {
-    setIsFlipped(false);
-    setCurrentIndex((prev) => (prev + 1) % Math.max(1, filteredCards.length));
-  }, [filteredCards.length]);
-
-  const handlePrev = useCallback(() => {
-    setIsFlipped(false);
-    setCurrentIndex((prev) =>
-      prev === 0 ? Math.max(0, filteredCards.length - 1) : prev - 1
+  // Filter items by unit
+  const filteredFlashcards = useMemo(() => {
+    if (unitFilter === "all") return rawDeckItems;
+    return rawDeckItems.filter(
+      (item) =>
+        item.unit.toLowerCase().includes(unitFilter.toLowerCase()) ||
+        (unitFilter === "unit-1" && item.unit.includes("1")) ||
+        (unitFilter === "unit-2" && item.unit.includes("2")) ||
+        (unitFilter === "unit-3" && item.unit.includes("3")) ||
+        (unitFilter === "unit-4" && item.unit.includes("4"))
     );
-  }, [filteredCards.length]);
+  }, [rawDeckItems, unitFilter]);
 
-  // Keyboard navigation shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (viewMode !== "card") return;
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement)
-        return;
+  const currentFlashcard = filteredFlashcards[currentIndex] || filteredFlashcards[0];
+  const isMastered = currentFlashcard ? !!masteredFlashcards[currentFlashcard.id] : false;
 
-      if (e.code === "Space" || e.code === "Enter") {
-        e.preventDefault();
-        setIsFlipped((prev) => !prev);
-      } else if (e.code === "ArrowRight") {
-        e.preventDefault();
-        handleNext();
-      } else if (e.code === "ArrowLeft") {
-        e.preventDefault();
-        handlePrev();
-      } else if (e.key === "1" || e.key.toLowerCase() === "m") {
-        e.preventDefault();
-        if (activeCard) {
-          toggleFlashcardMastered(activeCard.id);
-        }
-      }
-    };
+  const handleNextCard = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev + 1) % filteredFlashcards.length);
+  };
 
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [viewMode, handleNext, handlePrev, activeCard, toggleFlashcardMastered]);
+  const handlePrevCard = () => {
+    setIsFlipped(false);
+    setCurrentIndex((prev) => (prev - 1 + filteredFlashcards.length) % filteredFlashcards.length);
+  };
+
+  const handleOpenTopic = (topicId: string) => {
+    setActiveTopic(topicId);
+    setViewMode("stream");
+  };
 
   return (
-    <div className="space-y-6">
-      {/* Header Banner */}
-      <div className="liquid-glass-bento rounded-3xl p-6 sm:p-8 relative overflow-hidden">
-        <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="font-mono text-xs px-2.5 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-500/30 font-bold uppercase tracking-wider flex items-center gap-1.5">
-                <Brain className="w-3.5 h-3.5" /> Active Recall Revision Hub
-              </span>
-              <span className="text-xs font-mono text-slate-400">
-                Spaced Repetition & Exam Cram Engine
-              </span>
-            </div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Interactive 3D Revision Flashcards
-            </h1>
-            <p className="text-xs sm:text-sm text-slate-300 mt-1 max-w-2xl">
-              Master diagrams, formulas, definitions, key concepts, and 15-mark essay
-              blueprints using active recall with keyboard shortcuts.
-            </p>
-          </div>
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      {/* Hero Header */}
+      <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-sky-950/40 via-slate-900/80 to-blue-950/40 border border-white/10 relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-2 text-xs font-mono font-bold uppercase tracking-wider text-sky-400">
+          <Sparkles className="w-4 h-4" />
+          <span>IB Economics Revision &amp; Lesson Warmup Hub</span>
+        </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+          Revise &amp; Master
+        </h1>
+        <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
+          Quickly review high-yield lesson entry ticket summaries, diagrammatic models, teacher talking points, and market traps. Switch easily into active recall flashcards to drill definitions, formulas, and 15-mark essay blueprints.
+        </p>
 
-          {/* Progress Badge */}
-          <div className="p-4 rounded-2xl bg-slate-950/70 border border-white/10 text-right shrink-0">
-            <span className="text-[11px] font-mono text-slate-400 block mb-0.5">
-              Deck Mastery Progress
-            </span>
-            <span className="text-2xl font-mono font-extrabold text-emerald-400">
-              {masteredCount} / {filteredCards.length}
-            </span>
-            <span className="text-[10px] font-mono text-slate-500 block mt-0.5">
-              {filteredCards.length > 0
-                ? Math.round((masteredCount / filteredCards.length) * 100)
-                : 0}
-              % Mastered
-            </span>
-          </div>
+        {/* Top-Level Mode Switcher */}
+        <div className="flex flex-wrap items-center gap-3 mt-6">
+          <button
+            onClick={() => setMainTab("entry-tickets")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
+              mainTab === "entry-tickets"
+                ? "bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/25 font-bold"
+                : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10"
+            }`}
+          >
+            <Layers className="w-4 h-4" />
+            <span>Entry Ticket Summaries</span>
+          </button>
+
+          <button
+            onClick={() => setMainTab("flashcards")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
+              mainTab === "flashcards"
+                ? "bg-sky-500 text-slate-950 shadow-lg shadow-sky-500/25 font-bold"
+                : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10"
+            }`}
+          >
+            <Brain className="w-4 h-4" />
+            <span>Flashcards / Active Recall ({rawDeckItems.length})</span>
+          </button>
         </div>
       </div>
 
-      {/* Deck Selector Tabs */}
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* Decks */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0 no-scrollbar">
-          {(
-            [
-              { id: "diagrams", label: "Diagrams (29)", icon: Layers },
-              { id: "formulas", label: "Formulas (10)", icon: Calculator },
-              { id: "glossary", label: "Glossary (180+)", icon: BookOpen },
-              { id: "concepts", label: "Concepts & Theorists", icon: Compass },
-              { id: "exam-questions", label: "15-Mark Essays", icon: FileText },
-            ] as const
-          ).map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeFlashcardDeck === tab.id;
-            return (
+      {/* ===================================================================
+          MODE 1: ENTRY TICKET SUMMARIES (LESSON WARMUPS)
+          =================================================================== */}
+      {mainTab === "entry-tickets" && (
+        <div className="space-y-6">
+          {/* Unit selector tabs across the top & Search */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                key={tab.id}
-                onClick={() => {
-                  setActiveFlashcardDeck(tab.id);
-                  setCurrentIndex(0);
-                  setIsFlipped(false);
-                }}
-                className={`px-3 py-2 rounded-xl text-xs font-mono transition-all flex items-center gap-2 cursor-pointer whitespace-nowrap ${
-                  isActive
-                    ? "liquid-glass-pill-active text-white"
-                    : "liquid-glass-pill text-slate-300 hover:text-white"
+                onClick={() => setSelectedEntryUnit("all")}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+                  selectedEntryUnit === "all"
+                    ? "bg-sky-500 text-slate-950 font-bold shadow-sm shadow-sky-500/30"
+                    : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
-                {tab.label}
+                All Units ({ALL_TOPICS.length})
               </button>
-            );
-          })}
-        </div>
+              {SYLLABUS_UNITS.map((unit) => {
+                const count = unit.topics.length;
+                const shortTitle = unit.title.replace("Unit ", "U");
+                return (
+                  <button
+                    key={unit.id}
+                    onClick={() => setSelectedEntryUnit(unit.id)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+                      selectedEntryUnit === unit.id
+                        ? "bg-sky-500 text-slate-950 font-bold shadow-sm shadow-sky-500/30"
+                        : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
+                    }`}
+                  >
+                    {shortTitle.split(":")[0]}: {unit.subtitle.split(",")[0]} ({count})
+                  </button>
+                );
+              })}
+            </div>
 
-        {/* View Mode Toggle & Shuffle */}
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setShuffledSeed(Date.now())}
-            className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all cursor-pointer"
-            title="Shuffle Deck"
-          >
-            <Shuffle className="w-4 h-4" />
-          </button>
-          <div className="p-1 rounded-xl bg-slate-900 border border-white/10 flex items-center gap-1">
-            <button
-              onClick={() => setViewMode("card")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer transition-all ${
-                viewMode === "card"
-                  ? "bg-sky-500/30 text-white font-bold"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Card Mode
-            </button>
-            <button
-              onClick={() => setViewMode("sheet")}
-              className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer transition-all ${
-                viewMode === "sheet"
-                  ? "bg-purple-500/30 text-white font-bold"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              Cram Sheet
-            </button>
+            <div className="relative w-full md:w-64">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={entrySearchQuery}
+                onChange={(e) => setEntrySearchQuery(e.target.value)}
+                placeholder="Filter subunits or diagrams..."
+                className="w-full pl-10 pr-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-sky-400 transition-colors"
+              />
+            </div>
           </div>
-        </div>
-      </div>
 
-      {/* =====================================================================
-          VIEW MODE 1: INTERACTIVE 3D FLIP CARD
-          ===================================================================== */}
-      {viewMode === "card" && activeCard && (
-        <div className="max-w-3xl mx-auto space-y-4">
-          {/* Card Viewport with Hardware-Accelerated 3D Flip */}
-          <div
-            className="w-full min-h-[380px] cursor-pointer select-none"
-            style={{ perspective: "1400px" }}
-            onClick={() => setIsFlipped(!isFlipped)}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              {!isFlipped ? (
-                <motion.div
-                  key={`front-${activeCard.id}`}
-                  initial={{ rotateY: -80, opacity: 0 }}
-                  animate={{ rotateY: 0, opacity: 1 }}
-                  exit={{ rotateY: 80, opacity: 0 }}
-                  transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full min-h-[380px] rounded-3xl p-6 sm:p-8 liquid-glass-bento jelly-card-interactive border border-white/15 relative flex flex-col justify-between hover:border-sky-400/50 shadow-2xl"
+          {/* Subunit Bento Cards Grid */}
+          <div className="space-y-6">
+            {filteredEntryTopics.map((topic) => {
+              const unit = SYLLABUS_UNITS.find((u) => u.id === topic.unitId);
+              const discussionPrompt =
+                topic.examBlueprint.paper1EssayPrompt ||
+                topic.checkUnderstanding[0]?.question ||
+                `Evaluate the market and welfare consequences of government intervention in ${topic.title}.`;
+              const traps =
+                topic.analysis.commonMisconceptions.length > 0
+                  ? topic.analysis.commonMisconceptions
+                  : ["Confusing a shift of the demand/supply curve with a movement along the curve."];
+
+              return (
+                <div
+                  key={topic.id}
+                  className="liquid-glass-bento rounded-3xl p-6 sm:p-7 border border-white/10 space-y-6 hover:border-sky-500/30 transition-all duration-300"
                 >
-                  {/* Top Card Badge & Flip Indicator */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`font-mono text-xs px-2.5 py-1 rounded-xl border font-bold ${activeCard.badgeColor}`}
-                      >
-                        {activeCard.badge}
-                      </span>
-                      <span className="font-mono text-xs text-slate-400">
-                        Card {currentIndex + 1} of {filteredCards.length}
-                      </span>
+                  {/* Subunit Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                          {topic.displayCode}
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
+                          Unit {topic.unitNumber} • {unit?.title.split(":")[1]?.trim() || "Economics"}
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-400/25">
+                          {topic.level}
+                        </span>
+                        <span className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
+                          <Zap className="w-3 h-3 text-amber-400" />
+                          60s Warmup
+                        </span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        {topic.title}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-slate-400 italic">
+                        {topic.subtitle}
+                      </p>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-                      <RotateCw className="w-3.5 h-3.5 animate-spin-slow text-sky-400" />
-                      <span>Click / Space to Flip</span>
-                    </div>
+
+                    <button
+                      onClick={() => handleOpenTopic(topic.id)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white/[0.05] hover:bg-sky-500 hover:text-slate-950 text-slate-300 text-xs font-semibold border border-white/10 hover:border-sky-400 cursor-pointer transition-all shrink-0 self-start sm:self-center"
+                    >
+                      <span>Study Full Topic</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
                   </div>
 
-                  {/* Central Prompt Content */}
-                  <div className="my-auto py-4 text-center">
-                    <div className="space-y-3">
-                      <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
-                        {activeCard.frontPrompt}
-                      </h3>
-                      {activeCard.frontSubtext && (
-                        <p className="text-xs sm:text-sm text-slate-400 font-mono">
-                          {activeCard.frontSubtext}
+                  {/* 4 Bento Panels Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Panel 1: 60-Second Core Takeaway */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                        <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                        <span>60-Second Core Takeaway (Warmup)</span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                        {topic.summary}
+                      </p>
+                      {topic.subSections[0]?.analyticalTakeaway && (
+                        <div className="pt-2 border-t border-white/5 text-xs text-slate-300 leading-relaxed">
+                          <span className="text-amber-400 font-bold">Key Analytical Principle: </span>
+                          {topic.subSections[0].analyticalTakeaway}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Panel 2: Key Formulas, Diagrams & Quantitative Models */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-sky-300">
+                        <TrendingUp className="w-4 h-4 text-sky-400 shrink-0" />
+                        <span>Key Diagrams &amp; Quantitative Models</span>
+                      </div>
+                      {topic.analysis.keyDiagrams.length > 0 && (
+                        <div className="space-y-1.5">
+                          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                            Core Syllabus Diagrams:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {topic.analysis.keyDiagrams.map((diag, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2.5 py-1 rounded-xl text-xs font-mono bg-sky-500/15 text-sky-200 border border-sky-400/25"
+                              >
+                                {diag}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                      {topic.subSections[0]?.keyFormulaOrFramework ? (
+                        <div className="p-3 rounded-xl bg-slate-950/70 border border-sky-500/20 text-xs font-mono text-sky-300">
+                          <span className="font-bold text-slate-400 block text-[10px] uppercase mb-1">
+                            Formula / Model Definition:
+                          </span>
+                          <MathFormula math={topic.subSections[0].keyFormulaOrFramework} block={false} />
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          Equilibrium analysis and social surplus welfare calculations govern this topic.
                         </p>
                       )}
-                      <span className="inline-block mt-4 px-3 py-1 rounded-xl bg-white/5 border border-white/10 text-[11px] font-mono text-slate-400">
-                        [Press Spacebar to Reveal Answer]
-                      </span>
+                    </div>
+
+                    {/* Panel 3: Teacher Will Ask / Discussion Points */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-indigo-300">
+                          <HelpCircle className="w-4 h-4 text-indigo-400 shrink-0" />
+                          <span>Teacher Will Ask / Discussion</span>
+                        </div>
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-400/25">
+                          {topic.examBlueprint.commandTerm || "Evaluate"}
+                        </span>
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed">
+                        &ldquo;{discussionPrompt}&rdquo;
+                      </p>
+                      {topic.analysis.coreThesis && (
+                        <div className="pt-2 border-t border-white/5 text-xs text-indigo-200/90 leading-relaxed">
+                          <span className="font-bold text-indigo-300">Evaluation Stance: </span>
+                          {topic.analysis.coreThesis}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Panel 4: Common Student Traps & Misconceptions */}
+                    <div className="p-5 rounded-2xl bg-rose-500/[0.04] border border-rose-500/20 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-rose-300">
+                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>Common Student Traps &amp; Misconceptions</span>
+                      </div>
+                      <div className="space-y-2">
+                        {traps.slice(0, 2).map((misc, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-xs text-rose-200/90 leading-relaxed">
+                            <Target className="w-3.5 h-3.5 text-rose-400 shrink-0 mt-0.5" />
+                            <span>{misc}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="pt-2 border-t border-rose-500/10 text-xs text-slate-400">
+                        <strong className="text-rose-300">Exam Reminder: </strong>
+                        Always explicitly define axes, label initial vs new equilibriums (e.g. P1, Q1 to P2, Q2), and state welfare loss areas.
+                      </div>
                     </div>
                   </div>
-
-                  {/* Bottom Card Controls */}
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-sky-400" />
-                      {activeCard.unit}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFlashcardMastered(activeCard.id);
-                      }}
-                      className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-                        isMastered
-                          ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/40"
-                          : "bg-white/5 text-slate-400 border border-white/10 hover:text-white"
-                      }`}
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      {isMastered ? "Mastered (Press 1)" : "Mark Mastered (1)"}
-                    </button>
-                  </div>
-                </motion.div>
-              ) : (
-                <motion.div
-                  key={`back-${activeCard.id}`}
-                  initial={{ rotateY: -80, opacity: 0 }}
-                  animate={{ rotateY: 0, opacity: 1 }}
-                  exit={{ rotateY: 80, opacity: 0 }}
-                  transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                  className="w-full min-h-[380px] rounded-3xl p-6 sm:p-8 liquid-glass-bento jelly-card-interactive border border-sky-400/40 bg-slate-900/95 relative flex flex-col justify-between shadow-[0_0_35px_-5px_rgba(14,165,233,0.3)]"
-                >
-                  {/* Top Card Badge & Flip Indicator */}
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={`font-mono text-xs px-2.5 py-1 rounded-xl border font-bold ${activeCard.badgeColor}`}
-                      >
-                        {activeCard.badge} Solution
-                      </span>
-                      <span className="font-mono text-xs text-slate-400">
-                        Card {currentIndex + 1} of {filteredCards.length}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs font-mono text-sky-400">
-                      <RotateCw className="w-3.5 h-3.5 animate-spin-slow text-sky-400" />
-                      <span>Showing Answer (Click to Flip)</span>
-                    </div>
-                  </div>
-
-                  {/* Central Answer Content */}
-                  <div className="my-auto py-4 text-center">
-                    {activeCard.backContent}
-                  </div>
-
-                  {/* Bottom Card Controls */}
-                  <div className="mt-4 pt-3 border-t border-white/10 flex items-center justify-between text-xs font-mono text-slate-400">
-                    <span className="flex items-center gap-1.5">
-                      <span className="w-2 h-2 rounded-full bg-sky-400" />
-                      {activeCard.unit}
-                    </span>
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleFlashcardMastered(activeCard.id);
-                      }}
-                      className={`px-3 py-1 rounded-xl transition-all flex items-center gap-1.5 cursor-pointer ${
-                        isMastered
-                          ? "bg-emerald-500/25 text-emerald-300 border border-emerald-500/40"
-                          : "bg-white/5 text-slate-400 border border-white/10 hover:text-white"
-                      }`}
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5" />
-                      {isMastered ? "Mastered (Press 1)" : "Mark Mastered (1)"}
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-
-          {/* Navigation Controls Bar */}
-          <div className="flex items-center justify-between gap-3 px-2">
-            <button
-              onClick={handlePrev}
-              className="px-4 py-2 rounded-2xl liquid-glass-pill text-xs font-mono text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer"
-            >
-              <ChevronLeft className="w-4 h-4" /> Previous
-            </button>
-            <div className="text-xs font-mono text-slate-500 hidden sm:block">
-              Shortcuts: [Space] Flip • [← →] Next/Prev • [1] Master
-            </div>
-            <button
-              onClick={handleNext}
-              className="px-4 py-2 rounded-2xl liquid-glass-pill text-xs font-mono text-slate-300 hover:text-white flex items-center gap-1.5 cursor-pointer"
-            >
-              Next <ChevronRight className="w-4 h-4" />
-            </button>
+                </div>
+              );
+            })}
           </div>
         </div>
       )}
 
-      {/* =====================================================================
-          VIEW MODE 2: FULL CRAM SHEET TABLE
-          ===================================================================== */}
-      {viewMode === "sheet" && (
-        <div className="space-y-4">
-          <div className="liquid-glass-bento rounded-3xl p-6 border border-white/10">
-            <h3 className="text-base font-bold text-white mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-purple-400" /> Complete Rapid Cram Sheet ({filteredCards.length} Cards)
-            </h3>
+      {/* ===================================================================
+          MODE 2: FLASHCARDS / ACTIVE RECALL
+          =================================================================== */}
+      {mainTab === "flashcards" && (
+        <div className="space-y-6">
+          {/* Deck Switcher Subtabs */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2">
+            {[
+              { id: "diagrams", label: "Diagrams", icon: Layers, count: DIAGRAMS_DOSSIER.length },
+              { id: "formulas", label: "Formulas", icon: Calculator, count: FORMULA_BANK.length },
+              { id: "glossary", label: "Glossary", icon: BookOpen, count: GLOSSARY_TERMS.length },
+              { id: "concepts", label: "Concepts", icon: Compass, count: KEY_CONCEPTS.length },
+              { id: "exam-questions", label: "Exam Questions", icon: FileText, count: HIGH_YIELD_EXAM_QUESTIONS.length },
+            ].map((deck) => {
+              const Icon = deck.icon;
+              const isActive = activeFlashcardDeck === deck.id;
+              return (
+                <button
+                  key={deck.id}
+                  onClick={() => setActiveFlashcardDeck(deck.id as FlashcardDeckType)}
+                  className={`flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer text-left ${
+                    isActive
+                      ? "bg-sky-500/20 border-sky-400 text-white shadow-[0_0_20px_-5px_rgba(14,165,233,0.4)]"
+                      : "bg-white/[0.03] border-white/10 hover:border-white/20 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2">
+                    <Icon className={`w-4 h-4 ${isActive ? "text-sky-400" : "text-slate-400"}`} />
+                    <span className="text-xs font-bold">{deck.label}</span>
+                  </div>
+                  <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300">
+                    {deck.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Unit Filters */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-mono uppercase text-slate-400 mr-2 flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" />
+                <span>Unit:</span>
+              </span>
+              {[
+                { id: "all", label: "All Units" },
+                { id: "unit-1", label: "Unit 1" },
+                { id: "unit-2", label: "Unit 2" },
+                { id: "unit-3", label: "Unit 3" },
+                { id: "unit-4", label: "Unit 4" },
+              ].map((u) => (
+                <button
+                  key={u.id}
+                  onClick={() => {
+                    setUnitFilter(u.id);
+                    setCurrentIndex(0);
+                    setIsFlipped(false);
+                  }}
+                  className={`px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                    unitFilter === u.id
+                      ? "bg-sky-500 text-slate-950 font-bold"
+                      : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
+                  }`}
+                >
+                  {u.label}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10">
+              <button
+                onClick={() => setViewModeState("card")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer ${
+                  viewModeState === "card" ? "bg-sky-500 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Card
+              </button>
+              <button
+                onClick={() => setViewModeState("sheet")}
+                className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer ${
+                  viewModeState === "sheet" ? "bg-sky-500 text-slate-950 font-bold" : "text-slate-400 hover:text-white"
+                }`}
+              >
+                Sheet
+              </button>
+            </div>
+          </div>
+
+          {/* Flashcard Presentation Card */}
+          {viewModeState === "card" && currentFlashcard && (
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div
+                onClick={() => setIsFlipped(!isFlipped)}
+                className="min-h-[340px] rounded-3xl p-8 bg-gradient-to-b from-slate-900/90 to-slate-950/95 border border-white/10 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-sky-500/40 transition-all select-none relative overflow-hidden"
+              >
+                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className={`px-2.5 py-0.5 rounded-full font-mono font-bold text-xs border ${currentFlashcard.badgeColor}`}>
+                      {currentFlashcard.badge}
+                    </span>
+                    <span className="text-slate-300 font-mono text-xs">{currentFlashcard.frontSubtext}</span>
+                  </div>
+                  <span className="font-mono text-sky-400">
+                    {currentIndex + 1} of {filteredFlashcards.length}
+                  </span>
+                </div>
+
+                <div className="my-auto py-6 text-center space-y-4">
+                  {!isFlipped ? (
+                    <>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                        QUESTION / PROMPT
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug">
+                        {currentFlashcard.frontPrompt}
+                      </h3>
+                      <p className="text-xs text-slate-400 pt-2">
+                        (Click card to reveal model definition &amp; guidance)
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">
+                        MODEL ANSWER &amp; GUIDANCE
+                      </span>
+                      <div className="py-2">{currentFlashcard.backContent}</div>
+                    </>
+                  )}
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-400 border-t border-white/10 pt-3">
+                  <span className="text-[11px] text-slate-500">
+                    {isFlipped ? "Answer revealed" : "Click to flip"}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleFlashcardMastered(currentFlashcard.id);
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer ${
+                      isMastered
+                        ? "bg-emerald-950/80 text-emerald-300 border border-emerald-500/40"
+                        : "bg-white/[0.05] text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{isMastered ? "Mastered" : "Mark Mastered"}</span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation buttons */}
+              <div className="flex items-center justify-between gap-4">
+                <button
+                  onClick={handlePrevCard}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-200 text-xs font-bold cursor-pointer transition-all"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </button>
+                <button
+                  onClick={handleNextCard}
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-sky-500 hover:bg-sky-400 text-slate-950 text-xs font-bold cursor-pointer transition-all shadow-lg shadow-sky-500/25"
+                >
+                  <span>Next Card</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Sheet View */}
+          {viewModeState === "sheet" && (
             <div className="space-y-3">
-              {filteredCards.map((card, idx) => {
-                const isCardMastered = !!masteredFlashcards[card.id];
+              {filteredFlashcards.map((card, idx) => {
+                const mastered = !!masteredFlashcards[card.id];
                 return (
                   <div
                     key={card.id}
-                    className="p-4 rounded-2xl bg-slate-950/60 border border-white/5 space-y-2.5"
+                    className={`p-5 rounded-2xl border transition-all ${
+                      mastered
+                        ? "bg-emerald-950/15 border-emerald-500/30"
+                        : "bg-white/[0.02] border-white/10"
+                    }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <span className="font-mono text-xs font-bold text-slate-400">
-                          #{idx + 1}
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div>
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 mr-2">
+                          #{idx + 1} • {card.unit}
                         </span>
-                        <span
-                          className={`font-mono text-[10px] px-2 py-0.5 rounded-lg border font-bold ${card.badgeColor}`}
-                        >
-                          {card.badge}
-                        </span>
-                        <span className="text-xs font-bold text-white">
-                          {card.title}
-                        </span>
+                        <h4 className="text-base font-bold text-white inline-block mt-1">
+                          {card.frontPrompt}
+                        </h4>
                       </div>
                       <button
                         onClick={() => toggleFlashcardMastered(card.id)}
-                        className={`text-xs font-mono px-2 py-0.5 rounded-lg cursor-pointer ${
-                          isCardMastered
-                            ? "bg-emerald-500/20 text-emerald-300"
-                            : "bg-white/5 text-slate-500 hover:text-white"
+                        className={`p-2 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
+                          mastered
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                            : "bg-white/[0.04] text-slate-400 hover:text-white border-white/10"
                         }`}
                       >
-                        {isCardMastered ? "✓ Mastered" : "Mark Mastered"}
+                        {mastered ? "Mastered" : "Unmastered"}
                       </button>
                     </div>
-                    <p className="text-xs text-sky-200/90 font-medium">
-                      Q: {card.frontPrompt}
-                    </p>
-                    <div className="pt-2 border-t border-white/5 text-xs text-slate-300">
+                    <div className="text-xs sm:text-sm text-slate-300 pl-2 border-l-2 border-sky-500/30">
                       {card.backContent}
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
+          )}
         </div>
       )}
     </div>
   );
 };
+
+export default ActiveRecallRevisionView;

@@ -2,6 +2,7 @@ import {
   FlashcardItem,
   QuizQuestion,
   PreLessonCramItem,
+  ChapterEntryTicketItem,
   EssayBlueprint,
   QuoteClozeItem,
 } from "./types";
@@ -1020,3 +1021,843 @@ export const FIRST_TIME_READER_GUIDE: FirstTimeReaderGuide = {
     "Don't skip the Appendix: 'The Principles of Newspeak' at the end of the book is written in the past tense in standard English, providing an essential historical hint about the Party's ultimate fate!",
   ],
 };
+
+// ==================== 6. COMPLETE CHAPTER SUMMARY & ENTRY TICKET CATALOG ====================
+// Curated 60-second briefs, characters, settings, themes, must-cite quotes, teacher questions,
+// and exam pitfalls for all 24 chapters and scholarly Appendix.
+
+export const ALL_CHAPTER_ENTRY_TICKETS: ChapterEntryTicketItem[] = [
+  // ---------- PART 1 ----------
+  {
+    id: "p1-c1",
+    chapterCode: "I.1",
+    title: "The Bright Cold Day in April & The Diary",
+    subtitle: "Victory Mansions, the Two Minutes Hate, and 'DOWN WITH BIG BROTHER'",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Julia (dark-haired girl)", "O'Brien", "Emmanuel Goldstein (telescreen)"],
+    setting: "Victory Mansions Flat 7 & Ministry of Truth (Minitrue)",
+    keyThemes: ["surveillance", "totalitarianism", "doublethink"],
+    sixtySecondSummary:
+      "Winston Smith enters dilapidated Victory Mansions on a cold April day where clocks strike thirteen. Taking advantage of a shallow alcove outside telescreen line-of-sight, he opens an antique cream-laid diary bought illegally in a prole junk shop and writes 'DOWN WITH BIG BROTHER'. He recalls the Two Minutes Hate, Goldstein's demonization, his suspicion of the dark-haired girl as a Thought Police spy, and a fleeting glance of shared heresy with O'Brien.",
+    mustCiteQuotes: [
+      {
+        quote: "It was a bright cold day in April, and the clocks were striking thirteen.",
+        speaker: "Narrator",
+        analysis: "Subverts familiar pastoral spring expectations; military 24-hour time establishes an unnatural, regimented order.",
+      },
+      {
+        quote: "WAR IS PEACE / FREEDOM IS SLAVERY / IGNORANCE IS STRENGTH",
+        speaker: "Party Slogan",
+        analysis: "The tripartite slogan embodying Doublethink—holding contradictory axioms simultaneously to paralyze critical logic.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Orwell open with clocks striking thirteen rather than a standard hour?",
+      "How does the Two Minutes Hate function as psychological conditioning rather than mere propaganda?",
+      "What is the significance of Winston's diary being physical, cream-laid paper in a digitized surveillance society?",
+    ],
+    commonMisconceptions:
+      "Students often assume Winston is brave or heroic. In reality, Orwell emphasizes Winston's physical frailty (varicose ulcer, coughing fits) and impulsive desperation; his rebellion begins with visceral psychological disgust rather than a grand political doctrine.",
+  },
+  {
+    id: "p1-c2",
+    chapterCode: "I.2",
+    title: "Mrs. Parsons, The Junior Spies & O'Brien's Promise",
+    subtitle: "Domestic decay, weaponized children, and the place with no darkness",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 6,
+    characters: ["Winston Smith", "Mrs. Parsons", "Parsons Children", "Tom Parsons (mentioned)"],
+    setting: "Victory Mansions Flat 2 (Dilapidated Parsons Residence)",
+    keyThemes: ["loyalty", "surveillance", "totalitarianism"],
+    sixtySecondSummary:
+      "Winston visits his neighbor Mrs. Parsons to unblock her sink. Her children, dressed in Junior Spies uniforms, savagely play at hanging Eurasian prisoners and fire toy catapults at Winston while chanting 'Traitor!' and 'Thought-criminal!' Winston reflects on how the Party systematically turns offspring into domestic informants who betray their parents. Back in his flat, ink stains on his fingers remind him he is doomed, yet he recalls a dream in which O'Brien whispered: 'We shall meet in the place where there is no darkness.'",
+    mustCiteQuotes: [
+      {
+        quote: "It was almost normal for people over thirty to be frightened of their own children.",
+        speaker: "Narrator",
+        analysis: "Illustrates the totalitarian destruction of nuclear family loyalty in favor of absolute loyalty to Big Brother.",
+      },
+      {
+        quote: "We shall meet in the place where there is no darkness.",
+        speaker: "O'Brien (in Winston's dream)",
+        analysis: "Poignant motif that Winston mistakes for utopia or the Brotherhood, but which ironically foreshadows the blinding interrogation cells of the Ministry of Love.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does the Party exploit children to dismantle the traditional family structure?",
+      "Why does Winston consider Tom and Mrs. Parsons doomed even though they are orthodox?",
+      "What is the dramatic irony of Winston's interpretation of 'the place where there is no darkness'?",
+    ],
+    commonMisconceptions:
+      "Students often treat the Parsons children as comic brats. Orwell modeled them on the Nazi Hitler Youth and Soviet Pioneers (e.g. Pavlik Morozov); they are genuine executioners in training.",
+  },
+  {
+    id: "p1-c3",
+    chapterCode: "I.3",
+    title: "Dreams of the Golden Country, Mother & Ingsoc Origins",
+    subtitle: "The vanished pastoral pasture, maternal sacrifice, and Physical Jerks",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Winston's Mother & Sister (in dream)", "Julia (in dream)", "Physical Jerks Instructor"],
+    setting: "Winston's Dreamscape & Flat 7 Exercising Mat",
+    keyThemes: ["doublethink", "totalitarianism", "rebellion"],
+    sixtySecondSummary:
+      "Winston wakes from a vivid dream of his mother and infant sister sinking beneath green water, sacrificing their lives so he might survive during the atomic purges of the 1950s. He dreams of the 'Golden Country'—a lush pasture where the dark-haired girl tears off her clothes in an act that annihilates the Party with a single gesture. Awakened by the telescreen for 'Physical Jerks', he contemplates Doublethink and how the Party erases all memory of past alliances between Oceania, Eurasia, and Eastasia.",
+    mustCiteQuotes: [
+      {
+        quote: "Tragedy, he perceived, belonged to the ancient time, to a time when there was still privacy, love, and friendship...",
+        speaker: "Narrator",
+        analysis: "Establishes that deep human emotion requires private autonomy, which totalitarian regimes eradicate.",
+      },
+      {
+        quote: "To know and not to know, to be conscious of complete truthfulness while telling carefully constructed lies...",
+        speaker: "Narrator",
+        analysis: "The definitive definition of Doublethink: holding contradictory beliefs simultaneously and believing both.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Winston connect private human tragedy with an extinct pre-Party past?",
+      "What does Julia casting off her clothes symbolize in Winston's dream of the Golden Country?",
+      "How does Doublethink differ from simple lying or political hypocrisy?",
+    ],
+    commonMisconceptions:
+      "Students often confuse Doublethink with mere hypocrisy. Doublethink is cognitive gymnastics where the liar completely believes his own falsehoods even while holding the original truth in reserve.",
+  },
+  {
+    id: "p1-c4",
+    chapterCode: "I.4",
+    title: "Ministry of Truth (Minitrue) & Historical Falsification",
+    subtitle: "Pneumatic speakwrites, memory holes, and the creation of Comrade Ogilvy",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Comrade Ogilvy (invented)", "Comrade Withers (unperson)", "Tillotson"],
+    setting: "Ministry of Truth (Records Department / Minitrue)",
+    keyThemes: ["totalitarianism", "newspeak", "doublethink"],
+    sixtySecondSummary:
+      "Winston works at his cubicle in Minitrue altering back issues of The Times using pneumatic tubes, speakwrites, and memory holes. To cover up Big Brother's praise of a purged official (Comrade Withers), Winston invents 'Comrade Ogilvy'—an unblemished, ascetic Party martyr who died in battle. History is not merely censored; it is continuously re-manufactured so the Party's infallibility remains perpetually intact.",
+    mustCiteQuotes: [
+      {
+        quote: "Who controls the past controls the future: who controls the present controls the past.",
+        speaker: "Party Slogan",
+        analysis: "Epistemological doctrine: present power gives monopoly over archives, rendering historical truth fully mutable.",
+      },
+      {
+        quote: "Comrade Ogilvy, who had never existed in the present, now existed in the past...",
+        speaker: "Narrator",
+        analysis: "Exposes the grotesque ease with which totalitarian regimes create heroes and erase dissidents out of thin air.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "What is an 'unperson' and how does destroying physical records destroy existence itself?",
+      "How does the creation of Comrade Ogilvy parody Soviet and totalitarian mythmaking?",
+      "If all historical records agree with the Party, can an objective truth be said to exist?",
+    ],
+    commonMisconceptions:
+      "Students mistake Minitrue for a simple censorship bureau. Minitrue does not merely suppress facts; it continuously manufactures an exhaustive, synthetic reality to replace them.",
+  },
+  {
+    id: "p1-c5",
+    chapterCode: "I.5",
+    title: "Syme & The Purpose of Newspeak",
+    subtitle: "Linguistic determinism, cutting words, and Chestnut Tree outcasts",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Syme", "Tom Parsons"],
+    setting: "Ministry of Truth Canteen",
+    keyThemes: ["newspeak", "totalitarianism", "surveillance"],
+    sixtySecondSummary:
+      "In the noisy, foul-smelling canteen, Winston eats stew with philologist Syme, who works on the Eleventh Edition of the Newspeak Dictionary. Syme gleefully explains that the goal of Newspeak is to narrow the range of thought until thoughtcrime becomes literally impossible, because there will be no vocabulary to formulate heresy. Observing Syme's razor-sharp intellect, Winston knows with fatal certainty that Syme will be vaporized.",
+    mustCiteQuotes: [
+      {
+        quote: "Don't you see that the whole aim of Newspeak is to narrow the range of thought? In the end we shall make thoughtcrime literally impossible...",
+        speaker: "Syme",
+        analysis: "Radical linguistic determinism: eliminating vocabulary eliminates the mental capacity for oppositional thought.",
+      },
+      {
+        quote: "Orthodoxy means not thinking—not needing to think. Orthodoxy is unconsciousness.",
+        speaker: "Syme",
+        analysis: "The Party's ultimate psychological goal: the total voluntary surrender of critical consciousness.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why is cutting words from the dictionary considered an achievement by the Party?",
+      "Why does Winston realize Syme will be vaporized while the stupid Parsons will survive?",
+      "What is 'duckspeak' and why does the Party consider it the ideal form of speech?",
+    ],
+    commonMisconceptions:
+      "Students often assume Newspeak is slang or colloquial abbreviation. It is an engineered linguistic cage designed to eliminate semantic shades, synonyms, and rebellious concepts.",
+  },
+  {
+    id: "p1-c6",
+    chapterCode: "I.6",
+    title: "Katharine, Prostitution & Party Chastity",
+    subtitle: "The anti-sex campaign, marital duty, and suppressed erotic energy",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Katharine (estranged wife)", "Old Prole Prostitute"],
+    setting: "Winston's Diary / London Memory",
+    keyThemes: ["rebellion", "doublethink", "loyalty"],
+    sixtySecondSummary:
+      "Winston records in his diary an encounter with an aged, toothless prole prostitute in a dark basement. He reflects on his estranged marriage to Katharine, an orthodox fanatic who regarded marital sex as 'our duty to the Party' for reproduction. Winston understands that the Party suppresses erotic love because sexual satisfaction creates a private world outside the state's reach, while frustrated desire is easily channeled into war hysteria and Big Brother worship.",
+    mustCiteQuotes: [
+      {
+        quote: "The sexual act, successfully performed, was rebellion. Desire was thoughtcrime.",
+        speaker: "Narrator",
+        analysis: "Connects private intimate pleasure with political insurrection; eros is inherently anti-totalitarian.",
+      },
+      {
+        quote: "She had not a thought in her head that was not a slogan.",
+        speaker: "Winston (regarding Katharine)",
+        analysis: "Depicts the total colonization of individual human consciousness by Party dogma.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does the Party regard private sexual attraction as an existential political threat?",
+      "How does Katharine embody the Party's ideal feminine orthodoxy?",
+      "How is sexual frustration channeled into collective aggression like Hate Week?",
+    ],
+    commonMisconceptions:
+      "Students often view the Party's anti-sex campaign as puritanical religious morality. Orwell reveals it is cold political engineering: sublimated libido fuels aggressive mass hysteria.",
+  },
+  {
+    id: "p1-c7",
+    chapterCode: "I.7",
+    title: "Hope in the Proles & Jones, Aaronson, and Rutherford",
+    subtitle: "The 85% majority, physical proof of party lies, and '2 + 2 = 4'",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Jones, Aaronson & Rutherford (photograph)", "Proles"],
+    setting: "Winston's Desk & Prole Districts",
+    keyThemes: ["class", "doublethink", "rebellion"],
+    sixtySecondSummary:
+      "Winston writes in his diary: 'If there is hope, it lies in the proles,' who make up 85% of Oceania's population and remain exempt from continuous telescreen monitoring. Yet they remain politically unconscious. Winston recalls holding incontrovertible physical proof of Party falsehoods—a ten-year-old newspaper photograph proving leaders Jones, Aaronson, and Rutherford were in New York when the Party claimed they were committing treason in Eurasia. He burned it in a memory hole in terror, but concludes: 'Freedom is the freedom to say that two plus two make four.'",
+    mustCiteQuotes: [
+      {
+        quote: "Until they become conscious they will never rebel, and until after they have rebelled they cannot become conscious.",
+        speaker: "Winston",
+        analysis: "A debilitating totalitarian Catch-22: resistance requires political consciousness, which systemic oppression prevents.",
+      },
+      {
+        quote: "Freedom is the freedom to say that two plus two make four. If that is granted, all else follows.",
+        speaker: "Winston",
+        analysis: "Grounds human liberty in empirical, objective reality independent of state dogma; O'Brien's core target in Part 3.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why can't the proles rebel despite outnumbering Party members six to one?",
+      "Why was the photograph of Jones, Aaronson, and Rutherford so devastating to Winston?",
+      "What is the philosophical significance of 'two plus two make four'?",
+    ],
+    commonMisconceptions:
+      "Students often imagine Orwell portrays the proles as an imminent revolutionary army. In truth, Orwell portrays them as an inert mass pacified by lotteries, football, and trivial beer-hall disputes.",
+  },
+  {
+    id: "p1-c8",
+    chapterCode: "I.8",
+    title: "Mr. Charrington's Junk Shop & The Glass Paperweight",
+    subtitle: "The coral crystal, St. Clement's bells, and Julia's shadow",
+    part: "Part 1",
+    partId: "part-1",
+    readingTimeMinutes: 9,
+    characters: ["Winston Smith", "Mr. Charrington", "Old Prole in Pub", "Julia (trailing Winston)"],
+    setting: "Prole Quarter Slums & Mr. Charrington's Junk Shop",
+    keyThemes: ["rebellion", "surveillance", "class"],
+    sixtySecondSummary:
+      "Winston walks through prole streets, fails to extract memories of pre-revolutionary life from an old man in a pub, and revisits Mr. Charrington's antique shop. He buys a heavy glass paperweight containing a piece of pink coral—a useless, beautiful artifact from the past. Charrington shows him an upstairs bedroom without a telescreen and teaches him the opening lines of the nursery rhyme 'Oranges and lemons'. Leaving the shop, Winston sees the dark-haired girl trailing him and contemplates bashing her skull with a cobblestone.",
+    mustCiteQuotes: [
+      {
+        quote: "The paperweight was the room he was in, and the coral was Julia's life and his own, fixed in a sort of eternity at the heart of the crystal.",
+        speaker: "Narrator",
+        analysis: "Central motif: the paperweight represents Winston's illusion of private nostalgia, soon to be shattered on the hearthstone.",
+      },
+      {
+        quote: "Here comes a candle to light you to bed, / Here comes a chopper to chop off your head!",
+        speaker: "Mr. Charrington",
+        analysis: "Sinister nursery rhyme that encapsulates the illusion of safety followed by brutal decapitation/arrest.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "What does the glass coral paperweight symbolize in Winston's rebellion?",
+      "Why can't the elderly prole answer Winston's questions about capitalism vs. socialism?",
+      "Why does the rhyme 'Oranges and lemons' evoke nostalgia while hiding an ominous threat?",
+    ],
+    commonMisconceptions:
+      "Students often fail to recognize that Mr. Charrington's charming nostalgia and upstairs room are deliberate honeypots orchestrated by the Thought Police from day one.",
+  },
+
+  // ---------- PART 2 ----------
+  {
+    id: "p2-c1",
+    chapterCode: "II.1",
+    title: "The Note: 'I LOVE YOU'",
+    subtitle: "The corridor fall, the folded slip, and the canteen rendezvous",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Julia", "Wilsher"],
+    setting: "Ministry of Truth Corridor & Canteen",
+    keyThemes: ["rebellion", "surveillance", "loyalty"],
+    sixtySecondSummary:
+      "In the Minitrue corridor, the dark-haired girl trips with her arm in a sling. As Winston helps her to her feet, she slips a folded scrap of paper into his palm. Fearing it is an execution order from the Thought Police, Winston opens it in his cubicle to read three words: 'I love you.' Over the following week, under the continuous glare of telescreens, he struggles to make contact without arousing suspicion, finally arranging a rendezvous with her at a crowded canteen table.",
+    mustCiteQuotes: [
+      {
+        quote: "At the sight of the words I love you the desire to stay alive had welled up inside him...",
+        speaker: "Narrator",
+        analysis: "Love immediately dispels Winston's nihilistic death wish and replaces it with biological willpower to survive.",
+      },
+      {
+        quote: "To mark the paper was the decisive act.",
+        speaker: "Narrator",
+        analysis: "Parallels Winston's opening of the diary; reciprocal human connection is treated as an irreversible act of heresy.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does Orwell generate suspense before Winston reads the note?",
+      "Why was the phrase 'I love you' shocking beyond measure in Oceania?",
+      "How do telescreens force citizens to conduct human relationships in code and glances?",
+    ],
+    commonMisconceptions:
+      "Students often forget Winston previously fantasized about raping and murdering Julia; the note instantly transforms his misogynistic paranoia into romantic obsession.",
+  },
+  {
+    id: "p2-c2",
+    chapterCode: "II.2",
+    title: "The Golden Country: First Physical Encounter",
+    subtitle: "The singing thrush, the bluebells, and embrace as a political act",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Julia", "Singing Thrush"],
+    setting: "Countryside Hideout outside London (The Golden Country)",
+    keyThemes: ["rebellion", "doublethink", "loyalty"],
+    sixtySecondSummary:
+      "Winston follows Julia's precise directions to a secluded woodland clearing outside London. Free from telescreens and hidden microphones, they talk, hear a thrush singing without motive, and share real chocolate Julia smuggled from the black market. Tearing off her Junior Anti-Sex League sash, Julia makes love to Winston in the sunlight. Winston realizes that their embrace is an insurrectionary blow struck against the Party.",
+    mustCiteQuotes: [
+      {
+        quote: "Their embrace had been a battle, the climax a victory. It was a blow struck against the Party. It was a political act.",
+        speaker: "Narrator",
+        analysis: "Reframes physical pleasure and private intimacy as the supreme anti-totalitarian revolt.",
+      },
+      {
+        quote: "I hate purity, I hate goodness! I don't want any virtue to exist anywhere. I want everyone to be corrupt to the bones.",
+        speaker: "Winston",
+        analysis: "Winston's nihilistic realization: moral corruption is the only antidote to the Party's artificial purity.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Winston consider their physical union 'a political act'?",
+      "How does the pastoral countryside contrast with London's urban decay?",
+      "Why does Winston rejoice when Julia confesses she has had sex with dozens of Party members?",
+    ],
+    commonMisconceptions:
+      "Students frequently romanticize this scene as traditional romance. Orwell explicitly grounds it in animal instinct and political defiance: Winston values Julia's corruption because it weakens the Party.",
+  },
+  {
+    id: "p2-c3",
+    chapterCode: "II.3",
+    title: "The Belfry & Julia's Pragmatic Rebellion",
+    subtitle: "Pornosec, black-market chocolate, and yelling with the crowd",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Julia"],
+    setting: "Belfry of a Ruined Country Church",
+    keyThemes: ["rebellion", "totalitarianism", "loyalty"],
+    sixtySecondSummary:
+      "Winston and Julia meet in the belfry of a bombed church. Julia describes her pragmatic philosophy: she has no interest in grand political resistance, historical truth, or future generations. Instead, she seeks private pleasure, works on the pornography machines in Pornosec, wears the Anti-Sex sash as camouflage, and advises Winston to 'always yell with the crowd.' Winston reflects on the gulf between his intellectual martyrdom and Julia's sensual pragmatism.",
+    mustCiteQuotes: [
+      {
+        quote: "Life as she saw it was quite simple. You wanted a good time; 'they', meaning the Party, wanted to stop you having it; you broke the rules as best you could.",
+        speaker: "Narrator (on Julia)",
+        analysis: "Defines Julia's rebellion: individual, hedonistic, and devoid of ideological theory.",
+      },
+      {
+        quote: "Always yell with the crowd, that's what I say. It's the only way to be safe.",
+        speaker: "Julia",
+        analysis: "The art of totalitarian camouflage: hyperbolic public orthodoxy masks private non-conformity.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does Julia's rebellion differ fundamentally from Winston's?",
+      "Why does Julia believe the Party enforces sexual puritanism?",
+      "Why does Julia work in Pornosec, and what is its role in Oceania?",
+    ],
+    commonMisconceptions:
+      "Students often assume Julia shares Winston's obsession with truth and the past. In reality, Julia is bored by doctrine and falls asleep when Winston discusses the Brotherhood; she resists with her body, not her intellect.",
+  },
+  {
+    id: "p2-c4",
+    chapterCode: "II.4",
+    title: "Charrington's Rented Room & The Rat in the Wainscot",
+    subtitle: "Real coffee, feminine cosmetics, and the primal phobia revealed",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Julia", "Mr. Charrington"],
+    setting: "Room above Mr. Charrington's Junk Shop",
+    keyThemes: ["loyalty", "torture", "rebellion"],
+    sixtySecondSummary:
+      "Winston rents the upstairs room above Charrington's shop. Julia arrives with luxuries stolen from the Inner Party: real ground coffee, white sugar, and bread. She applies perfume and makeup, transforming into a vibrant woman. When a brown rat pokes its snout from the wainscot, Winston experiences uncontrollable, nauseating terror, confessing his lifelong phobia of rats. Julia covers the hole and comforts him, gazing into the coral paperweight.",
+    mustCiteQuotes: [
+      {
+        quote: "'Of all horrors in the world—a rat!' Winston cried.",
+        speaker: "Winston",
+        analysis: "Crucial foreshadowing: plants Winston's ultimate psychological vulnerability, which O'Brien will exploit in Room 101.",
+      },
+      {
+        quote: "In this room I'm going to be a woman, not a Party comrade.",
+        speaker: "Julia",
+        analysis: "Reclaims gender, beauty, and individuality against the unisex, desexualized overalls of Ingsoc.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why is renting Charrington's room Winston's definitive crossing of the Rubicon?",
+      "How does Julia wearing makeup represent an act of political defiance?",
+      "Why is the rat's appearance in the bedroom pivotal to the entire novel's trajectory?",
+    ],
+    commonMisconceptions:
+      "Students sometimes overlook the rat as a minor domestic nuisance. Orwell explicitly plants it as Chekhov's gun—it is the exact weapon that breaks Winston's soul in Part 3.",
+  },
+  {
+    id: "p2-c5",
+    chapterCode: "II.5",
+    title: "Syme's Vaporization & Hate Week Preparations",
+    subtitle: "The erased lexicographer, military banners, and Julia's skepticism",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Julia", "Mr. Charrington", "Syme (vaporized)"],
+    setting: "London Streets & Charrington's Room",
+    keyThemes: ["newspeak", "totalitarianism", "surveillance"],
+    sixtySecondSummary:
+      "Syme vanishes without a trace; his name is expunged from the chess committee and he becomes an unperson just as Winston predicted. London is gripped by hysterical preparations for Hate Week, with colossal effigies of Eurasian soldiers hung from buildings. In the room, Winston and Julia debate the Party's origins; Julia shocks Winston by suggesting that the rocket bombs falling on London are launched by the Party itself to maintain terror.",
+    mustCiteQuotes: [
+      {
+        quote: "Syme had ceased to exist: he had never existed.",
+        speaker: "Narrator",
+        analysis: "The definitive formula of vaporization: retroactive historical erasure.",
+      },
+      {
+        quote: "It was a question of whether the rocket bombs were fired by the Party itself, just to keep people frightened.",
+        speaker: "Julia",
+        analysis: "Julia's instinctive cynicism pierces Party propaganda, exposing state-sponsored false-flag terror.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does Syme's vaporization validate Winston's understanding of the Party's psychology?",
+      "Why does Julia suspect the Party fires rocket bombs at its own citizens?",
+      "How does Hate Week demonstrate the total manipulation of public emotion?",
+    ],
+    commonMisconceptions:
+      "Students often think Winston is the more perceptive rebel. Julia's intuition—that the war and rocket bombs are manufactured by Oceania itself—shows she is faster at spotting practical state fraud.",
+  },
+  {
+    id: "p2-c6",
+    chapterCode: "II.6",
+    title: "O'Brien's Invitation in the Corridor",
+    subtitle: "The slip of address, the mention of Syme, and the shadow of death",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 6,
+    characters: ["Winston Smith", "O'Brien"],
+    setting: "Ministry of Truth Corridor",
+    keyThemes: ["surveillance", "loyalty", "doublethink"],
+    sixtySecondSummary:
+      "O'Brien approaches Winston in the Minitrue corridor, praising his Newspeak articles and subtly referencing the vaporized Syme. O'Brien offers to lend Winston the new Tenth Edition of the Newspeak Dictionary and writes his private home address on a slip of paper in full view of a telescreen. Winston memorizes it and drops the slip into a memory hole, realizing the long-awaited conspiracy with the Brotherhood has begun—yet sensing the damp chill of a grave.",
+    mustCiteQuotes: [
+      {
+        quote: "The conspiracy that he had dreamed of did exist, and he had reached the outer edges of it.",
+        speaker: "Narrator",
+        analysis: "Winston's tragic misinterpretation: he believes he is joining an underground liberation movement, unaware it is a Thought Police sting.",
+      },
+      {
+        quote: "He had the sensation of stepping into the dampness of a grave...",
+        speaker: "Narrator",
+        analysis: "Profound premonition: Winston instinctively knows this step seals his physical execution.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does O'Brien code his invitation so it sounds innocuous to the telescreen?",
+      "Why does O'Brien mentioning Syme act as a secret password for Winston?",
+      "Why does Winston feel like he is stepping into a grave even while feeling elated?",
+    ],
+    commonMisconceptions:
+      "Students assume Winston is naive to walk into O'Brien's trap. Orwell portrays O'Brien as an omniscient, magnetic figure—Winston craves O'Brien's paternal validation even knowing it leads to death.",
+  },
+  {
+    id: "p2-c7",
+    chapterCode: "II.7",
+    title: "The Stolen Chocolate, Mother & Betrayal Defined",
+    subtitle: "Childhood hunger, the proles' humanity, and the impregnable heart",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Julia", "Winston's Mother & Sister (memory)"],
+    setting: "Room above Charrington's Shop",
+    keyThemes: ["loyalty", "class", "totalitarianism"],
+    sixtySecondSummary:
+      "Winston wakes in tears after remembering his childhood during the post-atomic famines. He recalls selfishly snatching a chocolate ration from his starving baby sister and running away, never seeing his mother or sister again. He realizes the proles have remained truly human because their personal loyalties and gestures endure. He and Julia agree that while the Party can force confessions through torture, 'they can't get inside you'—real betrayal is ceasing to love each other.",
+    mustCiteQuotes: [
+      {
+        quote: "The proles are human beings. We are not human.",
+        speaker: "Winston",
+        analysis: "Outer Party members have had their instincts, empathy, and dignity stripped; the proles alone retain genuine emotion.",
+      },
+      {
+        quote: "If they could make me stop loving you—that would be the real betrayal.",
+        speaker: "Winston",
+        analysis: "The novel's central emotional thesis: inner emotional loyalty is inviolable—the exact belief that Miniluv will destroy.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does the chocolate flashback encapsulate the moral devastation of totalitarian famine?",
+      "Why does Winston view the proles as the only true human beings left in Oceania?",
+      "What is Winston and Julia's distinction between confession and betrayal?",
+    ],
+    commonMisconceptions:
+      "Students often forget Winston's assertion that 'they can't get inside you' is the thematic fulcrum of the book; Part 3 exists specifically to prove that the Party CAN get inside you.",
+  },
+  {
+    id: "p2-c8",
+    chapterCode: "II.8",
+    title: "O'Brien's Flat & Brotherhood Initiation",
+    subtitle: "Turning off the telescreen, real wine, and the terrible pledge",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 9,
+    characters: ["Winston Smith", "Julia", "O'Brien", "Martin (servant)"],
+    setting: "O'Brien's Luxurious Inner Party Apartment",
+    keyThemes: ["rebellion", "totalitarianism", "doublethink"],
+    sixtySecondSummary:
+      "Winston and Julia visit O'Brien's plush Inner Party flat, where O'Brien stuns them by turning off his telescreen. They drink real wine and declare themselves enemies of the Party, promising to commit murder, sabotage, and throw sulfuric acid in children's faces if the Brotherhood demands it—refusing only to separate and stop loving each other. O'Brien confirms the existence of Emmanuel Goldstein and promises to deliver 'The Book' to Winston via a briefcase drop.",
+    mustCiteQuotes: [
+      {
+        quote: "Yes, everything is turned off. We are alone.",
+        speaker: "O'Brien",
+        analysis: "Displays the unimaginable luxury of privacy reserved solely for the Inner Party elite.",
+      },
+      {
+        quote: "'You are prepared to throw sulfuric acid in a child's face?' 'Yes.'",
+        speaker: "O'Brien & Winston",
+        analysis: "Chilling moral compromise: in fighting a monstrous regime, the rebels agree to adopt the regime's own depravity.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Winston agree to commit horrific atrocities for the Brotherhood?",
+      "What single condition do Winston and Julia refuse to accept?",
+      "How does O'Brien's apartment contrast with Victory Mansions?",
+    ],
+    commonMisconceptions:
+      "Students often cheer for Winston during the initiation. Orwell intentionally includes Winston agreeing to throw acid at children to demonstrate that anti-totalitarian hatred can corrupt the rebel's morality.",
+  },
+  {
+    id: "p2-c9",
+    chapterCode: "II.9",
+    title: "Hate Week Mid-Speech Shift & Goldstein's Book",
+    subtitle: "The war that is continuous, the three classes, and the singing prole woman",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 10,
+    characters: ["Winston Smith", "Julia", "Prole Washerwoman"],
+    setting: "Room above Charrington's Shop",
+    keyThemes: ["class", "totalitarianism", "doublethink"],
+    sixtySecondSummary:
+      "On the sixth day of Hate Week, the speaker is handed a slip mid-sentence: Oceania is at war with Eastasia, not Eurasia. The crowd immediately tears down Eurasian banners, blaming Goldstein. After days of rewriting records, Winston retreats to the room and reads 'The Theory and Practice of Oligarchical Collectivism' (The Book). It details how perpetual war burns surplus goods to maintain social hierarchy and how Ingsoc preserves power. Julia joins him and falls asleep as they admire a singing prole washerwoman.",
+    mustCiteQuotes: [
+      {
+        quote: "Oceania was at war with Eastasia: Oceania had always been at war with Eastasia.",
+        speaker: "Narrator",
+        analysis: "The supreme manifestation of Doublethink and mutable reality executed on a mass scale.",
+      },
+      {
+        quote: "War is a way of shattering to pieces, or pouring into the stratosphere... materials which might otherwise be used to make the masses too comfortable.",
+        speaker: "Goldstein's Book",
+        analysis: "The economic engine of totalitarianism: manufactured scarcity prevents egalitarian education and rebellion.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why is perpetual war necessary to sustain Oceania's social pyramid?",
+      "Why does Winston say: 'I understand HOW: I do not understand WHY'?",
+      "Why does the singing prole washerwoman represent the only enduring hope for humanity?",
+    ],
+    commonMisconceptions:
+      "Students often skim the excerpts from Goldstein's Book. In reality, Orwell wrote these chapters to lay out his political philosophy; they contain the economic and sociological framework of the entire novel.",
+  },
+  {
+    id: "p2-c10",
+    chapterCode: "II.10",
+    title: "The Iron Voice, Smashed Paperweight & The Arrest",
+    subtitle: "The picture removed, Charrington unmasked, and the dead heretics",
+    part: "Part 2",
+    partId: "part-2",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "Julia", "Mr. Charrington (Thought Police)", "Black-uniformed Troopers"],
+    setting: "Room above Mr. Charrington's Shop",
+    keyThemes: ["surveillance", "loyalty", "torture"],
+    sixtySecondSummary:
+      "Looking down at the red-armed prole washerwoman, Winston murmurs: 'We are the dead.' Julia repeats: 'We are the dead.' Suddenly, a cold metallic voice behind the St. Clement's engraving replies: 'You are the dead.' The picture crashes to the floor, revealing a hidden telescreen. Black-uniformed Thought Police smash into the room, beat Julia, and shatter the glass coral paperweight against the hearthstone. Mr. Charrington enters, revealed as a thirty-five-year-old Thought Police operative.",
+    mustCiteQuotes: [
+      {
+        quote: "'You are the dead,' said an iron voice behind them.",
+        speaker: "Telescreen Voice (Charrington)",
+        analysis: "The chilling climax of Part 2: the panoptic state shatters the domestic sanctuary in an instant.",
+      },
+      {
+        quote: "The paperweight was the room he was in... The fragment of coral, a tiny crinkle of pink... rolled across the mat. How small, thought Winston, how small it always was!",
+        speaker: "Narrator",
+        analysis: "Symbolic destruction: Winston's illusion of safety is smashed, revealing how tiny and fragile his private rebellion truly was.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does the placement of the telescreen behind St. Clement's engraving symbolize the Party's weaponization of the past?",
+      "What does the shattering of the glass paperweight signify?",
+      "How does Mr. Charrington's sudden physical transformation reflect Party surveillance?",
+    ],
+    commonMisconceptions:
+      "Students are often shocked by Charrington's betrayal. Orwell dropped continuous clues: Charrington's lack of a family, his low prices, his convenient lack of a telescreen, and his sinister nursery rhyme.",
+  },
+
+  // ---------- PART 3 ----------
+  {
+    id: "p3-c1",
+    chapterCode: "III.1",
+    title: "Ministry of Love (Miniluv) Holding Cell",
+    subtitle: "The windowless fluorescent glare, Ampleforth, and Parsons betrayed by his daughter",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Ampleforth", "Tom Parsons", "Skull-faced man", "O'Brien"],
+    setting: "Windowless White-Tiled Holding Cell, Ministry of Love",
+    keyThemes: ["torture", "loyalty", "surveillance"],
+    sixtySecondSummary:
+      "Winston sits in a perpetually lit, white porcelain cell in Miniluv where day cannot be distinguished from night. He encounters fellow prisoners: poet Ampleforth, arrested for leaving the word 'God' in a Kipling poem, and Tom Parsons, arrested after his seven-year-old daughter denounced him for chanting 'Down with Big Brother' in his sleep. A starving prisoner begs guards to slit his throat rather than send him to 'Room 101'. Finally, O'Brien enters; Winston realizes O'Brien was his hunter all along.",
+    mustCiteQuotes: [
+      {
+        quote: "'They got me a long time ago,' said O'Brien.",
+        speaker: "O'Brien",
+        analysis: "Ambiguous and chilling: reveals O'Brien was once an unorthodox heretic who was broken and assimilated by Miniluv.",
+      },
+      {
+        quote: "'Thoughtcrime is a dreadful thing, old man,' said Parsons... 'Who denounced you?' 'It was my little daughter.'",
+        speaker: "Parsons & Winston",
+        analysis: "Grotesque perfection of Ingsoc: Parsons is proud of his child for sending him to the execution chamber.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Orwell contrast the reactions of intellectual Ampleforth and orthodox Parsons to arrest?",
+      "What psychological horror is evoked by the prisoners' panic at the mention of 'Room 101'?",
+      "What does O'Brien mean by 'They got me a long time ago'?",
+    ],
+    commonMisconceptions:
+      "Students expect Winston to meet Julia in prison. Miniluv deliberately isolates prisoners so they cannot draw strength or solidarity from human relationships.",
+  },
+  {
+    id: "p3-c2",
+    chapterCode: "III.2",
+    title: "O'Brien's Interrogation & The 4 Dialectical Fingers",
+    subtitle: "The dial of electroshock pain, solipsism, and seeing five fingers",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 9,
+    characters: ["Winston Smith", "O'Brien", "White-coated Technicians"],
+    setting: "Miniluv Interrogation Room",
+    keyThemes: ["doublethink", "torture", "totalitarianism"],
+    sixtySecondSummary:
+      "Strapped to an electroshock bed, Winston is tortured by O'Brien using a dial of adjustable pain. O'Brien explains that Winston is suffering from a defective memory and deranged individualism. Holding up four fingers, O'Brien demands that Winston see five fingers if the Party says so. Winston screams that he sees four, but under relentless agony and cognitive breakdown, he genuinely sees five. O'Brien reveals that Miniluv does not execute heretics until they have been spiritually cured.",
+    mustCiteQuotes: [
+      {
+        quote: "We do not destroy the heretic because he resists us... We convert him, we capture his inner mind, we reshape him.",
+        speaker: "O'Brien",
+        analysis: "The distinct horror of Ingsoc: unlike the Inquisition or Nazis, the Party will not tolerate martyrs—it forces loving capitulation.",
+      },
+      {
+        quote: "Whatever the Party holds to be truth, is truth. It is impossible to see reality except through the eyes of the Party.",
+        speaker: "O'Brien",
+        analysis: "Collective solipsism: reality is not external or empirical, but entirely defined by the consensus of the ruling class.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does O'Brien insist that Winston genuinely see five fingers instead of merely pretending?",
+      "How does the Party prevent martyrs, and how does this contrast with historical regimes?",
+      "What does O'Brien mean when he says reality exists only in the mind of the Party?",
+    ],
+    commonMisconceptions:
+      "Students often believe O'Brien wants Winston to lie to save his life. O'Brien explicitly rejects lip service: Winston must rewire his sensory perception to experience 2 + 2 = 5 as absolute truth.",
+  },
+  {
+    id: "p3-c3",
+    chapterCode: "III.3",
+    title: "The Philosophy of Pure Power & The Stamping Boot",
+    subtitle: "Salinger cruelty, the immortal collective body, and the skeletal mirror",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 9,
+    characters: ["Winston Smith", "O'Brien"],
+    setting: "Miniluv Interrogation Room",
+    keyThemes: ["totalitarianism", "torture", "doublethink"],
+    sixtySecondSummary:
+      "O'Brien explains the Party's ultimate motive: power entirely for its own sake. The Party is not interested in the good of others, wealth, or luxury—only pure, absolute power, which can only be asserted by inflicting pain and humiliation. To demonstrate what Winston has become, O'Brien forces him to look in a three-sided mirror: Winston is a rotting, toothless, skeletal wreck of sixty. Weeping, Winston clings to one remaining shred of dignity: he has not betrayed Julia.",
+    mustCiteQuotes: [
+      {
+        quote: "The Party seeks power entirely for its own sake. We are not interested in the good of others; we are interested solely in power.",
+        speaker: "O'Brien",
+        analysis: "Strips away ideological pretexts: Ingsoc is pure sadism and dominion unmasked.",
+      },
+      {
+        quote: "If you want a picture of the future, imagine a boot stamping on a human face—forever.",
+        speaker: "O'Brien",
+        analysis: "The most famous image in 20th-century political literature: eternal, unyielding oppression.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "How does O'Brien's definition of power overturn previous philosophies of government?",
+      "Why does O'Brien argue that power over matter is meaningless compared to power over human consciousness?",
+      "Why does seeing his emaciated body in the mirror shatter Winston's spirit?",
+    ],
+    commonMisconceptions:
+      "Students often assume the Party rules for material privilege. O'Brien explicitly denies this: wealth and comfort are trivial compared to the ecstasy of exercising absolute power through cruelty.",
+  },
+  {
+    id: "p3-c4",
+    chapterCode: "III.4",
+    title: "Physical Rehabilitation & 'Julia! Julia!' in the Night",
+    subtitle: "Clean clothes, crimestop on a slate, and the unbowed heart that triggers Room 101",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "O'Brien"],
+    setting: "Hospitalized Cell, Ministry of Love",
+    keyThemes: ["torture", "loyalty", "doublethink"],
+    sixtySecondSummary:
+      "Winston is treated humanely: his ulcers are healed, he is fed three hot meals a day, and given false teeth. He practices 'crimestop' and self-hypnosis, writing on a slate: 'FREEDOM IS SLAVERY' and 'TWO AND TWO MAKE FIVE.' He realizes he can outsmart the Party by obeying outwardly while dying with his hatred intact. But in a sudden nightmare, he screams aloud: 'Julia! Julia! My love! Julia!' O'Brien enters and announces that because Winston's heart is still heretical, he must take the final step in Room 101.",
+    mustCiteQuotes: [
+      {
+        quote: "To die hating them, that was freedom.",
+        speaker: "Winston",
+        analysis: "Winston's final defiant stratagem: maintaining private hatred until the moment of the bullet.",
+      },
+      {
+        quote: "You hate him. Good. Then the time has come for you to take the last step. You must love Big Brother.",
+        speaker: "O'Brien",
+        analysis: "Obedience is not enough; the Party demands genuine adoration before execution.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "What are O'Brien's three stages of reintegration: Learning, Understanding, and Acceptance?",
+      "Why is intellectual obedience insufficient for the Party?",
+      "Why does crying out Julia's name trigger Winston's immediate transfer to Room 101?",
+    ],
+    commonMisconceptions:
+      "Students mistakenly believe Winston was winning against O'Brien. The scream reveals that subconscious love cannot be suppressed by conscious logic—and O'Brien uses that exact leak to crush him.",
+  },
+  {
+    id: "p3-c5",
+    chapterCode: "III.5",
+    title: "Room 101 & The Wire Cage of Rats",
+    subtitle: "The worst thing in the world, the clicking mask, and 'Do it to Julia!'",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 7,
+    characters: ["Winston Smith", "O'Brien", "Julia (invoked)"],
+    setting: "Room 101, Subterranean Ministry of Love",
+    keyThemes: ["torture", "loyalty", "totalitarianism"],
+    sixtySecondSummary:
+      "Deep underground in Room 101, O'Brien explains that the room contains 'the worst thing in the world'—which varies for every individual. For Winston, it is carnivorous rats. O'Brien brings forward an oblong wire cage fitted with a mask that clamps over Winston's face, containing two enormous, famished sewer rats. As O'Brien prepares to open the door separating the rats from his eyes and tongue, Winston descends into blind primal panic and shrieks the only words that can save him: 'Do it to Julia! Do it to Julia! Not me! Julia!'",
+    mustCiteQuotes: [
+      {
+        quote: "The worst thing in the world varies from individual to individual.",
+        speaker: "O'Brien",
+        analysis: "Room 101 exploits the absolute personal limit where instinct overcomes all morality and love.",
+      },
+      {
+        quote: "'Do it to Julia! Do it to Julia! Not me! Julia! I don't care what you do to her. Tear her face off, strip her to the bones. Not me! Julia! Not me!'",
+        speaker: "Winston",
+        analysis: "The definitive betrayal: Winston sacrifices the person he loves to save himself, severing his human soul forever.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why is Room 101 different for every prisoner?",
+      "Why does sacrificing Julia represent the total death of Winston's humanity?",
+      "Why couldn't Winston endure the rats through willpower alone?",
+    ],
+    commonMisconceptions:
+      "Students often think Winston merely uttered words to escape pain. Orwell makes clear that Winston truly wanted Julia to be torn to pieces in his place—he surrendered the core of his moral being.",
+  },
+  {
+    id: "p3-c6",
+    chapterCode: "III.6",
+    title: "Chestnut Tree Café, Victory Gin & 'He Loved Big Brother'",
+    subtitle: "The ruined meeting in the park, the chess problem, and the final victory",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 8,
+    characters: ["Winston Smith", "Julia (reunited)", "Big Brother (portrait)", "Waiters"],
+    setting: "Chestnut Tree Café & London Park",
+    keyThemes: ["doublethink", "totalitarianism", "loyalty"],
+    sixtySecondSummary:
+      "A broken, bloated Winston sits in the Chestnut Tree Café drinking clove-flavored Victory Gin and moving chess pieces. He recalls an awkward reunion with Julia in a cold park: both admitted they betrayed each other in Room 101, and their love and physical desire were dead. A trumpet fanfare on the telescreen announces a colossal victory in Africa. Tears of gin roll down Winston's nose as he gazes up at Big Brother's mustache: the struggle is finished. He has won the victory over himself: he loves Big Brother.",
+    mustCiteQuotes: [
+      {
+        quote: "'I betrayed you,' she said baldly. 'I betrayed you,' he said.",
+        speaker: "Julia & Winston",
+        analysis: "The tragic epitaph of human intimacy: total spiritual death under totalitarian coercion.",
+      },
+      {
+        quote: "He had won the victory over himself. He loved Big Brother.",
+        speaker: "Narrator",
+        analysis: "The harrowing concluding lines: not physical death, but total psychological assimilation and surrender.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why does Orwell end the narrative with Winston loving Big Brother rather than with his execution?",
+      "What is the symbolic meaning of Winston's interaction with the chess puzzle?",
+      "Why was Winston and Julia's reunion in the park devoid of emotion or resentment?",
+    ],
+    commonMisconceptions:
+      "Students often believe Winston is executed at the end. He is alive, employed in a sinecure, drinking gin. The real tragedy is that his execution is unnecessary because his soul has already been annihilated.",
+  },
+
+  // ---------- SCHOLARLY APPENDIX ----------
+  {
+    id: "p3-c7",
+    chapterCode: "App",
+    title: "The Principles of Newspeak (Scholarly Appendix)",
+    subtitle: "A, B, and C vocabularies, grammatical inversion, and the past-tense epitaph",
+    part: "Part 3",
+    partId: "part-3",
+    readingTimeMinutes: 7,
+    characters: ["Orwell / Future Academic Historian"],
+    setting: "Post-Totalitarian Academic Future (Post-1984 / Post-2050)",
+    keyThemes: ["newspeak", "totalitarianism", "doublethink"],
+    sixtySecondSummary:
+      "A dry, clinical scholarly treatise examining the linguistics of Newspeak (A-vocabulary for daily life, B-vocabulary for political compounds like goodthink, C-vocabulary for technical science). Crucially, the entire essay is written in standard grammatical English in the past tense ('Newspeak was the official language of Oceania...'). This linguistic fact reveals that the Party collapsed, its target completion date of 2050 was never reached, and objective historical scholarship outlived Ingsoc.",
+    mustCiteQuotes: [
+      {
+        quote: "Newspeak was the official language of Oceania and had been devised to meet the ideological needs of Ingsoc...",
+        speaker: "Scholarly Narrator",
+        analysis: "The past-tense verb 'was' is the novel's subtle masterstroke: it proves Ingsoc fell into the dustbin of history.",
+      },
+      {
+        quote: "In 1984, when Oldspeak was still in use, the final adoption of Newspeak had been fixed for so late a date as 2050.",
+        speaker: "Scholarly Narrator",
+        analysis: "Confirms the regime did not achieve its ultimate goal of permanent cognitive enslavement.",
+      },
+    ],
+    teacherDiscussionQuestions: [
+      "Why is the past-tense grammatical framing of the Appendix the most critical clue to Orwell's ultimate message?",
+      "How do the A, B, and C vocabularies function differently to constrain consciousness?",
+      "Why did the architects of Newspeak project 2050 as its completion date?",
+    ],
+    commonMisconceptions:
+      "Students almost universally skip the Appendix, assuming it is dry linguistic filler. Literary scholars emphasize that the Appendix provides the novel's singular glimmer of hope: written in normal English after Ingsoc's fall, it proves truth survived.",
+  },
+];
+

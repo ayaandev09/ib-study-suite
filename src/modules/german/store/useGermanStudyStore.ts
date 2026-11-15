@@ -25,7 +25,8 @@ export type GermanNavMode =
   | "redemittel"
   | "pruefung"
   | "literatur"
-  | "testdaf";
+  | "testdaf"
+  | "revision";
 
 export type AcademicStyle = "jakarta" | "newsreader" | "garamond";
 

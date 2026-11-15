@@ -22,12 +22,14 @@ import {
   GraduationCap,
   StickyNote,
   AlertCircle,
+  AlertTriangle,
   Layers,
   ArrowRight,
   Check,
 } from "lucide-react";
 import { useGermanStudyStore } from "@/modules/german/store/useGermanStudyStore";
 import { IB_THEMES, ALL_SUBTOPICS } from "@/modules/german/data/themes";
+import { GERMAN_ENTRY_TICKETS } from "@/modules/german/data/revisionData";
 import { AcademicNotesSurface } from "@/modules/german/components/AcademicNotesSurface";
 import { Subtopic, ThemeId } from "@/modules/german/data/types";
 import { RecallFlipCard } from "@/modules/german/components/RecallFlipCard";
@@ -58,6 +60,10 @@ export function ThemesBentoView() {
   const activeTheme = IB_THEMES.find((t) => t.id === activeTopic.themeId) || IB_THEMES[0];
   const isActiveCompleted = completedTopics.includes(activeTopic.id);
   const activeNote = topicNotes[activeTopic.id] || "";
+  const matchingTicket =
+    GERMAN_ENTRY_TICKETS.find(
+      (t) => t.id === activeTopic.id || t.topicId === activeTopic.id
+    ) || GERMAN_ENTRY_TICKETS[0];
 
   // Filtered topics for the bento matrix
   const filteredTopics = ALL_SUBTOPICS.filter((sub) => {
@@ -127,12 +133,12 @@ export function ThemesBentoView() {
       </div>
 
       {/* =====================================================================
-          1. ACTIVE FOCUS SUBTOPIC BENTO STACK (SINGLE-COLUMN VERTICAL BENTO)
+          1. ACTIVE FOCUS SUBTOPIC BENTO STACK (TIERED HIERARCHY)
           ===================================================================== */}
       <section className="space-y-5" id="active-subtopic-focus">
-        {/* HERO BENTO HEADER */}
+        {/* ==================== TIER 1: HERO ==================== */}
         <div
-          className="liquid-glass-bento rounded-3xl p-6 relative overflow-hidden transition-all duration-300 border border-white/10"
+          className="liquid-glass-bento rounded-3xl p-5 sm:p-6 relative overflow-hidden transition-all duration-300 border border-white/10"
           style={{
             borderColor: `${activeTheme.color}45`,
           }}
@@ -178,13 +184,18 @@ export function ThemesBentoView() {
                   <MapPin className="w-3.5 h-3.5 text-violet-400" />
                   {activeTopic.culturalSpotlight.region}
                 </span>
+
+                <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-white/[0.06] text-slate-300 border border-white/10 flex items-center gap-1">
+                  <Sparkles className="w-3 h-3 text-amber-400" />
+                  10 min Lernzeit
+                </span>
               </div>
 
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-1 font-sans">
                 {activeTopic.title}
               </h1>
               <p
-                className="text-sm font-medium tracking-wide"
+                className="text-sm font-medium tracking-wide font-sans"
                 style={{ color: `${activeTheme.color}dd` }}
               >
                 {activeTopic.englishTitle}
@@ -235,7 +246,7 @@ export function ThemesBentoView() {
             </div>
           </div>
 
-          {/* Mode Switcher & Quick Actions */}
+          {/* Quick Mode & Revision Hub Shortcuts */}
           <div className="mt-5 pt-4 border-t border-white/10 flex flex-wrap items-center justify-between gap-3 relative z-10">
             <div className="flex items-center gap-1.5 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
               <button
@@ -265,6 +276,14 @@ export function ThemesBentoView() {
 
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setViewMode("revision")}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold text-fuchsia-300 hover:text-white bg-fuchsia-500/15 hover:bg-fuchsia-500/25 border border-fuchsia-400/30 transition-all cursor-pointer"
+              >
+                <span>Revision Hub Entry Ticket</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+
+              <button
                 onClick={() => setShowScratchpad((prev) => !prev)}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer border ${
                   showScratchpad
@@ -273,7 +292,7 @@ export function ThemesBentoView() {
                 }`}
               >
                 <StickyNote className="w-3.5 h-3.5 text-violet-400" />
-                <span>{showScratchpad ? "Notizen ausblenden" : "Notizblock öffnen"}</span>
+                <span>{showScratchpad ? "Notizen zu" : "Notizblock"}</span>
               </button>
 
               <button
@@ -281,7 +300,7 @@ export function ThemesBentoView() {
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono bg-white/5 text-slate-300 border border-white/10 hover:bg-white/10 transition-all cursor-pointer"
               >
                 <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
-                <span>Vollbild-Dossier</span>
+                <span>Dossier</span>
               </button>
             </div>
           </div>
@@ -301,222 +320,302 @@ export function ThemesBentoView() {
           </div>
         )}
 
-        {/* BENTO CARD 1: Core Analysis / Synthesis & Key Debates */}
-        <div
-          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
-          style={{
-            borderColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.35)" : `${activeTheme.color}35`,
-          }}
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-2.5">
-                <span
-                  className="p-2 rounded-xl border"
-                  style={{
-                    backgroundColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.18)" : `${activeTheme.color}20`,
-                    borderColor: studyGoal === "revise" ? "rgba(239, 68, 68, 0.4)" : `${activeTheme.color}40`,
-                    color: studyGoal === "revise" ? "#fca5a5" : activeTheme.color,
-                  }}
-                >
-                  {studyGoal === "revise" ? (
-                    <Flame className="w-4 h-4" />
-                  ) : (
-                    <BookOpen className="w-4 h-4" />
-                  )}
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-white tracking-tight">
-                    {studyGoal === "revise"
-                      ? "Prüfungs-Blitzanalyse & Kernaussagen"
-                      : "Kernanalyse & Zentrale Kontroversen"}
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    {studyGoal === "revise"
-                      ? "High-Yield Debatten für Paper 1 & Individual Oral"
-                      : `Themeneinführung & Argumentationslinien (${activeTopic.displayCode})`}
+        {/* ==================== TIER 2: CORE DIGEST (3 Clean Rounded Bullet Cards) ==================== */}
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30">
+                <Sparkles className="w-4 h-4" />
+              </span>
+              <div>
+                <h2 className="text-base font-bold text-white tracking-tight">
+                  Kernsynthese &amp; Themen-Digest
+                </h2>
+                <p className="text-xs text-slate-400">
+                  Die drei tragenden Säulen für Paper 1, Paper 2 und das Individual Oral
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Card 1: Core Synthesis */}
+            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center justify-center shrink-0">
+                    <Sparkles className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                    1. Themenschwerpunkt
+                  </span>
+                </div>
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                  {matchingTicket.sixtySecondSummary}
+                </p>
+              </div>
+              <div className="pt-2 border-t border-white/5 text-[11px] text-slate-400 italic font-mono">
+                IB Fokus: {activeTopic.displayCode} • {activeTopic.level}
+              </div>
+            </div>
+
+            {/* Card 2: Cultural DACH Context */}
+            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-7 h-7 rounded-xl bg-fuchsia-500/20 text-fuchsia-300 border border-fuchsia-400/30 flex items-center justify-center shrink-0">
+                    <MapPin className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-fuchsia-300">
+                    2. DACH-Kontext (Kriterium B2)
+                  </span>
+                </div>
+                <h4 className="text-xs sm:text-sm font-bold text-white mb-1">
+                  {activeTopic.culturalSpotlight.title} ({activeTopic.culturalSpotlight.region})
+                </h4>
+                <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                  {activeTopic.culturalSpotlight.description}
+                </p>
+              </div>
+              <div className="pt-2 border-t border-white/5 text-[11px] text-fuchsia-300/80 font-mono">
+                Authentischer Kulturanker
+              </div>
+            </div>
+
+            {/* Card 3: IB Writing & Text Type Strategy */}
+            <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-7 h-7 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30 flex items-center justify-center shrink-0">
+                    <FileText className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-xs font-mono font-bold uppercase tracking-wider text-violet-300">
+                    3. Textsorten-Strategie (Paper 1)
+                  </span>
+                </div>
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-violet-300 block">
+                    Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
+                  </span>
+                  <span className="text-[11px] text-slate-400 font-mono block">
+                    Register: {activeTopic.sampleEssayPrompts[0]?.register}
+                  </span>
+                  <p className="text-xs text-slate-200 italic font-serif leading-snug pt-1">
+                    „{activeTopic.sampleEssayPrompts[0]?.prompt}“
                   </p>
                 </div>
               </div>
-              <span className="font-mono text-[11px] px-2.5 py-1 rounded-xl bg-white/[0.04] text-slate-300 border border-white/10 shrink-0">
-                {studyGoal === "revise" ? "⚡ Rapid Recall" : "Synthese"}
+              <div className="pt-2 border-t border-white/5 flex items-center justify-between text-[11px] text-violet-300/80 font-mono">
+                <span>250–400 (SL) / 450–600 (HL)</span>
+                <button
+                  onClick={() => setViewMode("textsorten")}
+                  className="hover:underline flex items-center gap-0.5 text-white"
+                >
+                  <span>Format</span>
+                  <ArrowRight className="w-3 h-3" />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Full Thematic Narrative Prose Card (Open without Collapsed Wall) */}
+          <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+              <div className="flex items-center gap-2">
+                <BookOpen className="w-4 h-4 text-violet-400" />
+                <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                  Ausführlicher Themendiskurs &amp; gesellschaftlicher Kontext
+                </h3>
+              </div>
+              <span className="text-xs text-slate-400 font-mono">
+                {activeTopic.displayCode} Synthese
               </span>
             </div>
-
-            <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10">
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                {activeTopic.overview}
-              </p>
-            </div>
-
-            <div className="space-y-2.5">
-              <div className="text-[11px] font-mono font-bold uppercase tracking-wider text-slate-400">
-                Zentrale Kontroversen &amp; Debatten
-              </div>
-              <div className="space-y-2">
-                {activeTopic.keyDebates.map((debate, i) => (
-                  <div
-                    key={i}
-                    className="p-3.5 rounded-2xl bg-black/40 border border-white/10 flex items-start gap-2.5"
-                  >
-                    <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-300 border border-rose-400/30 shrink-0 mt-0.5">
-                      D{i + 1}
-                    </span>
-                    <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                      {debate}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+              {activeTopic.overview}
+            </p>
           </div>
         </div>
 
-        {/* BENTO CARD 2: Key Vocabulary & Redemittel */}
-        <div
-          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
-          style={{ borderColor: "rgba(56, 189, 248, 0.3)" }}
-        >
-          <div className="space-y-4">
-            <div className="flex items-center justify-between gap-2">
-              <div>
-                <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-sky-500/20 text-sky-300 border border-sky-400/40 uppercase tracking-wider">
-                  SCHLÜSSELWORTSCHATZ (C1/B2)
-                </span>
-                <h3 className="text-base font-bold text-white mt-2">
-                  Kernbegriffe &amp; Kontexte
-                </h3>
-              </div>
-              <span className="text-xs font-mono text-slate-400 shrink-0">
-                {activeTopic.vocabBullets.length} Begriffe
+        {/* ==================== TIER 3: KEY VOCABULARY & REDEMITTEL ==================== */}
+        <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2.5">
+              <span className="p-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30">
+                <BookOpen className="w-4 h-4" />
               </span>
+              <div>
+                <h2 className="text-base font-bold text-white tracking-tight">
+                  Schlüsselwortschatz &amp; Idiomatische Redemittel
+                </h2>
+                <p className="text-xs text-slate-400">
+                  C1/B2 Kernbegriffe im Satzkontext und erprobte Debatten-Sprachmittel
+                </p>
+              </div>
             </div>
 
-            <div className="space-y-2.5">
-              {activeTopic.vocabBullets.map((v, i) => (
-                <div
-                  key={i}
-                  className="p-3 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-400/40 transition-colors"
-                >
-                  <div className="flex items-baseline justify-between gap-2 mb-1">
-                    <span className="font-bold text-sky-200 text-xs sm:text-sm">
-                      {v.german}
-                    </span>
-                    <span className="text-[11px] text-slate-400 italic shrink-0">
-                      {v.english}
-                    </span>
-                  </div>
-                  <p className="text-[11px] text-slate-300/90 italic leading-snug">
-                    „{v.context}“
-                  </p>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between">
-            <span className="text-[11px] font-mono text-slate-400">
-              Redemittel &amp; Konnektoren
-            </span>
             <button
               onClick={() => setViewMode("redemittel")}
-              className="text-xs text-sky-300 hover:text-white font-bold flex items-center gap-1 cursor-pointer"
+              className="flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold text-sky-300 hover:text-white bg-sky-500/15 hover:bg-sky-500/25 border border-sky-400/30 transition-all cursor-pointer"
             >
               <span>Redemittel Dossier</span>
               <ChevronRight className="w-3.5 h-3.5" />
             </button>
           </div>
-        </div>
 
-        {/* BENTO CARD 3: Cultural DACH Context */}
-        <div
-          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
-          style={{ borderColor: `${activeTheme.color}35` }}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span
-                className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg border uppercase tracking-wider flex items-center gap-1.5"
-                style={{
-                  backgroundColor: `${activeTheme.color}25`,
-                  color: activeTheme.color,
-                  borderColor: `${activeTheme.color}50`,
-                }}
-              >
-                <MapPin className="w-3 h-3" />
-                DACH-FOKUS · {activeTopic.culturalSpotlight.region}
-              </span>
-              <span className="text-[11px] font-mono text-slate-400">
-                Paper 2 &amp; Oral Key
-              </span>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            {/* Column 1: Schlüsselwortschatz */}
+            <div className="space-y-2.5">
+              <div className="text-xs font-bold font-mono uppercase tracking-wider text-sky-300">
+                Themenspezifischer Wortschatz ({activeTopic.vocabBullets.length} Begriffe)
+              </div>
+              <div className="space-y-2">
+                {activeTopic.vocabBullets.map((v, i) => (
+                  <div
+                    key={i}
+                    className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 hover:border-sky-400/40 transition-colors space-y-1"
+                  >
+                    <div className="flex items-baseline justify-between gap-2">
+                      <span className="font-bold text-sky-200 text-xs sm:text-sm font-sans">
+                        {v.german}
+                      </span>
+                      <span className="text-[11px] text-slate-400 italic shrink-0">
+                        {v.english}
+                      </span>
+                    </div>
+                    <p className="text-xs text-slate-300 italic leading-snug">
+                      „{v.context}“
+                    </p>
+                  </div>
+                ))}
+              </div>
             </div>
 
-            <h3 className="text-base font-bold text-white mb-2">
-              {activeTopic.culturalSpotlight.title}
-            </h3>
-            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-              {activeTopic.culturalSpotlight.description}
-            </p>
-          </div>
+            {/* Column 2: Redemittel & Grammar Formula */}
+            <div className="space-y-3">
+              <div className="text-xs font-bold font-mono uppercase tracking-wider text-fuchsia-300">
+                Empfohlene Redemittel für Diskussionen &amp; Aufsätze
+              </div>
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between text-xs text-violet-300">
-            <span className="font-mono text-[11px] text-slate-400">
-              Authentischer Kulturbezug
-            </span>
-            <span className="flex items-center gap-1 font-bold">
-              Kriterium B2 Relevanz
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-            </span>
-          </div>
-        </div>
+              <div className="space-y-2">
+                {matchingTicket.redemittel.map((r, idx) => (
+                  <div
+                    key={idx}
+                    className="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-1"
+                  >
+                    <span className="font-bold text-fuchsia-200 text-xs sm:text-sm block">
+                      {r.phrase}
+                    </span>
+                    <span className="text-[11px] text-slate-400 italic block mb-1">
+                      {r.meaning}
+                    </span>
+                    <p className="text-xs text-slate-300 leading-snug">
+                      „{r.example}“
+                    </p>
+                  </div>
+                ))}
+              </div>
 
-        {/* BENTO CARD 4: IB Exam / Paper 1 & Textsorten Strategy */}
-        <div
-          className="liquid-glass-bento rounded-3xl p-6 border border-white/10 space-y-4"
-          style={{ borderColor: "rgba(168, 85, 247, 0.35)" }}
-        >
-          <div>
-            <div className="flex items-center justify-between mb-3">
-              <span className="font-mono text-[10px] font-bold px-2.5 py-0.5 rounded-lg bg-violet-500/20 text-violet-300 border border-violet-400/40 uppercase tracking-wider flex items-center gap-1.5">
-                <FileText className="w-3 h-3" />
-                PAPER 1 SCHREIBEN &amp; STRATEGIE
-              </span>
-              <span className="text-[11px] font-mono text-slate-400">
-                Register: {activeTopic.sampleEssayPrompts[0]?.register}
-              </span>
+              {/* Grammar Formula Box */}
+              <div className="p-3.5 rounded-2xl bg-violet-500/10 border border-violet-400/30 space-y-1.5">
+                <div className="text-[11px] font-bold text-violet-300 uppercase tracking-wider flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-violet-400" />
+                  Kriterium A Grammatik-Schwerpunkt: {matchingTicket.keyGrammar.title}
+                </div>
+                <code className="text-xs font-mono text-violet-100 block bg-black/40 px-2.5 py-1 rounded-lg">
+                  {matchingTicket.keyGrammar.formula}
+                </code>
+                <p className="text-xs text-slate-200 leading-relaxed pt-0.5">
+                  <strong className="text-violet-300">Prüfungstipp:</strong> {matchingTicket.keyGrammar.tip}
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ==================== TIER 4: DISCUSSION & EXAM TRAPS ==================== */}
+        <section className="space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {/* Card 1: Teacher Will Ask / Mündliche Diskussionsfragen */}
+            <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
+              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+                <span className="p-2 rounded-xl bg-violet-500/20 text-violet-300 border border-violet-400/30">
+                  <HelpCircle className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                    Fragen des Lehrers (Mündliche Prüfungsdebatten)
+                  </h3>
+                  <p className="text-xs text-slate-400">
+                    Schlüsselkontroversen für das Individual Oral und Unterrichtsgespräche
+                  </p>
+                </div>
+              </div>
+
+              <ul className="space-y-2.5 pt-1">
+                {(matchingTicket?.teacherDiscussionQuestions || activeTopic.keyDebates).map((debate, i) => (
+                  <li
+                    key={i}
+                    className="text-xs sm:text-sm text-slate-200 pl-3 border-l-2 border-violet-400/60 leading-relaxed font-sans"
+                  >
+                    {debate}
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-[11px] font-mono text-violet-300 font-bold block">
-                Empfohlene Textsorte: {activeTopic.sampleEssayPrompts[0]?.textTypeSuggestion}
-              </span>
-              <p className="text-xs sm:text-sm text-slate-200 italic font-serif leading-relaxed bg-black/40 p-3.5 rounded-2xl border border-white/10">
-                „{activeTopic.sampleEssayPrompts[0]?.prompt}“
+            {/* Card 2: Common Misconceptions / Pitfalls */}
+            <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-rose-500/25 bg-gradient-to-br from-rose-500/10 to-transparent space-y-3">
+              <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+                <span className="p-2 rounded-xl bg-rose-500/25 text-rose-300 border border-rose-400/40">
+                  <AlertTriangle className="w-4 h-4" />
+                </span>
+                <div>
+                  <h3 className="text-sm sm:text-base font-bold text-rose-200 tracking-tight">
+                    Häufige Grammatik- &amp; Prüfungsfallen
+                  </h3>
+                  <p className="text-xs text-rose-300/70">
+                    Typische Fehlerquellen in Wortstellung, Kasus und Register vermeiden
+                  </p>
+                </div>
+              </div>
+
+              <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed font-sans pt-1">
+                {matchingTicket.commonMisconceptions}
               </p>
             </div>
           </div>
 
-          <div className="pt-3 border-t border-white/10 flex items-center justify-between gap-2">
-            <span className="text-[11px] text-slate-400 font-mono">
-              250–400 Wörter (SL) / 450–600 (HL)
-            </span>
+          {/* Banner: IB Criterion Success Strategy */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-violet-500/30 bg-gradient-to-r from-violet-500/15 via-fuchsia-500/15 to-transparent flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <GraduationCap className="w-5 h-5 text-violet-300 shrink-0" />
+              <div>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-violet-300 block">
+                  IB German B Kriterium-Erfolgsschlüssel
+                </span>
+                <p className="text-xs sm:text-sm text-white font-medium">
+                  Kriterium A: Kasusendungen &amp; Nebensatz-Verbstellung fehlerfrei halten • Kriterium B: DACH-Kulturkontext integrieren • Kriterium C: Textsortenkonventionen einhalten.
+                </p>
+              </div>
+            </div>
+
             <button
-              onClick={() => setViewMode("textsorten")}
-              className="text-xs font-bold text-violet-300 hover:text-white flex items-center gap-1 cursor-pointer transition-colors shrink-0"
+              onClick={() => setViewMode("pruefung")}
+              className="px-3.5 py-1.5 rounded-xl text-xs font-bold text-violet-200 hover:text-white bg-violet-500/20 hover:bg-violet-500/30 border border-violet-400/40 transition-all cursor-pointer whitespace-nowrap"
             >
-              <span>Formatvorlage anzeigen</span>
-              <ArrowRight className="w-3.5 h-3.5" />
+              Prüfungs-Leitfaden ➔
             </button>
           </div>
-        </div>
+        </section>
 
-        {/* BENTO CARD 5: Active Recall / Self-Check Prompt */}
+        {/* ==================== TIER 5: ACTIVE RECALL / SELF-CHECK ==================== */}
         <div>
           <RecallFlipCard
             moduleCode={activeTopic.displayCode}
             title={`${activeTopic.displayCode} · ${activeTopic.title}`}
-            prompt={activeTopic.overview}
-            answer={`Kultureller Schwerpunkt: ${activeTopic.culturalSpotlight.title} (${activeTopic.culturalSpotlight.region}) — ${activeTopic.culturalSpotlight.description}`}
+            prompt={matchingTicket?.teacherDiscussionQuestions?.[0] || activeTopic.overview}
+            answer={`Kultureller DACH-Schwerpunkt: ${activeTopic.culturalSpotlight.title} (${activeTopic.culturalSpotlight.region}) — ${activeTopic.culturalSpotlight.description}`}
             accent={activeTheme.color}
             secondary="#9333ea"
             meta={`ACTIVE RECALL · THEMA ${activeTheme.themeNumber}`}

@@ -9,6 +9,7 @@ import {
   Layers,
   HelpCircle,
   CheckCircle2,
+  Circle,
   XCircle,
   RotateCcw,
   Sparkles,
@@ -24,8 +25,14 @@ import {
   Flame,
   Shuffle,
   ShieldCheck,
+  MapPin,
+  Users,
+  ArrowRight,
+  Clock,
+  Search,
 } from "lucide-react";
 import {
+  ALL_CHAPTER_ENTRY_TICKETS,
   PRE_LESSON_CRAM_SHEETS,
   FLASHCARDS_DECK,
   PRACTICE_QUIZ_QUESTIONS,
@@ -51,6 +58,10 @@ export const RevisionHubView: React.FC = React.memo(() => {
     resetQuiz,
     spoilerMaskActive,
     toggleSpoilerMask,
+    setActiveChapter,
+    setViewMode,
+    completedChapters,
+    toggleChapterComplete,
   } = useStudyStore();
 
   // Local UI State for Flashcards
@@ -60,8 +71,9 @@ export const RevisionHubView: React.FC = React.memo(() => {
   const [cardCategoryFilter, setCardCategoryFilter] = useState<string>("all");
   const [cardPartFilter, setCardPartFilter] = useState<string>("all");
 
-  // Local UI State for Cram Sheets
-  const [cramPartFilter, setCramPartFilter] = useState<string>("all");
+  // Local UI State for Entry Tickets Hub
+  const [cramPartFilter, setCramPartFilter] = useState<string>("Part 1");
+  const [ticketSearchQuery, setTicketSearchQuery] = useState<string>("");
 
   // Local UI State for Essay Blueprints
   const [activeEssayId, setActiveEssayId] = useState<string>(ESSAY_BLUEPRINTS[0].id);
@@ -71,6 +83,25 @@ export const RevisionHubView: React.FC = React.memo(() => {
   const [clozeInputs, setClozeInputs] = useState<Record<string, string>>({});
   const [clozeChecked, setClozeChecked] = useState<Record<string, boolean>>({});
   const [clozeRevealed, setClozeRevealed] = useState<Record<string, boolean>>({});
+
+  // Filter entry tickets
+  const filteredEntryTickets = useMemo(() => {
+    return ALL_CHAPTER_ENTRY_TICKETS.filter((item) => {
+      if (cramPartFilter !== "all" && item.part !== cramPartFilter) return false;
+      if (ticketSearchQuery.trim()) {
+        const q = ticketSearchQuery.toLowerCase();
+        return (
+          item.title.toLowerCase().includes(q) ||
+          item.subtitle.toLowerCase().includes(q) ||
+          item.chapterCode.toLowerCase().includes(q) ||
+          item.sixtySecondSummary.toLowerCase().includes(q) ||
+          item.characters.some((c) => c.toLowerCase().includes(q)) ||
+          item.setting.toLowerCase().includes(q)
+        );
+      }
+      return true;
+    });
+  }, [cramPartFilter, ticketSearchQuery]);
 
   // Filter flashcards
   const filteredFlashcards = useMemo(() => {
@@ -226,7 +257,7 @@ export const RevisionHubView: React.FC = React.memo(() => {
           {[
             {
               id: "cram" as RevisionTab,
-              label: "60-Sec Cram Sheets",
+              label: `Summary & Entry Tickets (${ALL_CHAPTER_ENTRY_TICKETS.length})`,
               icon: <Zap className="w-4 h-4 text-rose-400" />,
             },
             {
@@ -269,115 +300,256 @@ export const RevisionHubView: React.FC = React.memo(() => {
         </div>
       </div>
 
-      {/* ==================== TAB 1: 60-SECOND PRE-LESSON CRAM SHEETS ==================== */}
+      {/* ==================== TAB 1: SUMMARY & ENTRY TICKET HUB ==================== */}
       {revisionTab === "cram" && (
-        <section className="space-y-4">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-slate-300 uppercase tracking-wider">
-                Filter by Part:
+        <section className="space-y-5">
+          {/* Controls: Part Tabs & Search Bar */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+            {/* Clean Part Tabs */}
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-xs font-bold text-slate-400 uppercase tracking-wider mr-1">
+                Book Part:
               </span>
-              {["all", "Part 1", "Part 2", "Part 3"].map((p) => (
-                <button
-                  key={p}
-                  onClick={() => setCramPartFilter(p)}
-                  className={`px-3 py-1 rounded-full text-xs font-medium transition-all cursor-pointer ${
-                    cramPartFilter === p
-                      ? "bg-rose-500/30 text-rose-200 border border-rose-400/40"
-                      : "liquid-glass-pill text-slate-400 hover:text-white"
-                  }`}
-                >
-                  {p === "all" ? "All Parts" : p}
-                </button>
-              ))}
+              {[
+                { id: "Part 1", label: "Part 1: Panoptic State (8)" },
+                { id: "Part 2", label: "Part 2: Love & Trap (10)" },
+                { id: "Part 3", label: "Part 3: Miniluv (7)" },
+                { id: "all", label: "All 25 Units" },
+              ].map((p) => {
+                const isActive = cramPartFilter === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    onClick={() => setCramPartFilter(p.id)}
+                    className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                      isActive
+                        ? "bg-rose-500/30 text-rose-100 border border-rose-400/50 shadow-md shadow-rose-500/20"
+                        : "liquid-glass-pill text-slate-300 hover:text-white"
+                    }`}
+                  >
+                    {p.label}
+                  </button>
+                );
+              })}
             </div>
 
-            <span className="text-xs text-slate-400">
-              Showing {filteredCramSheets.length} chapter briefs
+            {/* Quick Search */}
+            <div className="relative min-w-[240px] max-w-sm">
+              <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                placeholder="Search chapters, characters, quotes..."
+                value={ticketSearchQuery}
+                onChange={(e) => setTicketSearchQuery(e.target.value)}
+                className="w-full bg-black/40 border border-white/15 rounded-xl pl-9 pr-3 py-1.5 text-xs text-white placeholder-slate-400 focus:outline-none focus:border-rose-400/60 transition-colors"
+              />
+              {ticketSearchQuery && (
+                <button
+                  onClick={() => setTicketSearchQuery("")}
+                  className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white text-xs"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Result Counter & Instructions */}
+          <div className="flex items-center justify-between px-2 text-xs text-slate-400">
+            <span>
+              Showing <strong className="text-rose-300">{filteredEntryTickets.length}</strong> entry tickets &amp; chapter briefs
+            </span>
+            <span className="hidden sm:inline text-slate-400 font-mono text-[11px]">
+              Ready for pre-lesson tickets, seminar participation &amp; exam synthesis
             </span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {filteredCramSheets.map((item) => (
-              <div
-                key={item.id}
-                className="liquid-glass-bento rounded-3xl p-5 space-y-4 flex flex-col justify-between"
-              >
-                <div>
-                  {/* Header */}
-                  <div className="flex items-center justify-between gap-2 mb-2">
-                    <span className="px-2.5 py-0.5 rounded-full text-xs font-mono font-bold bg-sky-500/20 text-sky-300 border border-sky-400/30">
-                      {item.part} • Ch. {item.chapterCode}
-                    </span>
-                    <span className="text-xs font-mono text-rose-300/80 flex items-center gap-1">
-                      <Zap className="w-3.5 h-3.5 text-rose-400" />
-                      60-Sec Cram
-                    </span>
-                  </div>
-
-                  <h3 className="text-lg font-bold text-white tracking-tight mb-2">
-                    {item.title}
-                  </h3>
-
-                  {/* Summary */}
-                  <p className="text-xs sm:text-sm text-slate-200 leading-relaxed bg-white/5 p-3 rounded-2xl border border-white/10 mb-3">
-                    {item.sixtySecondSummary}
-                  </p>
-
-                  {/* Teacher Discussion Questions */}
-                  <div className="space-y-2 mb-3">
-                    <h4 className="text-xs font-bold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
-                      <HelpCircle className="w-3.5 h-3.5" />
-                      Teacher Will Ask (Raise Your Hand):
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {item.teacherDiscussionQuestions.map((q, idx) => (
-                        <li
-                          key={idx}
-                          className="text-xs text-slate-300 pl-3 border-l-2 border-rose-400/50"
-                        >
-                          {q}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-
-                  {/* Common Misconceptions */}
-                  <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-xs text-rose-200">
-                    <span className="font-bold text-rose-300 block mb-1 flex items-center gap-1">
-                      <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
-                      Avoid Common Exam Trap:
-                    </span>
-                    {item.commonMisconceptions}
-                  </div>
-                </div>
-
-                {/* Must-Cite Quotes */}
-                <div className="pt-3 border-t border-white/10">
-                  <h5 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-2">
-                    Must-Cite Textual Evidence:
-                  </h5>
-                  <div className="space-y-2">
-                    {item.mustCiteQuotes.map((qObj, idx) => (
-                      <div
-                        key={idx}
-                        className="bg-black/30 p-2.5 rounded-xl border border-white/10 text-xs"
-                      >
-                        <p className="font-serif italic text-rose-200 mb-1">
-                          "{qObj.quote}"
-                        </p>
-                        <p className="text-[11px] text-slate-400">
-                          <span className="text-sky-300 font-semibold">
-                            Analysis:
-                          </span>{" "}
-                          {qObj.analysis}
-                        </p>
+          {/* Bento Grid of Entry Tickets */}
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
+            {filteredEntryTickets.map((item) => {
+              const isDone = !!completedChapters[item.id];
+              return (
+                <div
+                  key={item.id}
+                  className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 hover:border-rose-400/40 transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-3.5">
+                    {/* Header Row */}
+                    <div className="flex flex-wrap items-center justify-between gap-2.5 border-b border-white/10 pb-3">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-0.5 rounded-lg text-xs font-mono font-bold bg-rose-500/20 text-rose-200 border border-rose-400/35">
+                          {item.part} • Ch. {item.chapterCode}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg text-[11px] font-mono text-slate-300 bg-white/[0.05] border border-white/10">
+                          <Clock className="w-3 h-3 text-rose-300" />
+                          {item.readingTimeMinutes} min
+                        </span>
                       </div>
-                    ))}
+
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => {
+                            toggleChapterComplete(item.id);
+                            if (typeof navigator !== "undefined" && navigator.vibrate) {
+                              navigator.vibrate(15);
+                            }
+                          }}
+                          className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-semibold border transition-all cursor-pointer ${
+                            isDone
+                              ? "bg-emerald-500/20 text-emerald-300 border-emerald-400/40"
+                              : "bg-white/5 text-slate-300 border-white/10 hover:text-white"
+                          }`}
+                        >
+                          {isDone ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                          ) : (
+                            <Circle className="w-3.5 h-3.5 text-slate-400" />
+                          )}
+                          <span>{isDone ? "Completed" : "Mark Read"}</span>
+                        </button>
+
+                        <button
+                          onClick={() => {
+                            setActiveChapter(item.id);
+                            setViewMode("focus");
+                            if (typeof window !== "undefined") {
+                              window.scrollTo({ top: 0, behavior: "smooth" });
+                            }
+                          }}
+                          className="flex items-center gap-1 px-3 py-1 rounded-xl text-xs font-bold text-rose-300 hover:text-white bg-rose-500/15 hover:bg-rose-500/25 border border-rose-400/30 transition-all cursor-pointer"
+                        >
+                          <span>Focus View</span>
+                          <ArrowRight className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Chapter Title & Subtitle */}
+                    <div>
+                      <h3 className="text-lg sm:text-xl font-extrabold text-white tracking-tight leading-snug font-sans">
+                        {item.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-rose-200/80 font-medium mt-0.5">
+                        {item.subtitle}
+                      </p>
+                    </div>
+
+                    {/* Metadata: Setting, Characters, Themes */}
+                    <div className="space-y-2 pt-1">
+                      <div className="flex flex-wrap items-center gap-2 text-xs">
+                        <span className="inline-flex items-center gap-1 text-slate-300 bg-white/[0.04] border border-white/10 px-2.5 py-1 rounded-xl truncate max-w-full">
+                          <MapPin className="w-3 h-3 text-rose-400 shrink-0" />
+                          <span className="text-slate-400 font-medium">Setting:</span>
+                          <span className="text-white truncate">{item.setting}</span>
+                        </span>
+
+                        <span className="inline-flex items-center gap-1 text-slate-300 bg-white/[0.04] border border-white/10 px-2.5 py-1 rounded-xl truncate max-w-full">
+                          <Users className="w-3 h-3 text-sky-400 shrink-0" />
+                          <span className="text-slate-400 font-medium">Characters:</span>
+                          <span className="text-slate-200 truncate">{item.characters.join(", ")}</span>
+                        </span>
+                      </div>
+
+                      {/* Theme Badges */}
+                      <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                        <span className="text-[11px] font-mono text-slate-400 mr-1">Key Themes:</span>
+                        {item.keyThemes.map((tId) => {
+                          const t = THEMES_TAXONOMY[tId];
+                          if (!t) return null;
+                          return (
+                            <span
+                              key={tId}
+                              className="px-2 py-0.5 rounded-lg text-[11px] font-semibold border"
+                              style={{
+                                backgroundColor: t.badgeBg,
+                                borderColor: t.badgeBorder,
+                                color: t.badgeText,
+                              }}
+                            >
+                              {t.shortName}
+                            </span>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 60-Second Lesson Summary */}
+                    <div className="p-4 rounded-2xl bg-white/[0.03] border border-white/10 space-y-1.5">
+                      <div className="text-xs font-bold uppercase tracking-wider text-rose-300 flex items-center gap-1.5">
+                        <Zap className="w-3.5 h-3.5 text-rose-400" />
+                        60-Second Lesson Summary &amp; Entry Ticket
+                      </div>
+                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                        {item.sixtySecondSummary}
+                      </p>
+                    </div>
+
+                    {/* Two-Column Bento: Quotes + Teacher Questions & Trap */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-1">
+                      {/* Left: Must-Cite Quotes */}
+                      <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-2.5">
+                        <h4 className="text-[11px] font-bold text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                          <BookOpen className="w-3 h-3 text-sky-400" />
+                          Must-Cite Textual Evidence:
+                        </h4>
+                        <div className="space-y-2">
+                          {item.mustCiteQuotes.map((q, idx) => (
+                            <div
+                              key={idx}
+                              className="p-2.5 rounded-xl bg-white/[0.03] border border-white/5 space-y-1"
+                            >
+                              <p className="text-xs text-rose-200 italic font-serif leading-relaxed">
+                                &ldquo;{q.quote}&rdquo;
+                              </p>
+                              {q.speaker && (
+                                <p className="text-[10px] font-mono text-slate-400">
+                                  — {q.speaker}
+                                </p>
+                              )}
+                              <p className="text-[11px] text-slate-300 leading-snug">
+                                <span className="text-sky-300 font-semibold">Significance:</span> {q.analysis}
+                              </p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Right: Teacher Will Ask & Exam Trap */}
+                      <div className="space-y-3">
+                        {/* Teacher Will Ask */}
+                        <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 space-y-2">
+                          <h4 className="text-[11px] font-bold text-rose-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <HelpCircle className="w-3.5 h-3.5 text-rose-400" />
+                            Teacher Will Ask (Seminar Talking Points):
+                          </h4>
+                          <ul className="space-y-1.5">
+                            {item.teacherDiscussionQuestions.map((q, idx) => (
+                              <li
+                                key={idx}
+                                className="text-xs text-slate-300 pl-2.5 border-l-2 border-rose-400/60 leading-snug"
+                              >
+                                {q}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+
+                        {/* Avoid Exam Trap */}
+                        <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1">
+                          <span className="font-bold text-rose-300 flex items-center gap-1.5 uppercase tracking-wider text-[11px]">
+                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                            Avoid Common Exam Trap / Pitfall:
+                          </span>
+                          <p className="text-xs text-rose-100/90 leading-relaxed font-sans">
+                            {item.commonMisconceptions}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </section>
       )}

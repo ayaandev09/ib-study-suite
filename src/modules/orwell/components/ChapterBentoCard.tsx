@@ -26,12 +26,14 @@ import {
   EyeOff,
   Flame,
   ArrowRight,
+  Users,
 } from "lucide-react";
 import {
   ChapterData,
   THEMES_TAXONOMY,
   BOOK_PARTS,
   PRE_LESSON_CRAM_SHEETS,
+  ALL_CHAPTER_ENTRY_TICKETS,
 } from "@/modules/orwell/data";
 import { useStudyStore } from "@/modules/orwell/store/useStudyStore";
 import { RecallFlipCard } from "@/modules/orwell/components/RecallFlipCard";
@@ -42,33 +44,6 @@ interface ChapterBentoCardProps {
   isDeferredBelowFold?: boolean;
   showPrevNextControls?: boolean;
 }
-
-/** Hides the long analysis blocks until the student asks for them. */
-function DeepDive({ children }: { children: React.ReactNode }) {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="space-y-5">
-      <button
-        type="button"
-        onClick={() => setOpen((o) => !o)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] hover:bg-white/[0.08] px-5 py-3.5 text-left cursor-pointer transition-colors"
-      >
-        <span>
-          <span className="block text-sm font-semibold text-white">
-            {open ? "Hide deeper analysis" : "Show deeper analysis"}
-          </span>
-          <span className="block text-xs text-slate-400">
-            Summary, themes, close reading and critics
-          </span>
-        </span>
-        <span className="text-rose-300 text-lg">{open ? "−" : "+"}</span>
-      </button>
-      {open && <div className="space-y-5">{children}</div>}
-    </div>
-  );
-}
-
 
 export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
   chapter,
@@ -96,9 +71,14 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
 
   const [localSpoilerRevealed, setLocalSpoilerRevealed] = useState(false);
 
-  const matchingCram = PRE_LESSON_CRAM_SHEETS.find(
-    (c) => c.chapterCode === chapter.displayCode
-  );
+  // Match full entry ticket catalog or cram sheet
+  const matchingTicket =
+    ALL_CHAPTER_ENTRY_TICKETS.find(
+      (t) => t.chapterCode === chapter.displayCode || t.id === chapter.id
+    ) ||
+    PRE_LESSON_CRAM_SHEETS.find(
+      (c) => c.chapterCode === chapter.displayCode
+    );
 
   const isSpoilerSensitive =
     chapter.partNumber === 3 ||
@@ -152,14 +132,16 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
   return (
     <article
       id={`chapter-card-${chapter.id}`}
-      className={`space-y-5 topic-transition-enter ${
+      className={`space-y-6 topic-transition-enter ${
         isDeferredBelowFold ? "deferred-chapter-card" : ""
       }`}
     >
-      {/* ==================== BENTO HERO HEADER ==================== */}
-      <div className="liquid-glass-bento rounded-3xl p-6 relative overflow-hidden">
+      {/* =====================================================================
+          TIER 1: HERO (Chapter title, setting, reading time, mark complete)
+          ===================================================================== */}
+      <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 relative overflow-hidden border border-white/10">
         <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-          {/* Hierarchy Breadcrumb: Book Part ➔ Chapter */}
+          {/* Breadcrumb Hierarchy */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider bg-rose-500/20 text-rose-200 border border-rose-400/35">
               Part {bookPart?.romanNumeral} • Chapter {chapter.displayCode}
@@ -186,21 +168,21 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
             </span>
           </div>
 
-          {/* Interactive Chapter Check-Off + Prev/Next Buttons */}
+          {/* Prev/Next Controls + Interactive Check-off */}
           <div className="flex items-center gap-2">
             {showPrevNextControls && (
               <div className="flex items-center gap-1 mr-1">
                 <button
                   onClick={goToPrevChapter}
                   title="Previous Chapter"
-                  className="p-2 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer"
+                  className="p-2 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer active:scale-95 transition-all"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
                 <button
                   onClick={goToNextChapter}
                   title="Next Chapter"
-                  className="p-2 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer"
+                  className="p-2 rounded-2xl liquid-glass-pill text-slate-300 hover:text-white cursor-pointer active:scale-95 transition-all"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
@@ -233,14 +215,14 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         </div>
 
         {/* Chapter Title & Subtitle */}
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white tracking-tight leading-snug mb-1.5 font-display">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight leading-snug mb-1 font-sans">
           {chapter.title}
         </h1>
         <p className="text-xs sm:text-sm text-rose-200/85 font-medium mb-4">
           {chapter.subtitle}
         </p>
 
-        {/* Setting & Telescreen Metadata Bar */}
+        {/* Setting & Telescreen Metadata */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-2.5 pt-4 border-t border-white/10 text-xs">
           <div className="flex items-center gap-2 text-slate-300">
             <MapPin className="w-4 h-4 text-rose-400 shrink-0" />
@@ -257,350 +239,295 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         </div>
       </div>
 
-      {/* ==================== DUAL-PURPOSE MODALITY CALLOUT ==================== */}
-      {studyGoal === "revise" ? (
-        /* REVISION & PRE-LESSON CRAM VIEW */
-        <div className="liquid-glass-bento rounded-3xl p-5 border border-rose-500/30 bg-gradient-to-r from-rose-500/10 via-pink-500/10 to-red-950/20 relative overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3.5">
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/40">
-                <Flame className="w-4 h-4 text-rose-400" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                    Pre-Lesson 60-Second Cram &amp; Discussion Ready
-                  </h3>
-                  <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-400/20 text-rose-300 border border-rose-400/30">
-                    Ch. {chapter.displayCode}
-                  </span>
-                </div>
-                <p className="text-xs text-rose-200/80">
-                  Instant talking points for class participation, high-yield quotes, and exam trap warnings.
-                </p>
-              </div>
-            </div>
-
-            <button
-              onClick={() => {
-                setViewMode("revision");
-                setRevisionTab("cram");
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-pill text-xs font-bold text-rose-200 hover:text-white shrink-0 self-start sm:self-center cursor-pointer"
-            >
-              <span>Full Revision Hub</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </div>
-
-          {matchingCram ? (
-            <div className="space-y-3">
-              <div className="p-3 rounded-2xl bg-black/40 border border-white/10 text-xs text-slate-200 leading-relaxed">
-                <span className="font-bold text-rose-300 block mb-1">
-                  ⚡ 60-Second Takeaway:
-                </span>
-                {matchingCram.sixtySecondSummary}
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                {/* Teacher Will Ask */}
-                <div className="p-3 rounded-2xl bg-white/5 border border-white/10 space-y-1.5">
-                  <span className="font-bold text-rose-300 flex items-center gap-1.5 uppercase tracking-wider text-xs">
-                    <HelpCircle className="w-3.5 h-3.5" />
-                    Teacher Will Ask (Raise Hand):
-                  </span>
-                  <ul className="space-y-1">
-                    {matchingCram.teacherDiscussionQuestions.slice(0, 2).map((q, idx) => (
-                      <li key={idx} className="text-slate-300 pl-2.5 border-l-2 border-rose-400/50">
-                        {q}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* Exam Trap */}
-                <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/25 space-y-1">
-                  <span className="font-bold text-rose-300 flex items-center gap-1.5 uppercase tracking-wider text-xs">
-                    <AlertTriangle className="w-3.5 h-3.5" />
-                    Avoid Exam Trap:
-                  </span>
-                  <p className="text-rose-200/90 leading-snug">
-                    {matchingCram.commonMisconceptions}
-                  </p>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="p-3 rounded-2xl bg-black/30 border border-white/10 text-xs text-slate-300">
-              <span className="font-bold text-rose-300 block mb-1">
-                🎯 Core Analytical Exam Thesis:
-              </span>
-              <p className="leading-relaxed">{chapter.examPromptTakeaway}</p>
-            </div>
-          )}
-        </div>
-      ) : (
-        /* FIRST-TIME READER COMPANION VIEW */
-        <div className="liquid-glass-bento rounded-3xl p-5 border border-emerald-500/30 bg-gradient-to-r from-emerald-500/10 via-rose-500/10 to-rose-600/10 relative overflow-hidden">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
-            <div className="flex items-center gap-2">
-              <span className="p-2 rounded-xl bg-emerald-500/20 text-emerald-300 border border-emerald-400/40">
-                <BookOpen className="w-4 h-4 text-emerald-400" />
-              </span>
-              <div>
-                <div className="flex items-center gap-2">
-                  <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
-                    First-Time Reader Companion
-                  </h3>
-                  <span className="px-2 py-0.5 rounded-full text-xs font-mono font-bold bg-emerald-400/20 text-emerald-300 border border-emerald-400/30">
-                    Guided Reading
-                  </span>
-                </div>
-                <p className="text-xs text-emerald-200/80">
-                  Orientation for understanding Orwell's world building, motifs, and narrative trajectory.
-                </p>
-              </div>
-            </div>
-
-            {isSpoilerSensitive && (
-              <button
-                onClick={() => setLocalSpoilerRevealed(!localSpoilerRevealed)}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  localSpoilerRevealed
-                    ? "bg-rose-500/25 text-rose-200 border border-rose-400/40"
-                    : "bg-emerald-500/25 text-emerald-200 border border-emerald-400/40"
-                }`}
-              >
-                {localSpoilerRevealed ? (
-                  <>
-                    <Eye className="w-3.5 h-3.5 text-rose-300" />
-                    <span>Spoilers Unmasked</span>
-                  </>
-                ) : (
-                  <>
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
-                    <span>Spoiler Shield On</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-
-          {/* Reader Orientation Body */}
-          <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 text-xs text-slate-200 leading-relaxed">
-            <span className="font-bold text-emerald-300 block mb-1">
-              🧭 What to look for in Chapter {chapter.displayCode}:
+      {/* =====================================================================
+          TIER 2: CORE DIGEST (3 clean rounded bullet cards) + SUMMARY
+          ===================================================================== */}
+      <section className="space-y-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30">
+              <Sparkles className="w-4 h-4" />
             </span>
-            <p>
-              Pay attention to how Orwell establishes <strong>{chapter.setting}</strong> and the contrast between Winston's internal psychology and the external surveillance apparatus. Notice how the motif of <em>{chapter.analysis.motifsAndSymbols[0] || "totalitarian control"}</em> surfaces during key interactions.
-            </p>
-          </div>
-
-          {/* Spoiler Mask Alert for sensitive chapters */}
-          {isSpoilerSensitive && spoilerMaskActive && !localSpoilerRevealed && (
-            <div className="mt-3 p-3 rounded-2xl bg-rose-500/15 border border-rose-400/30 flex items-center justify-between text-xs text-rose-200">
-              <span className="flex items-center gap-2">
-                <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0" />
-                <span>
-                  <strong>Spoiler Shield:</strong> High-impact plot twists in this chapter's deeper analysis are currently shielded to protect your reading suspense.
-                </span>
-              </span>
-              <button
-                onClick={() => setLocalSpoilerRevealed(true)}
-                className="underline hover:text-white font-bold ml-3 shrink-0 cursor-pointer"
-              >
-                Reveal Analysis
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      <DeepDive>
-      {/* ==================== BENTO STACK: SUMMARY & THEME TRACKING ==================== */}
-      <div className="space-y-5">
-        {/* Summary & Speed-Read Bullets */}
-        <div className="liquid-glass-bento rounded-3xl p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2">
-                <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
-                  <Zap className="w-4 h-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-white">
-                    {speedReadMode
-                      ? "High-Velocity Speed-Read Digest"
-                      : "Comprehensive Chapter Summary"}
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Synthesized from SparkNotes, LitCharts &amp; American Literature
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* High-Yield Speed-Read Bullets */}
-            <div
-              className={`rounded-2xl p-4 mb-4 border ${
-                speedReadMode
-                  ? "bg-rose-500/10 border-rose-400/35"
-                  : "bg-white/[0.03] border-white/10"
-              }`}
-            >
-              <div className="text-xs font-bold uppercase tracking-wider text-rose-300 mb-2.5 flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5" />
-                Rapid Late-Night Speed-Read Beats
-              </div>
-              <ul className="space-y-2">
-                {chapter.speedReadBullets.map((bullet, idx) => (
-                  <li
-                    key={idx}
-                    className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-200 leading-relaxed"
-                  >
-                    <span className="w-5 h-5 rounded-full bg-rose-400/20 text-rose-300 font-mono text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                      {idx + 1}
-                    </span>
-                    <span>{bullet}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            {/* Narrative Prose Summary */}
-            {!speedReadMode && (
-              <div className="space-y-3 text-sm sm:text-base text-slate-200/95 leading-relaxed">
-                {chapter.summary.split("\n\n").map((para, i) => (
-                  <p key={i}>{para}</p>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* Exam Thesis Banner */}
-          <div className="mt-5 pt-4 border-t border-white/10">
-            <div className="rounded-2xl p-3.5 bg-gradient-to-r from-rose-500/15 via-rose-600/15 to-red-950/20 border border-rose-400/30">
-              <div className="text-xs font-bold uppercase tracking-wider text-rose-300 mb-1 flex items-center gap-1.5">
-                <GraduationCap className="w-3.5 h-3.5" />
-                Core Analytical Thesis Takeaway
-              </div>
-              <p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
-                {chapter.examPromptTakeaway}
+            <div>
+              <h2 className="text-base font-bold text-white tracking-tight">
+                Core Chapter Digest &amp; Synthesis
+              </h2>
+              <p className="text-xs text-slate-400">
+                Key beats, totalitarian mechanism, and psychological trajectory
               </p>
             </div>
           </div>
+
+          <button
+            onClick={() => {
+              setViewMode("revision");
+              setRevisionTab("cram");
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl liquid-glass-pill text-xs font-bold text-rose-300 hover:text-white transition-all cursor-pointer"
+          >
+            <span>Revision Hub Brief</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </button>
         </div>
 
-        {/* Theme Tracking Bento */}
-        <div className="liquid-glass-bento rounded-3xl p-6 flex flex-col justify-between">
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
-                <ShieldAlert className="w-4 h-4" />
+        {/* 3 Clean Rounded Bullet Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {/* Card 1: Key Narrative Beats */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-300 border border-amber-400/30 flex items-center justify-center shrink-0">
+                  <Zap className="w-3.5 h-3.5" />
+                </span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                  1. Narrative Beats
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {chapter.speedReadBullets[0] || chapter.summary.slice(0, 180) + "..."}
+              </p>
+            </div>
+            <div className="pt-2 border-t border-white/5 text-[11px] text-slate-400 italic">
+              {chapter.speedReadBullets[1] || "Plot progression anchor"}
+            </div>
+          </div>
+
+          {/* Card 2: Totalitarian Mechanism */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-7 h-7 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30 flex items-center justify-center shrink-0">
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                </span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-rose-300">
+                  2. Ideological Weapon
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {chapter.themeTracking[0]?.manifestation || chapter.analysis.sparkNotesSynthesis.slice(0, 180) + "..."}
+              </p>
+            </div>
+            <div className="pt-2 border-t border-white/5 text-[11px] text-rose-300/80 font-mono">
+              Mechanism: {chapter.themeTracking[0]?.themeId.toUpperCase() || "TOTALITARIANISM"}
+            </div>
+          </div>
+
+          {/* Card 3: Winston's Psychological Arc */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 space-y-2.5 flex flex-col justify-between">
+            <div>
+              <div className="flex items-center gap-2 mb-2">
+                <span className="w-7 h-7 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30 flex items-center justify-center shrink-0">
+                  <GraduationCap className="w-3.5 h-3.5" />
+                </span>
+                <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-300">
+                  3. Psychological Arc
+                </span>
+              </div>
+              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                {chapter.analysis.psychologicalArc || "Winston's internal consciousness under pressure."}
+              </p>
+            </div>
+            <div className="pt-2 border-t border-white/5 text-[11px] text-purple-300/80 font-mono">
+              Resistance &amp; Fear State
+            </div>
+          </div>
+        </div>
+
+        {/* Narrative Summary Card (Open & Inviting without Collapsed Wall) */}
+        <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
+          <div className="flex items-center justify-between border-b border-white/10 pb-3">
+            <div className="flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-rose-400" />
+              <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                Complete Narrative Reading Prose
+              </h3>
+            </div>
+            <span className="text-xs text-slate-400 font-mono">
+              {chapter.summary.split("\n\n").length} paragraphs
+            </span>
+          </div>
+
+          <div className="space-y-3 text-xs sm:text-sm text-slate-200/95 leading-relaxed font-sans tracking-normal">
+            {chapter.summary.split("\n\n").map((para, i) => (
+              <p key={i}>{para}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          TIER 3: KEY QUOTES / VOCABULARY & TEXTUAL EVIDENCE
+          ===================================================================== */}
+      <section className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+        <div className="flex items-center justify-between gap-2 border-b border-white/10 pb-3">
+          <div className="flex items-center gap-2.5">
+            <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30">
+              <Quote className="w-4 h-4" />
+            </span>
+            <div>
+              <h2 className="text-base font-bold text-white tracking-tight">
+                Key Verbatim Quotes &amp; Textual Evidence
+              </h2>
+              <p className="text-xs text-slate-400">
+                High-yield passages with speaker, context, and close literary analysis
+              </p>
+            </div>
+          </div>
+          <span className="text-xs font-mono text-rose-300/90 font-bold px-2.5 py-1 rounded-xl bg-rose-500/10 border border-rose-400/20">
+            {chapter.quotes.length} Quotes
+          </span>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          {chapter.quotes.map((q) => {
+            const isBookmarked = !!bookmarkedQuotes[q.id];
+            return (
+              <div
+                key={q.id}
+                className="rounded-2xl p-4 sm:p-5 bg-gradient-to-br from-white/[0.05] to-white/[0.02] border border-white/15 space-y-3 flex flex-col justify-between"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-start justify-between gap-3">
+                    <blockquote className="text-xs sm:text-sm font-semibold text-white italic leading-relaxed border-l-2 border-rose-400 pl-3 font-serif">
+                      &ldquo;{q.quote}&rdquo;
+                    </blockquote>
+                    <button
+                      onClick={() => toggleBookmarkQuote(q.id)}
+                      title="Bookmark quote"
+                      className="p-1.5 rounded-xl liquid-glass-pill text-slate-400 hover:text-rose-300 shrink-0 cursor-pointer"
+                    >
+                      <Bookmark
+                        className={`w-4 h-4 ${
+                          isBookmarked ? "text-rose-300 fill-rose-300" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
+
+                  <div className="text-xs font-mono text-rose-300/90 pl-3">
+                    — {q.speaker} ({q.context})
+                  </div>
+
+                  <p className="text-xs text-slate-200 leading-relaxed pt-1">
+                    <span className="text-sky-300 font-semibold">Close Reading:</span> {q.analysis}
+                  </p>
+                </div>
+
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-white/5">
+                  {q.themes.map((tId) => {
+                    const t = THEMES_TAXONOMY[tId];
+                    if (!t) return null;
+                    return (
+                      <span
+                        key={tId}
+                        className="px-2 py-0.5 rounded-lg text-[10px] font-semibold border"
+                        style={{
+                          backgroundColor: t.badgeBg,
+                          borderColor: t.badgeBorder,
+                          color: t.badgeText,
+                        }}
+                      >
+                        {t.shortName}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </section>
+
+      {/* =====================================================================
+          TIER 4: DISCUSSION & EXAM TRAPS
+          ===================================================================== */}
+      <section className="space-y-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Card 1: Teacher Will Ask / Seminar Talking Points */}
+          <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-3">
+            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30">
+                <HelpCircle className="w-4 h-4" />
               </span>
               <div>
-                <h3 className="text-base font-bold text-white">
-                  Theme Tracking &amp; Intensity
+                <h3 className="text-sm sm:text-base font-bold text-white tracking-tight">
+                  Teacher Will Ask (Seminar Talking Points)
                 </h3>
                 <p className="text-xs text-slate-400">
-                  Active ideological mechanisms in {chapter.displayCode}
+                  Discussion-ready questions for active class participation
                 </p>
               </div>
             </div>
 
-            <div className="space-y-3">
-              {chapter.themeTracking.map((track) => {
-                const themeDef = THEMES_TAXONOMY[track.themeId];
-                if (!themeDef) return null;
-
-                return (
-                  <div
-                    key={track.themeId}
-                    className="rounded-2xl p-3.5 bg-black/30 border border-white/10 hover:border-white/20 transition-colors"
-                  >
-                    <div className="flex items-center justify-between gap-2 mb-2">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="px-2.5 py-0.5 rounded-full text-xs font-bold border"
-                          style={{
-                            backgroundColor: themeDef.badgeBg,
-                            borderColor: themeDef.badgeBorder,
-                            color: themeDef.badgeText,
-                          }}
-                        >
-                          {themeDef.shortName}
-                        </span>
-                        <span className="text-[10px] font-mono text-slate-400 hidden sm:inline">
-                          {themeDef.newspeakTerm}
-                        </span>
-                      </div>
-
-                      {/* 5-Bar Intensity Meter */}
-                      <div className="flex items-center gap-1">
-                        {[1, 2, 3, 4, 5].map((lvl) => (
-                          <span
-                            key={lvl}
-                            className="w-2.5 h-3 rounded-sm transition-all"
-                            style={{
-                              backgroundColor:
-                                lvl <= track.intensity
-                                  ? themeDef.color
-                                  : "rgba(255,255,255,0.1)",
-                              boxShadow:
-                                lvl <= track.intensity
-                                  ? `0 0 8px ${themeDef.glowColor}`
-                                  : "none",
-                            }}
-                          />
-                        ))}
-                        <span className="ml-1 text-[11px] font-mono font-bold text-slate-300">
-                          {track.intensity}/5
-                        </span>
-                      </div>
-                    </div>
-
-                    <p className="text-xs text-slate-200 leading-relaxed">
-                      {track.manifestation}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
+            <ul className="space-y-2 pt-1">
+              {(matchingTicket?.teacherDiscussionQuestions || [
+                `How does Orwell develop the setting of ${chapter.setting} to reflect totalitarian power?`,
+                `What psychological shifts in Winston are highlighted by this chapter's central conflict?`,
+                `How does the thematic tension of ${chapter.themeTracking[0]?.themeId || "surveillance"} operate here?`,
+              ]).map((q, idx) => (
+                <li
+                  key={idx}
+                  className="text-xs sm:text-sm text-slate-200 pl-3 border-l-2 border-rose-400/60 leading-relaxed font-sans"
+                >
+                  {q}
+                </li>
+              ))}
+            </ul>
           </div>
 
-          {/* Symbols & Motifs Active in Chapter */}
-          <div className="mt-4 pt-4 border-t border-white/10">
-            <div className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2">
-              Symbols &amp; Motifs Present
+          {/* Card 2: Avoid Common Exam Traps & Misconceptions */}
+          <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-rose-500/25 bg-gradient-to-br from-rose-500/10 to-transparent space-y-3">
+            <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+              <span className="p-2 rounded-xl bg-rose-500/25 text-rose-300 border border-rose-400/40">
+                <AlertTriangle className="w-4 h-4" />
+              </span>
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-rose-200 tracking-tight">
+                  Avoid Common Exam Traps &amp; Pitfalls
+                </h3>
+                <p className="text-xs text-rose-300/70">
+                  Critical nuance required for top-tier essay analysis
+                </p>
+              </div>
             </div>
-            <div className="flex flex-wrap gap-1.5">
-              {chapter.analysis.motifsAndSymbols.map((sym, idx) => (
-                <span
-                  key={idx}
-                  className="px-2.5 py-1 rounded-xl text-xs bg-white/[0.06] border border-white/15 text-rose-200"
-                >
-                  {sym}
-                </span>
-              ))}
-            </div>
+
+            <p className="text-xs sm:text-sm text-rose-100/90 leading-relaxed font-sans pt-1">
+              {matchingTicket?.commonMisconceptions ||
+                "Students often treat this chapter as plot exposition rather than an ideological demonstration. Analyze how Orwell uses sensory decay and language to illustrate state control over private thought."}
+            </p>
           </div>
         </div>
-      </div>
 
-      {/* ==================== BENTO ROW 2: SUB-SECTIONS HIERARCHY ==================== */}
-      <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6">
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+        {/* Full-Width Core Analytical Thesis Takeaway Banner */}
+        <div className="liquid-glass-bento rounded-3xl p-5 border border-purple-500/30 bg-gradient-to-r from-purple-500/15 via-rose-500/15 to-transparent">
+          <div className="flex items-center gap-2 mb-1.5">
+            <GraduationCap className="w-4 h-4 text-purple-300" />
+            <span className="text-xs font-mono font-bold uppercase tracking-wider text-purple-300">
+              Core Analytical Exam Thesis Takeaway
+            </span>
+          </div>
+          <p className="text-xs sm:text-sm text-white font-medium leading-relaxed font-sans">
+            {chapter.examPromptTakeaway}
+          </p>
+        </div>
+      </section>
+
+      {/* =====================================================================
+          TIER 5: SCENE BREAKDOWN, THEMES & ANNOTATIONS
+          ===================================================================== */}
+      {/* Sub-Sections Hierarchy */}
+      <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 pb-3">
           <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
+            <span className="p-2 rounded-xl bg-rose-500/20 text-rose-300 border border-rose-400/30">
               <Layers className="w-4 h-4" />
             </span>
             <div>
-              <h3 className="text-base font-bold text-white">
-                Hierarchical Scene &amp; Sub-Section Breakdown
+              <h3 className="text-base font-bold text-white tracking-tight">
+                Scene &amp; Sub-Section Breakdown
               </h3>
               <p className="text-xs text-slate-400">
-                Book Part {bookPart?.partNumber} ➔ Chapter {chapter.chapterNumber} ➔{" "}
-                {chapter.subSections.length} Sub-sections (Check off scenes as you read)
+                {chapter.subSections.length} scenes in {chapter.displayCode} • Check off as you read
               </p>
             </div>
           </div>
@@ -636,10 +563,10 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
                           navigator.vibrate(20);
                         }
                       }}
-                      className={`w-8 h-8 -mr-1 -mt-1 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all duration-150 active:scale-80 select-none ${
+                      className={`w-7 h-7 rounded-full flex items-center justify-center shrink-0 cursor-pointer transition-all duration-150 active:scale-80 select-none ${
                         isSubDone
                           ? "text-emerald-400 bg-emerald-500/20"
-                          : "text-slate-400 hover:text-emerald-300 hover:bg-white/10 active:bg-white/20"
+                          : "text-slate-400 hover:text-emerald-300 hover:bg-white/10"
                       }`}
                     >
                       <div className={isSubDone ? "animate-tick-pop" : ""}>
@@ -653,7 +580,7 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
                   </div>
 
                   <h4
-                    className={`text-sm font-bold mb-2 ${
+                    className={`text-sm font-bold mb-1.5 font-sans ${
                       isSubDone ? "text-emerald-200 line-through" : "text-white"
                     }`}
                   >
@@ -666,10 +593,10 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
                 </div>
 
                 <div className="pt-2.5 border-t border-white/10">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-indigo-300 mb-0.5">
-                    Analytical Significance
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-rose-300 mb-0.5">
+                    Analytical Takeaway
                   </div>
-                  <p className="text-xs text-indigo-100/90 leading-relaxed">
+                  <p className="text-xs text-rose-100/90 leading-relaxed font-sans">
                     {sub.analyticalTakeaway}
                   </p>
                 </div>
@@ -679,178 +606,111 @@ export const ChapterBentoCard: React.FC<ChapterBentoCardProps> = React.memo(({
         </div>
       </div>
 
-      {/* ==================== BENTO ROW 2.5: PHYSICAL BOOK MARGINALIA & COLOR-CODED ANNOTATIONS ==================== */}
+      {/* Theme Tracking & Active Motifs */}
+      <div className="liquid-glass-bento rounded-3xl p-5 sm:p-6 border border-white/10 space-y-4">
+        <div className="flex items-center gap-2 border-b border-white/10 pb-3">
+          <ShieldAlert className="w-4 h-4 text-rose-400" />
+          <h3 className="text-base font-bold text-white tracking-tight">
+            Theme Tracking &amp; Active Ideological Mechanisms
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
+          {chapter.themeTracking.map((track) => {
+            const themeDef = THEMES_TAXONOMY[track.themeId];
+            if (!themeDef) return null;
+
+            return (
+              <div
+                key={track.themeId}
+                className="rounded-2xl p-4 bg-black/30 border border-white/10 space-y-2"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <span
+                    className="px-2.5 py-0.5 rounded-lg text-xs font-bold border"
+                    style={{
+                      backgroundColor: themeDef.badgeBg,
+                      borderColor: themeDef.badgeBorder,
+                      color: themeDef.badgeText,
+                    }}
+                  >
+                    {themeDef.shortName}
+                  </span>
+
+                  {/* 5-Bar Intensity Meter */}
+                  <div className="flex items-center gap-1">
+                    {[1, 2, 3, 4, 5].map((lvl) => (
+                      <span
+                        key={lvl}
+                        className="w-2.5 h-3 rounded-sm transition-all"
+                        style={{
+                          backgroundColor:
+                            lvl <= track.intensity
+                              ? themeDef.color
+                              : "rgba(255,255,255,0.1)",
+                          boxShadow:
+                            lvl <= track.intensity
+                              ? `0 0 8px ${themeDef.glowColor}`
+                              : "none",
+                        }}
+                      />
+                    ))}
+                    <span className="ml-1 text-[11px] font-mono font-bold text-slate-300">
+                      {track.intensity}/5
+                    </span>
+                  </div>
+                </div>
+
+                <p className="text-xs text-slate-200 leading-relaxed font-sans">
+                  {track.manifestation}
+                </p>
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Motifs & Symbols Pills */}
+        <div className="pt-2 flex flex-wrap items-center gap-2">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-400 mr-1">
+            Motifs in Chapter:
+          </span>
+          {chapter.analysis.motifsAndSymbols.map((sym, idx) => (
+            <span
+              key={idx}
+              className="px-2.5 py-1 rounded-xl text-xs bg-white/[0.06] border border-white/15 text-rose-200"
+            >
+              {sym}
+            </span>
+          ))}
+        </div>
+      </div>
+
+      {/* Color-Coded Physical Book Annotations & Marginalia */}
       <ChapterAnnotationsBento
         chapterId={chapter.id}
         chapterCode={chapter.displayCode}
       />
 
-      {/* ==================== BENTO STACK: DEEP ANALYSIS & KEY QUOTES ==================== */}
-      <div className="space-y-5">
-        {/* Multi-Source Synthesis Analysis */}
-        <div className="liquid-glass-bento rounded-3xl p-6 space-y-4">
-          <div className="flex items-center gap-2.5">
-            <span className="p-2 rounded-xl bg-purple-500/20 border border-purple-400/30 text-purple-300">
-              <GraduationCap className="w-4 h-4" />
-            </span>
-            <div>
-              <h3 className="text-base font-bold text-white">
-                Triangulated Critical Analysis
-              </h3>
-              <p className="text-xs text-slate-400">
-                SparkNotes • LitCharts • American Literature Synthesis
-              </p>
-            </div>
-          </div>
+      {/* Personal Study Marginalia Scratchpad */}
+      <AcademicNotesSurface
+        note={chapterNotes[chapter.id] || ""}
+        onChange={(text) => setChapterNote(chapter.id, text)}
+        title="Personal Study Marginalia & Reflections"
+        itemCode={chapter.displayCode}
+        minRows={5}
+        accentColor="#f43f5e"
+      />
 
-          <div className="rounded-2xl p-3.5 bg-purple-500/10 border border-purple-400/30">
-            <div className="text-[11px] font-bold uppercase tracking-wider text-purple-300 mb-1">
-              Chapter Thesis
-            </div>
-            <p className="text-xs sm:text-sm text-white font-medium leading-relaxed">
-              {chapter.analysis.thesis}
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <div className="rounded-2xl p-3.5 bg-black/30 border border-white/10">
-              <div className="text-xs font-bold text-rose-300 mb-1">
-                1. SparkNotes Structural &amp; Character Synthesis
-              </div>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                {chapter.analysis.sparkNotesSynthesis}
-              </p>
-            </div>
-
-            <div className="rounded-2xl p-3.5 bg-black/30 border border-white/10">
-              <div className="text-xs font-bold text-rose-300 mb-1">
-                2. LitCharts Thematic &amp; Epistemological Lens
-              </div>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                {chapter.analysis.litChartsSynthesis}
-              </p>
-            </div>
-
-            <div className="rounded-2xl p-3.5 bg-black/30 border border-white/10">
-              <div className="text-xs font-bold text-emerald-300 mb-1">
-                3. American Literature &amp; Historical Context
-              </div>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                {chapter.analysis.americanLitContext}
-              </p>
-            </div>
-
-            <div className="rounded-2xl p-3.5 bg-black/30 border border-white/10">
-              <div className="text-xs font-bold text-rose-300 mb-1">
-                4. Winston&apos;s Psychological Trajectory
-              </div>
-              <p className="text-xs sm:text-sm text-slate-200 leading-relaxed">
-                {chapter.analysis.psychologicalArc}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        {/* Key Quotes & Study Scratchpad */}
-        <div className="flex flex-col gap-5">
-          <div className="liquid-glass-bento rounded-3xl p-6 flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-2.5">
-                <span className="p-2 rounded-xl bg-rose-500/20 border border-rose-400/30 text-rose-300">
-                  <Quote className="w-4 h-4" />
-                </span>
-                <div>
-                  <h3 className="text-base font-bold text-white">
-                    Key Verbatim Quotes &amp; Explication
-                  </h3>
-                  <p className="text-xs text-slate-400">
-                    Bookmark high-impact quotes for essays &amp; exams
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="space-y-3.5">
-              {chapter.quotes.map((q) => {
-                const isBookmarked = !!bookmarkedQuotes[q.id];
-                return (
-                  <div
-                    key={q.id}
-                    className="rounded-2xl p-4 bg-gradient-to-br from-white/[0.06] to-white/[0.02] border border-white/15"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <blockquote className="text-sm sm:text-[15px] font-semibold text-white italic leading-relaxed border-l-2 border-rose-400 pl-3">
-                        &ldquo;{q.quote}&rdquo;
-                      </blockquote>
-                      <button
-                        onClick={() => toggleBookmarkQuote(q.id)}
-                        title="Bookmark quote"
-                        className="p-1.5 rounded-xl liquid-glass-pill text-slate-400 hover:text-rose-300 shrink-0 cursor-pointer"
-                      >
-                        <Bookmark
-                          className={`w-4 h-4 ${
-                            isBookmarked ? "text-rose-300 fill-rose-300" : ""
-                          }`}
-                        />
-                      </button>
-                    </div>
-
-                    <div className="text-xs font-mono text-rose-300 mb-2">
-                      — {q.speaker} ({q.context})
-                    </div>
-
-                    <p className="text-xs text-slate-200 leading-relaxed mb-2.5">
-                      {q.analysis}
-                    </p>
-
-                    <div className="flex flex-wrap gap-1.5">
-                      {q.themes.map((tId) => {
-                        const t = THEMES_TAXONOMY[tId];
-                        if (!t) return null;
-                        return (
-                          <span
-                            key={tId}
-                            className="px-2 py-0.5 rounded-full text-xs font-semibold border"
-                            style={{
-                              backgroundColor: t.badgeBg,
-                              borderColor: t.badgeBorder,
-                              color: t.badgeText,
-                            }}
-                          >
-                            {t.shortName}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* Personal Late-Night Study Scratchpad Bento */}
-          <AcademicNotesSurface
-            note={chapterNotes[chapter.id] || ""}
-            onChange={(text) => setChapterNote(chapter.id, text)}
-            title="Personal Study Marginalia"
-            itemCode={chapter.displayCode}
-            minRows={5}
-            accentColor="#06b6d4"
-          />
-        </div>
-      </div>
-      </DeepDive>
-
-      {/* ==================== ACTIVE RECALL / SELF-CHECK BENTO ==================== */}
+      {/* Active Recall / Self-Check Bento */}
       <RecallFlipCard
         moduleCode={chapter.displayCode}
         title={`${chapter.displayCode} · ${chapter.title}`}
         prompt={
-          matchingCram?.teacherDiscussionQuestions?.[0] ||
+          matchingTicket?.teacherDiscussionQuestions?.[0] ||
           chapter.examPromptTakeaway ||
           chapter.summary
         }
-        answer={matchingCram?.sixtySecondSummary || chapter.summary}
+        answer={matchingTicket?.sixtySecondSummary || chapter.summary}
         accent="#f43f5e"
         secondary="#e11d48"
         meta="ACTIVE RECALL"

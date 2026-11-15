@@ -11,9 +11,10 @@ interface ModuleProps {
 
 const mapGermanNavMode = (mode: string): GermanNavMode => {
   if (mode === "home") return "home";
+  if (mode === "revision" || mode === "revise") return "revision";
   if (mode === "textsorten" || mode === "matrix") return "textsorten";
   if (mode === "literatur" || mode === "literature") return "literatur";
-  if (mode === "grammatik" || mode === "revision") return "grammatik";
+  if (mode === "grammatik") return "grammatik";
   if (mode === "redemittel" || mode === "lexicon") return "redemittel";
   if (mode === "pruefung" || mode === "exam") return "pruefung";
   if (mode === "testdaf") return "testdaf";

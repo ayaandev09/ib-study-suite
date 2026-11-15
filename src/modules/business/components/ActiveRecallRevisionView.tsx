@@ -7,9 +7,12 @@ import {
   FORMULA_BANK,
   THEORISTS_DOSSIER,
   ALL_TOPICS,
+  SYLLABUS_UNITS,
   GlossaryTerm,
   FormulaItem,
   TheoristProfile,
+  TopicData,
+  UnitId,
 } from "@/modules/business/data";
 import { useStudyStore, FlashcardDeckType } from "@/modules/business/store/useStudyStore";
 import { MathFormula } from "./MathFormula";
@@ -32,6 +35,12 @@ import {
   Layers,
   GraduationCap,
   Zap,
+  ArrowRight,
+  Wrench,
+  AlertCircle,
+  HelpCircle,
+  Search,
+  Building2,
 } from "lucide-react";
 
 interface ExamQuestionCard {
@@ -170,7 +179,30 @@ export const ActiveRecallRevisionView = React.memo(function ActiveRecallRevision
     setViewMode,
   } = useStudyStore();
 
-  const [selectedUnit, setSelectedUnit] = useState<string>("ALL");
+  const [mainTab, setMainTab] = useState<"entry-tickets" | "flashcards">("entry-tickets");
+
+  // Entry Ticket Summaries state
+  const [selectedEntryUnit, setSelectedEntryUnit] = useState<string>("ALL");
+  const [entrySearchQuery, setEntrySearchQuery] = useState("");
+
+  const filteredEntryTopics = useMemo(() => {
+    return ALL_TOPICS.filter((t) => {
+      const matchesUnit =
+        selectedEntryUnit === "ALL" ||
+        (selectedEntryUnit === "bmt"
+          ? t.unitId === "bmt"
+          : t.unitId === selectedEntryUnit || t.displayCode.startsWith(selectedEntryUnit));
+      const matchesQuery =
+        !entrySearchQuery ||
+        t.title.toLowerCase().includes(entrySearchQuery.toLowerCase()) ||
+        t.displayCode.toLowerCase().includes(entrySearchQuery.toLowerCase()) ||
+        t.subtitle.toLowerCase().includes(entrySearchQuery.toLowerCase());
+      return matchesUnit && matchesQuery;
+    });
+  }, [selectedEntryUnit, entrySearchQuery]);
+
+  // Flashcards state
+  const [selectedFlashcardUnit, setSelectedFlashcardUnit] = useState<string>("ALL");
   const [onlyUnmastered, setOnlyUnmastered] = useState<boolean>(false);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -290,21 +322,21 @@ export const ActiveRecallRevisionView = React.memo(function ActiveRecallRevision
   // Filter cards by unit and unmastered toggle
   const filteredCards = useMemo(() => {
     return allCards.filter((card) => {
-      if (selectedUnit !== "ALL") {
-        if (!card.unit.startsWith(selectedUnit)) return false;
+      if (selectedFlashcardUnit !== "ALL") {
+        if (!card.unit.startsWith(selectedFlashcardUnit)) return false;
       }
       if (onlyUnmastered && masteredFlashcards[card.id]) {
         return false;
       }
       return true;
     });
-  }, [allCards, selectedUnit, onlyUnmastered, masteredFlashcards]);
+  }, [allCards, selectedFlashcardUnit, onlyUnmastered, masteredFlashcards]);
 
   // Reset index when deck or filter changes
   useEffect(() => {
     setCurrentIndex(0);
     setIsFlipped(false);
-  }, [activeFlashcardDeck, selectedUnit, onlyUnmastered]);
+  }, [activeFlashcardDeck, selectedFlashcardUnit, onlyUnmastered]);
 
   const currentCard: Flashcard | undefined = filteredCards[currentIndex];
   const isMastered = currentCard ? !!masteredFlashcards[currentCard.id] : false;
@@ -342,453 +374,509 @@ export const ActiveRecallRevisionView = React.memo(function ActiveRecallRevision
     }
   };
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
-      if (
-        document.activeElement?.tagName === "INPUT" ||
-        document.activeElement?.tagName === "TEXTAREA"
-      ) {
-        return;
-      }
-
-      if (e.code === "Space") {
-        e.preventDefault();
-        setIsFlipped((f) => !f);
-      } else if (e.code === "ArrowRight") {
-        e.preventDefault();
-        handleNext();
-      } else if (e.code === "ArrowLeft") {
-        e.preventDefault();
-        handlePrev();
-      } else if (e.code === "ArrowUp") {
-        e.preventDefault();
-        handleToggleMastered();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [handleNext, handlePrev]);
-
-  const shuffleDeck = () => {
-    setIsFlipped(false);
-    setCurrentIndex(Math.floor(Math.random() * filteredCards.length));
+  const handleOpenTopic = (topicId: string) => {
+    setActiveTopic(topicId);
+    setViewMode("stream");
   };
 
   return (
-    <div className="space-y-6">
-      {/* =====================================================================
-          1. HEADER & DECK SELECTOR
-          ===================================================================== */}
-      <section className="liquid-glass-bento rounded-3xl p-6">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-          <div>
-            <div className="flex items-center gap-2 mb-1">
-              <Brain className="w-5 h-5 text-purple-400" />
-              <h2 className="text-lg font-bold text-white tracking-tight">
-                Active Recall & Exam Revision Hub
-              </h2>
-            </div>
-            <p className="text-xs text-slate-400">
-              Interactive spaced repetition drills for rapid pre-lesson preparation and exam tests.
-            </p>
-          </div>
-
-          {/* Deck Selectors */}
-          <div className="flex flex-wrap items-center gap-1.5 p-1 rounded-2xl bg-slate-950/70 border border-white/10">
-            <button
-              onClick={() => setActiveFlashcardDeck("glossary")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                activeFlashcardDeck === "glossary"
-                  ? "bg-sky-500/25 border border-sky-400/40 text-sky-200"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <BookOpen className="w-3.5 h-3.5" />
-              <span>Glossary ({GLOSSARY_TERMS.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveFlashcardDeck("formulas")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                activeFlashcardDeck === "formulas"
-                  ? "bg-blue-500/25 border border-blue-400/40 text-blue-200"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Calculator className="w-3.5 h-3.5" />
-              <span>Formulas ({FORMULA_BANK.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveFlashcardDeck("theorists")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                activeFlashcardDeck === "theorists"
-                  ? "bg-purple-500/25 border border-purple-400/40 text-purple-200"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Theorists ({THEORISTS_DOSSIER.length})</span>
-            </button>
-            <button
-              onClick={() => setActiveFlashcardDeck("exam-questions")}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                activeFlashcardDeck === "exam-questions"
-                  ? "bg-blue-500/25 border border-blue-400/40 text-blue-200"
-                  : "text-slate-400 hover:text-white"
-              }`}
-            >
-              <GraduationCap className="w-3.5 h-3.5" />
-              <span>Exam Drills ({HIGH_YIELD_EXAM_QUESTIONS.length})</span>
-            </button>
-          </div>
+    <div className="space-y-8 max-w-6xl mx-auto pb-12">
+      {/* Hero Header */}
+      <div className="liquid-glass-card rounded-3xl p-6 sm:p-8 bg-gradient-to-r from-blue-950/40 via-slate-900/80 to-indigo-950/40 border border-white/10 relative overflow-hidden">
+        <div className="flex items-center gap-2 mb-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-400">
+          <Sparkles className="w-4 h-4" />
+          <span>IB Business Management Revision &amp; Lesson Warmup Hub</span>
         </div>
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight mb-2">
+          Revise &amp; Master
+        </h1>
+        <p className="text-sm sm:text-base text-slate-300 max-w-3xl leading-relaxed">
+          Review high-yield lesson entry ticket summaries, quantitative decision tools, teacher discussion prompts, and corporate traps. Switch seamlessly into active recall flashcards to drill definitions, ratios, and theorists.
+        </p>
 
-        {/* Filter Bar & Progress Strip */}
-        <div className="pt-3 border-t border-white/10 flex flex-wrap items-center justify-between gap-3">
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
-              <Filter className="w-3.5 h-3.5 text-sky-400" /> Filter Unit:
-            </span>
-            {["ALL", "Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "BMT"].map((u) => (
-              <button
-                key={u}
-                onClick={() => setSelectedUnit(u)}
-                className={`px-2.5 py-1 rounded-xl text-[11px] font-mono transition-all cursor-pointer ${
-                  selectedUnit === u
-                    ? "bg-white/15 text-white border border-white/25"
-                    : "bg-white/[0.03] text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                {u}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex items-center gap-3">
-            {/* Unmastered Only Toggle */}
-            <button
-              onClick={() => setOnlyUnmastered(!onlyUnmastered)}
-              className={`flex items-center gap-1.5 px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
-                onlyUnmastered
-                  ? "bg-blue-500/20 text-blue-200 border border-blue-400/30"
-                  : "bg-white/[0.04] text-slate-400 hover:text-white"
-              }`}
-            >
-              <Zap className="w-3 h-3 text-blue-400" />
-              <span>Unmastered Only</span>
-            </button>
-
-            {/* View Format Toggle (Card vs Cram Sheet) */}
-            <div className="flex items-center p-0.5 rounded-xl bg-slate-950/60 border border-white/10">
-              <button
-                onClick={() => setViewFormat("card")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-                  viewFormat === "card"
-                    ? "bg-white/15 text-white"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Flashcard
-              </button>
-              <button
-                onClick={() => setViewFormat("sheet")}
-                className={`px-2.5 py-1 rounded-lg text-xs font-mono transition-all cursor-pointer ${
-                  viewFormat === "sheet"
-                    ? "bg-white/15 text-white"
-                    : "text-slate-400 hover:text-slate-200"
-                }`}
-              >
-                Cram Sheet
-              </button>
-            </div>
-          </div>
-        </div>
-
-        {/* Progress Bar */}
-        <div className="mt-4 pt-3 border-t border-white/10 flex items-center gap-3">
-          <div className="w-full h-2 rounded-full bg-slate-950/80 overflow-hidden border border-white/5">
-            <div
-              className="h-full rounded-full transition-all duration-500"
-              style={{
-                width: `${progressPercent}%`,
-                background: "linear-gradient(90deg, #2563eb, #0ea5e9)",
-                boxShadow: "0 0 10px rgba(37, 99, 235, 0.5)",
-              }}
-            />
-          </div>
-          <span className="font-mono text-xs font-bold text-blue-400 shrink-0">
-            {totalMasteredInDeck} / {allCards.length} Mastered ({progressPercent}%)
-          </span>
+        {/* Top-Level Mode Switcher */}
+        <div className="flex flex-wrap items-center gap-3 mt-6">
           <button
-            onClick={() => resetFlashcardProgress()}
-            className="p-1 text-slate-500 hover:text-rose-400 transition-colors cursor-pointer"
-            title="Reset Mastered Stats"
+            onClick={() => setMainTab("entry-tickets")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
+              mainTab === "entry-tickets"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10"
+            }`}
           >
-            <RotateCcw className="w-3.5 h-3.5" />
+            <Layers className="w-4 h-4" />
+            <span>Entry Ticket Summaries</span>
+          </button>
+
+          <button
+            onClick={() => setMainTab("flashcards")}
+            className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs sm:text-sm font-bold cursor-pointer transition-all ${
+              mainTab === "flashcards"
+                ? "bg-blue-600 text-white shadow-lg shadow-blue-600/30"
+                : "bg-white/[0.04] hover:bg-white/[0.08] text-slate-300 border border-white/10"
+            }`}
+          >
+            <Brain className="w-4 h-4" />
+            <span>Flashcards / Active Recall ({allCards.length})</span>
           </button>
         </div>
-      </section>
+      </div>
 
-      {/* =====================================================================
-          2. FORMAT A: 3D INTERACTIVE FLASHCARD
-          ===================================================================== */}
-      {viewFormat === "card" && (
-        <div className="max-w-3xl mx-auto space-y-4">
-          {filteredCards.length === 0 ? (
-            <div className="liquid-glass-bento rounded-3xl p-12 text-center space-y-3">
-              <Award className="w-12 h-12 text-blue-400 mx-auto" />
-              <h3 className="text-lg font-bold text-white">Deck Mastered!</h3>
-              <p className="text-xs text-slate-400 max-w-md mx-auto">
-                You have marked all cards in this category as mastered. Great job!
-              </p>
+      {/* ===================================================================
+          MODE 1: ENTRY TICKET SUMMARIES (LESSON WARMUPS)
+          =================================================================== */}
+      {mainTab === "entry-tickets" && (
+        <div className="space-y-6">
+          {/* Unit selector tabs across the top & Search */}
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-2">
               <button
-                onClick={() => setOnlyUnmastered(false)}
-                className="px-4 py-2 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30 text-xs font-mono cursor-pointer"
+                onClick={() => setSelectedEntryUnit("ALL")}
+                className={`px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+                  selectedEntryUnit === "ALL"
+                    ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-600/30"
+                    : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
+                }`}
               >
-                Review All Cards
+                All Units ({ALL_TOPICS.length})
               </button>
+              {SYLLABUS_UNITS.map((unit) => {
+                const count = unit.topics.length;
+                const shortLabel = unit.title.split(":")[0];
+                return (
+                  <button
+                    key={unit.id}
+                    onClick={() => setSelectedEntryUnit(unit.id)}
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold cursor-pointer transition-all ${
+                      selectedEntryUnit === unit.id
+                        ? "bg-blue-600 text-white font-bold shadow-sm shadow-blue-600/30"
+                        : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
+                    }`}
+                  >
+                    {shortLabel} ({count})
+                  </button>
+                );
+              })}
             </div>
-          ) : currentCard ? (
-            <>
-              {/* Card Meta Indicator */}
-              <div className="flex items-center justify-between text-xs font-mono text-slate-400 px-2">
-                <span>
-                  Card <strong className="text-white">{currentIndex + 1}</strong> of{" "}
-                  {filteredCards.length}
-                </span>
-                <span className="text-[11px] text-slate-500">
-                  Keyboard: Space = Flip • ← / → = Prev / Next • ↑ = Mark Mastered
-                </span>
-              </div>
 
-              {/* Main Flip Card Container with Silky Smooth 3D Flip */}
-              <div
-                className="w-full min-h-[360px] cursor-pointer select-none"
-                style={{ perspective: "1400px" }}
-                onClick={() => setIsFlipped(!isFlipped)}
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  {!isFlipped ? (
-                    <motion.div
-                      key={`front-${currentCard.id}`}
-                      initial={{ rotateY: -80, opacity: 0 }}
-                      animate={{ rotateY: 0, opacity: 1 }}
-                      exit={{ rotateY: 80, opacity: 0 }}
-                      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                      className="liquid-glass-bento rounded-3xl p-7 sm:p-9 min-h-[360px] flex flex-col justify-between border border-white/15 hover:border-sky-400/40 transition-colors bg-slate-950/80 shadow-2xl"
+            <div className="relative w-full md:w-64">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={entrySearchQuery}
+                onChange={(e) => setEntrySearchQuery(e.target.value)}
+                placeholder="Filter subunits or tools..."
+                className="w-full pl-10 pr-4 py-2 rounded-2xl bg-white/[0.03] border border-white/10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-400 transition-colors"
+              />
+            </div>
+          </div>
+
+          {/* Subunit Bento Cards Grid */}
+          <div className="space-y-6">
+            {filteredEntryTopics.map((topic) => {
+              const unit = SYLLABUS_UNITS.find((u) => u.id === topic.unitId);
+              const discussionPrompt =
+                topic.examPromptTakeaway ||
+                `How do decisions in ${topic.title} create strategic friction between shareholders and internal stakeholders?`;
+              const traps =
+                topic.analysis.commonMisconceptions.length > 0
+                  ? topic.analysis.commonMisconceptions
+                  : ["Confusing short-term cash flow with long-term accounting profitability."];
+
+              return (
+                <div
+                  key={topic.id}
+                  className="liquid-glass-bento rounded-3xl p-6 sm:p-7 border border-white/10 space-y-6 hover:border-blue-500/30 transition-all duration-300"
+                >
+                  {/* Subunit Header */}
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/10">
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-mono text-xs font-bold px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 border border-blue-400/30">
+                          {topic.displayCode}
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-white/[0.06] text-slate-300 border border-white/10">
+                          {unit?.title.split(":")[0] || `Unit ${topic.unitNumber}`}
+                        </span>
+                        <span className="font-mono text-xs px-2.5 py-0.5 rounded-full bg-indigo-500/15 text-indigo-200 border border-indigo-400/25">
+                          {topic.level}
+                        </span>
+                        <span className="inline-flex items-center gap-1 font-mono text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-400/30">
+                          <Zap className="w-3 h-3 text-amber-400" />
+                          60s Warmup
+                        </span>
+                      </div>
+                      <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+                        {topic.title}
+                      </h2>
+                      <p className="text-xs sm:text-sm text-slate-400 italic">
+                        {topic.subtitle}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={() => handleOpenTopic(topic.id)}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-white/[0.05] hover:bg-blue-600 hover:text-white text-slate-300 text-xs font-semibold border border-white/10 hover:border-blue-400 cursor-pointer transition-all shrink-0 self-start sm:self-center"
                     >
-                      {/* Header Pills */}
-                      <div className="flex items-center justify-between gap-2 mb-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-sky-500/20 text-sky-300 border border-sky-400/30">
-                            {currentCard.categoryBadge}
-                          </span>
-                          <span className="font-mono text-xs px-2.5 py-1 rounded-xl bg-white/[0.06] text-slate-300 border border-white/10">
-                            {currentCard.unit}
-                          </span>
-                          {currentCard.hlOnly && (
-                            <span className="font-mono text-[10px] font-bold px-2 py-0.5 rounded-lg bg-rose-500/20 text-rose-300 border border-rose-400/30">
-                              HL
-                            </span>
-                          )}
-                        </div>
+                      <span>Study Full Topic</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
 
-                        <div className="flex items-center gap-2">
-                          {isMastered && (
-                            <span className="flex items-center gap-1 font-mono text-xs text-blue-400 bg-blue-500/15 border border-blue-400/30 px-2 py-0.5 rounded-lg">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              Mastered
-                            </span>
-                          )}
-                          <span className="p-1.5 rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors">
-                            <RotateCw className="w-4 h-4" />
-                          </span>
-                        </div>
+                  {/* 4 Bento Panels Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Panel 1: 60-Second Core Takeaway */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-amber-300">
+                        <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
+                        <span>60-Second Core Takeaway (Warmup)</span>
                       </div>
-
-                      {/* Card Prompt */}
-                      <div className="my-auto py-4 space-y-3">
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400 block">
-                          PROMPT / QUESTION:
-                        </span>
-                        <h3 className="text-xl sm:text-2xl font-bold text-white tracking-tight leading-snug">
-                          {currentCard.front}
-                        </h3>
-                        <p className="text-xs font-mono text-slate-400">
-                          {currentCard.frontSub}
-                        </p>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="pt-4 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                        <span className="flex items-center gap-1.5">
-                          <Eye className="w-3.5 h-3.5 text-sky-400" />
-                          Click anywhere to reveal answer (3D Flip)
-                        </span>
-                        <span className="text-slate-500">Tap Spacebar to Flip</span>
-                      </div>
-                    </motion.div>
-                  ) : (
-                    <motion.div
-                      key={`back-${currentCard.id}`}
-                      initial={{ rotateY: -80, opacity: 0 }}
-                      animate={{ rotateY: 0, opacity: 1 }}
-                      exit={{ rotateY: 80, opacity: 0 }}
-                      transition={{ duration: 0.26, ease: [0.16, 1, 0.3, 1] }}
-                      className="liquid-glass-bento rounded-3xl p-7 sm:p-9 min-h-[360px] flex flex-col justify-between border border-sky-400/40 bg-slate-900/95 shadow-[0_0_35px_-5px_rgba(14,165,233,0.3)]"
-                    >
-                      {/* Header Pills */}
-                      <div className="flex items-center justify-between gap-2 mb-4">
-                        <div className="flex items-center gap-2">
-                          <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-xl bg-purple-500/20 text-purple-300 border border-purple-400/30">
-                            {currentCard.categoryBadge} Solution
-                          </span>
-                          <span className="font-mono text-xs px-2.5 py-1 rounded-xl bg-white/[0.06] text-slate-300 border border-white/10">
-                            {currentCard.unit}
-                          </span>
+                      <p className="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                        {topic.summary}
+                      </p>
+                      {topic.speedReadBullets.length > 0 && (
+                        <div className="pt-2 border-t border-white/5 space-y-1.5">
+                          {topic.speedReadBullets.slice(0, 2).map((bullet, idx) => (
+                            <div key={idx} className="flex items-start gap-2 text-xs text-slate-300 leading-relaxed">
+                              <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                              <span>{bullet}</span>
+                            </div>
+                          ))}
                         </div>
+                      )}
+                    </div>
 
-                        <div className="flex items-center gap-2">
-                          {isMastered && (
-                            <span className="flex items-center gap-1 font-mono text-xs text-blue-400 bg-blue-500/15 border border-blue-400/30 px-2 py-0.5 rounded-lg">
-                              <CheckCircle2 className="w-3.5 h-3.5" />
-                              Mastered
-                            </span>
-                          )}
-                          <span className="p-1.5 rounded-xl bg-white/5 text-slate-400 hover:text-white transition-colors">
-                            <RotateCw className="w-4 h-4" />
-                          </span>
-                        </div>
+                    {/* Panel 2: Key Formulas & Decision Tools */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-blue-300">
+                        <Wrench className="w-4 h-4 text-blue-400 shrink-0" />
+                        <span>Key Formulas &amp; Decision Tools</span>
                       </div>
-
-                      {/* Card Solution */}
-                      <div className="my-auto py-2 space-y-3">
-                        <span className="text-[11px] font-mono uppercase tracking-wider text-sky-400 font-bold block">
-                          EXPLANATION &amp; SYLLABUS ANSWER:
-                        </span>
-                        {currentCard.back}
-
-                        {currentCard.backTip && (
-                          <div className="p-3 rounded-2xl bg-blue-500/10 border border-blue-400/25 text-xs text-blue-200 font-mono">
-                            <span className="text-blue-400 font-bold">Exam Guidance: </span>
-                            {currentCard.backTip}
+                      {topic.analysis.connectedBMTTools.length > 0 && (
+                        <div className="space-y-1.5">
+                          <span className="text-[11px] font-mono text-slate-400 uppercase tracking-wider block">
+                            Connected BMT Frameworks:
+                          </span>
+                          <div className="flex flex-wrap gap-1.5">
+                            {topic.analysis.connectedBMTTools.map((tool, idx) => (
+                              <span
+                                key={idx}
+                                className="px-2.5 py-1 rounded-xl text-xs font-mono bg-blue-500/15 text-blue-200 border border-blue-400/25"
+                              >
+                                {tool}
+                              </span>
+                            ))}
                           </div>
-                        )}
-                      </div>
+                        </div>
+                      )}
+                      {topic.subSections[0]?.keyFormulaOrFramework ? (
+                        <div className="p-3 rounded-xl bg-slate-950/70 border border-blue-500/20 text-xs font-mono text-blue-300 space-y-1">
+                          <span className="font-bold text-slate-400 block text-[10px] uppercase">
+                            Primary Quantitative Formula / Framework:
+                          </span>
+                          <span>{topic.subSections[0].keyFormulaOrFramework}</span>
+                        </div>
+                      ) : (
+                        <p className="text-xs text-slate-400 leading-relaxed">
+                          Qualitative strategic evaluation models and stakeholder matrices drive this topic.
+                        </p>
+                      )}
+                    </div>
 
-                      {/* Footer */}
-                      <div className="pt-3 border-t border-white/10 flex items-center justify-between text-[11px] font-mono text-slate-400">
-                        <span className="flex items-center gap-1.5 text-sky-300">
-                          <Eye className="w-3.5 h-3.5" />
-                          Click anywhere to flip to question
+                    {/* Panel 3: Teacher Will Ask / Discussion Points */}
+                    <div className="p-5 rounded-2xl bg-white/[0.02] border border-white/10 space-y-3">
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-purple-300">
+                          <HelpCircle className="w-4 h-4 text-purple-400 shrink-0" />
+                          <span>Teacher Will Ask / Discussion</span>
+                        </div>
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-purple-500/15 text-purple-200 border border-purple-400/25">
+                          AO3 Evaluation
                         </span>
-                        <span className="text-slate-500">Tap Spacebar to Flip</span>
                       </div>
-                    </motion.div>
+                      <p className="text-xs sm:text-sm text-slate-100 font-medium leading-relaxed">
+                        &ldquo;{discussionPrompt}&rdquo;
+                      </p>
+                      {topic.analysis.coreThesis && (
+                        <div className="pt-2 border-t border-white/5 text-xs text-purple-200/90 leading-relaxed">
+                          <span className="font-bold text-purple-300">Strategic Angle: </span>
+                          {topic.analysis.coreThesis}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Panel 4: Common Student Traps & Misconceptions */}
+                    <div className="p-5 rounded-2xl bg-rose-500/[0.04] border border-rose-500/20 space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-rose-300">
+                        <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+                        <span>Common Student Traps &amp; Misconceptions</span>
+                      </div>
+                      <div className="space-y-2">
+                        {traps.slice(0, 2).map((misc, idx) => (
+                          <div key={idx} className="flex items-start gap-2 text-xs text-rose-200/90 leading-relaxed">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-400 mt-1.5 shrink-0" />
+                            <span>{misc}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="pt-2 border-t border-rose-500/10 text-xs text-slate-400">
+                        <strong className="text-rose-300">Exam Reminder: </strong>
+                        Always ground theoretical claims in context and provide explicit short vs long-term tradeoffs.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================================
+          MODE 2: FLASHCARDS / ACTIVE RECALL
+          =================================================================== */}
+      {mainTab === "flashcards" && (
+        <div className="space-y-6">
+          {/* Deck Switcher Subtabs */}
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            {[
+              {
+                id: "glossary",
+                label: "Key Terms Dossier",
+                icon: BookOpen,
+                count: GLOSSARY_TERMS.length,
+              },
+              {
+                id: "formulas",
+                label: "Quantitative Bank",
+                icon: Calculator,
+                count: FORMULA_BANK.length,
+              },
+              {
+                id: "theorists",
+                label: "Theorists Matrix",
+                icon: Users,
+                count: THEORISTS_DOSSIER.length,
+              },
+              {
+                id: "exam-questions",
+                label: "High-Yield Questions",
+                icon: Award,
+                count: HIGH_YIELD_EXAM_QUESTIONS.length,
+              },
+            ].map((deck) => {
+              const Icon = deck.icon;
+              const isActive = activeFlashcardDeck === deck.id;
+              return (
+                <button
+                  key={deck.id}
+                  onClick={() => setActiveFlashcardDeck(deck.id as FlashcardDeckType)}
+                  className={`flex flex-col sm:flex-row items-center justify-between p-3.5 rounded-2xl border transition-all cursor-pointer text-left ${
+                    isActive
+                      ? "bg-blue-600/20 border-blue-400 text-white shadow-[0_0_20px_-5px_rgba(37,99,235,0.4)]"
+                      : "bg-white/[0.03] border-white/10 hover:border-white/20 text-slate-400 hover:text-white"
+                  }`}
+                >
+                  <div className="flex items-center gap-2.5">
+                    <Icon className={`w-4 h-4 ${isActive ? "text-blue-400" : "text-slate-400"}`} />
+                    <span className="text-xs font-bold">{deck.label}</span>
+                  </div>
+                  <span className="font-mono text-[11px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 mt-1 sm:mt-0">
+                    {deck.count}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Unit Filters & Progress Bar */}
+          <div className="liquid-glass-bento rounded-3xl p-5 border border-white/10 flex flex-wrap items-center justify-between gap-4">
+            <div className="flex flex-wrap items-center gap-1.5">
+              <span className="text-xs font-mono uppercase text-slate-400 mr-2 flex items-center gap-1">
+                <Filter className="w-3.5 h-3.5" />
+                <span>Unit:</span>
+              </span>
+              {["ALL", "Unit 1", "Unit 2", "Unit 3", "Unit 4", "Unit 5", "BMT"].map((u) => (
+                <button
+                  key={u}
+                  onClick={() => setSelectedFlashcardUnit(u)}
+                  className={`px-3 py-1 rounded-xl text-xs font-mono transition-all cursor-pointer ${
+                    selectedFlashcardUnit === u
+                      ? "bg-blue-600 text-white font-bold"
+                      : "bg-white/[0.04] text-slate-400 hover:text-white border border-white/10"
+                  }`}
+                >
+                  {u}
+                </button>
+              ))}
+            </div>
+
+            <div className="flex items-center gap-4">
+              <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={onlyUnmastered}
+                  onChange={(e) => setOnlyUnmastered(e.target.checked)}
+                  className="rounded border-white/20 bg-black/40 text-blue-600 focus:ring-blue-500"
+                />
+                <span>Only Unmastered</span>
+              </label>
+
+              <div className="flex items-center gap-1 p-1 rounded-xl bg-white/[0.04] border border-white/10">
+                <button
+                  onClick={() => setViewFormat("card")}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer ${
+                    viewFormat === "card" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Card
+                </button>
+                <button
+                  onClick={() => setViewFormat("sheet")}
+                  className={`px-2.5 py-1 rounded-lg text-xs font-mono cursor-pointer ${
+                    viewFormat === "sheet" ? "bg-blue-600 text-white" : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  Sheet
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Card Presentation View */}
+          {viewFormat === "card" && currentCard && (
+            <div className="max-w-2xl mx-auto space-y-4">
+              <div
+                onClick={() => setIsFlipped(!isFlipped)}
+                className="min-h-[340px] rounded-3xl p-8 bg-gradient-to-b from-slate-900/90 to-slate-950/95 border border-white/10 shadow-2xl flex flex-col justify-between cursor-pointer hover:border-blue-500/40 transition-all select-none relative overflow-hidden"
+              >
+                <div className="flex items-center justify-between text-xs text-slate-400 border-b border-white/10 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="px-2.5 py-0.5 rounded font-mono font-bold bg-white/10 text-blue-300 border border-blue-500/30">
+                      {currentCard.categoryBadge}
+                    </span>
+                    <span className="text-slate-300 font-mono">{currentCard.frontSub}</span>
+                  </div>
+                  <span className="font-mono text-blue-400">
+                    {currentIndex + 1} of {filteredCards.length}
+                  </span>
+                </div>
+
+                <div className="my-auto py-6 text-center space-y-4">
+                  {!isFlipped ? (
+                    <>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-slate-500">
+                        QUESTION / PROMPT
+                      </span>
+                      <h3 className="text-xl sm:text-2xl font-bold text-white leading-snug">
+                        {currentCard.front}
+                      </h3>
+                      <p className="text-xs text-slate-400 pt-2">
+                        (Click card to reveal model definition &amp; guidance)
+                      </p>
+                    </>
+                  ) : (
+                    <>
+                      <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-400">
+                        MODEL ANSWER &amp; GUIDANCE
+                      </span>
+                      <div className="text-left py-2">{currentCard.back}</div>
+                      {currentCard.backTip && (
+                        <p className="text-xs text-slate-400 italic pt-2">
+                          Tip: {currentCard.backTip}
+                        </p>
+                      )}
+                    </>
                   )}
-                </AnimatePresence>
+                </div>
+
+                <div className="flex items-center justify-between text-xs text-slate-400 border-t border-white/10 pt-3">
+                  <span className="text-[11px] text-slate-500">
+                    {isFlipped ? "Answer revealed" : "Click to flip"}
+                  </span>
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleToggleMastered();
+                    }}
+                    className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold cursor-pointer ${
+                      isMastered
+                        ? "bg-emerald-950/80 text-emerald-300 border border-emerald-500/40"
+                        : "bg-white/[0.05] text-slate-400 hover:text-white"
+                    }`}
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>{isMastered ? "Mastered" : "Mark Mastered"}</span>
+                  </button>
+                </div>
               </div>
 
-              {/* Navigation & Grading Action Bar */}
-              <div className="flex items-center justify-between gap-3 pt-2">
+              {/* Navigation buttons */}
+              <div className="flex items-center justify-between gap-4">
                 <button
                   onClick={handlePrev}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-300 hover:text-white hover:bg-white/10 text-xs font-mono transition-all cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-slate-200 text-xs font-bold cursor-pointer transition-all"
                 >
                   <ChevronLeft className="w-4 h-4" />
                   <span>Previous</span>
                 </button>
-
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={shuffleDeck}
-                    className="p-2.5 rounded-2xl bg-white/5 border border-white/10 text-slate-400 hover:text-white transition-all cursor-pointer"
-                    title="Shuffle Cards"
-                  >
-                    <Shuffle className="w-4 h-4" />
-                  </button>
-
-                  <button
-                    onClick={handleToggleMastered}
-                    className={`flex items-center gap-2 px-5 py-2.5 rounded-2xl text-xs font-mono font-bold transition-all cursor-pointer ${
-                      isMastered
-                        ? "bg-blue-500/20 border border-blue-400/40 text-blue-300 shadow-[0_0_15px_-3px_rgba(37, 99, 235,0.4)]"
-                        : "bg-white/10 border border-white/20 text-white hover:bg-blue-500/20 hover:border-blue-400/40 hover:text-blue-300"
-                    }`}
-                  >
-                    <CheckCircle2 className="w-4 h-4 text-blue-400" />
-                    <span>{isMastered ? "Mark as Still Learning" : "Mark as Mastered"}</span>
-                  </button>
-                </div>
-
                 <button
                   onClick={handleNext}
-                  className="flex items-center gap-1.5 px-4 py-2.5 rounded-2xl bg-sky-500/20 border border-sky-400/30 text-sky-200 hover:bg-sky-500/30 text-xs font-mono transition-all cursor-pointer"
+                  className="flex-1 flex items-center justify-center gap-2 py-3 rounded-2xl bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold cursor-pointer transition-all shadow-lg shadow-blue-600/25"
                 >
-                  <span>Next</span>
+                  <span>Next Card</span>
                   <ChevronRight className="w-4 h-4" />
                 </button>
               </div>
-            </>
-          ) : null}
-        </div>
-      )}
+            </div>
+          )}
 
-      {/* =====================================================================
-          3. FORMAT B: PRE-LESSON CRAM SHEET (LIST VIEW)
-          ===================================================================== */}
-      {viewFormat === "sheet" && (
-        <div className="space-y-3">
-          <div className="p-3.5 rounded-2xl bg-blue-500/10 border border-blue-400/25 text-xs text-blue-200 font-mono flex items-center justify-between">
-            <span>
-              <strong>Pre-Lesson Quick Cram Sheet:</strong> Showing {filteredCards.length} key concepts. Perfect for quick review right before entering class or before exam papers.
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {filteredCards.map((card, idx) => (
-              <div
-                key={card.id}
-                className="liquid-glass-bento rounded-2xl p-4 space-y-2.5 border border-white/10 hover:border-sky-400/30 transition-all glossary-term-card"
-              >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-white/5 text-slate-300 border border-white/10 mr-1.5">
-                      {card.unit}
-                    </span>
-                    <strong className="text-sm font-bold text-white">
-                      {card.front}
-                    </strong>
-                  </div>
-                  <button
-                    onClick={() => toggleFlashcardMastered(card.id)}
-                    className="p-1 text-slate-400 hover:text-blue-400 transition-colors"
+          {/* Sheet View */}
+          {viewFormat === "sheet" && (
+            <div className="space-y-3">
+              {filteredCards.map((card, idx) => {
+                const mastered = !!masteredFlashcards[card.id];
+                return (
+                  <div
+                    key={card.id}
+                    className={`p-5 rounded-2xl border transition-all ${
+                      mastered
+                        ? "bg-emerald-950/15 border-emerald-500/30"
+                        : "bg-white/[0.02] border-white/10"
+                    }`}
                   >
-                    {masteredFlashcards[card.id] ? (
-                      <CheckCircle2 className="w-4 h-4 text-blue-400" />
-                    ) : (
-                      <XCircle className="w-4 h-4 text-slate-600" />
-                    )}
-                  </button>
-                </div>
-
-                <div className="text-xs text-slate-300 leading-relaxed">
-                  {card.back}
-                </div>
-
-                {card.backTip && (
-                  <div className="p-2 rounded-xl bg-slate-950/60 border border-blue-400/20 text-[11px] text-blue-200/90 font-mono">
-                    <span className="text-blue-400 font-bold">Tip: </span>
-                    {card.backTip}
+                    <div className="flex items-start justify-between gap-4 mb-2">
+                      <div>
+                        <span className="font-mono text-[10px] px-2 py-0.5 rounded-full bg-white/10 text-slate-300 mr-2">
+                          #{idx + 1} • {card.unit}
+                        </span>
+                        <h4 className="text-base font-bold text-white inline-block mt-1">
+                          {card.front}
+                        </h4>
+                      </div>
+                      <button
+                        onClick={() => toggleFlashcardMastered(card.id)}
+                        className={`p-2 rounded-xl border text-xs font-mono transition-all cursor-pointer ${
+                          mastered
+                            ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                            : "bg-white/[0.04] text-slate-400 hover:text-white border-white/10"
+                        }`}
+                      >
+                        {mastered ? "Mastered" : "Unmastered"}
+                      </button>
+                    </div>
+                    <div className="text-xs sm:text-sm text-slate-300 pl-2 border-l-2 border-blue-500/30">
+                      {card.back}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
-          </div>
+                );
+              })}
+            </div>
+          )}
         </div>
       )}
     </div>
   );
 });
+
+export default ActiveRecallRevisionView;

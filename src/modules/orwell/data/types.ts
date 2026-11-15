@@ -148,6 +148,23 @@ export interface PreLessonCramItem {
   mustCiteQuotes: { quote: string; analysis: string }[];
 }
 
+export interface ChapterEntryTicketItem {
+  id: string;
+  chapterCode: string;
+  title: string;
+  subtitle: string;
+  part: "Part 1" | "Part 2" | "Part 3";
+  partId: "part-1" | "part-2" | "part-3";
+  readingTimeMinutes: number;
+  characters: string[];
+  setting: string;
+  keyThemes: ThemeId[];
+  sixtySecondSummary: string;
+  mustCiteQuotes: { quote: string; speaker?: string; analysis: string }[];
+  teacherDiscussionQuestions: string[];
+  commonMisconceptions: string;
+}
+
 export interface EssayParagraphBlueprint {
   topicSentence: string;
   primaryEvidence: string;

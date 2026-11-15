@@ -60,6 +60,7 @@ interface WorkspaceState {
   splitRatio: SplitRatio;
   isExposeOpen: boolean;
   isSettingsOpen: boolean;
+  isReleaseNotesOpen: boolean;
   isCapsuleCondensed: boolean;
   sessionSnapshots: SessionSnapshot[];
   enabledSubjects: AppId[];
@@ -74,6 +75,7 @@ interface WorkspaceState {
   triggerAppIntro: (appId: AppId) => void;
   dismissAppIntro: () => void;
   setSettingsOpen: (open: boolean) => void;
+  setReleaseNotesOpen: (open: boolean) => void;
   setEnabledSubjects: (subjects: AppId[]) => void;
   toggleSubjectEnabled: (appId: AppId) => void;
   setSubjectLevel: (appId: AppId, level: "SL" | "HL") => void;
@@ -125,6 +127,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       splitRatio: "50/50",
       isExposeOpen: false,
       isSettingsOpen: false,
+      isReleaseNotesOpen: false,
       isCapsuleCondensed: false,
       sessionSnapshots: PRESET_SNAPSHOTS,
       enabledSubjects: ALL_SUBJECT_IDS,
@@ -136,6 +139,7 @@ export const useWorkspaceStore = create<WorkspaceState>()(
       isRestoringHistory: false,
 
       setSettingsOpen: (open) => set({ isSettingsOpen: open }),
+      setReleaseNotesOpen: (open) => set({ isReleaseNotesOpen: open }),
 
       setEnabledSubjects: (subjects) => {
         const valid = subjects.filter((id) => Boolean(MODULE_CATALOG[id]));

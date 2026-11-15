@@ -16,6 +16,7 @@ import { ExamMasteryView } from "@/modules/german/components/ExamMasteryView";
 import { TestDafView } from "@/modules/german/components/TestDafView";
 import { ThemeMatrixView } from "@/modules/german/components/ThemeMatrixView";
 import { LiteratureOralLabView } from "@/modules/german/components/LiteratureOralLabView";
+import { RevisionHubView } from "@/modules/german/components/RevisionHubView";
 import { CinematicStartupIntro } from "@/modules/german/components/CinematicStartupIntro";
 import { AmbientAuroraCanvas } from "@/modules/german/components/AmbientAuroraCanvas";
 import { WidgetBridge } from "@/modules/german/components/WidgetBridge";
@@ -51,7 +52,7 @@ export default function IBGermanBStudyDashboardPage() {
   }, [viewMode]);
 
   useEffect(() => {
-    const views = ["themen", "matrix", "grammatik", "textsorten", "redemittel", "pruefung", "literatur", "testdaf"];
+    const views = ["themen", "revision", "matrix", "grammatik", "textsorten", "redemittel", "pruefung", "literatur", "testdaf"];
     let idx = 0;
     let timer: ReturnType<typeof setTimeout>;
     const step = () => {
@@ -184,6 +185,11 @@ export default function IBGermanBStudyDashboardPage() {
                 <ThemesBentoView />
               </div>
             )}
+            {(viewMode === "revision" || visitedViews["revision"]) && (
+              <div className={viewMode === "revision" ? "" : "hidden"} aria-hidden={viewMode !== "revision"}>
+                <RevisionHubView />
+              </div>
+            )}
             {(viewMode === "stream" || visitedViews["stream"]) && (
               <div className={viewMode === "stream" ? "" : "hidden"} aria-hidden={viewMode !== "stream"}>
                 <ExecutiveStreamView />
@@ -224,7 +230,7 @@ export default function IBGermanBStudyDashboardPage() {
                 <TestDafView />
               </div>
             )}
-            {!["home", "themen", "stream", "matrix", "grammatik", "textsorten", "redemittel", "pruefung", "literatur", "testdaf"].includes(viewMode) && <HomeDashboard />}
+            {!["home", "themen", "revision", "stream", "matrix", "grammatik", "textsorten", "redemittel", "pruefung", "literatur", "testdaf"].includes(viewMode) && <HomeDashboard />}
           </div>
         </main>
 

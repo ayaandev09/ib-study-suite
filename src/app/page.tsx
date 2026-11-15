@@ -13,6 +13,7 @@ import { SplitWorkspaceLayout } from "@/components/SplitWorkspaceLayout";
 import { SpatialExposeDrawer } from "@/components/SpatialExposeDrawer";
 import { InteractiveWalkthrough } from "@/components/InteractiveWalkthrough";
 import { SubjectSettingsModal } from "@/components/SubjectSettingsModal";
+import { ReleaseNotesModal } from "@/components/ReleaseNotesModal";
 
 const SUITE_STARTUP_SESSION_KEY = "ib_suite_startup_seen_v1";
 const WALKTHROUGH_DONE_KEY = "ib_suite_walkthrough_done_v1";
@@ -260,6 +261,7 @@ export default function UnifiedStudySuitePage() {
         isDemoMode={isDemoWalkthrough}
       />
       <SubjectSettingsModal />
+      <ReleaseNotesModal />
     </div>
   );
 }

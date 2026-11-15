@@ -5,3 +5,4 @@ export * from "./textsorten";
 export * from "./redemittel";
 export * from "./literature";
 export * from "./examCriteria";
+export * from "./revisionData";
