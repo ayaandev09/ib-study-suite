@@ -36,8 +36,8 @@ An offline-first desktop study workspace for the IB Diploma Programme (May 2027 
 
 Grab the latest native desktop installers directly from the [GitHub Releases](../../releases/latest) page:
 
-- **🍎 macOS (Apple Silicon & Intel Universal):** Download `IBStudySuite-macOS.dmg`
-- **🪟 Windows (x64):** Download `IBStudySuite-Windows-x64-setup.exe` (or `.msi`)
+- **🍎 macOS (Apple Silicon & Intel Universal):** [`IBStudySuite-macOS-v1.0.1.dmg`](https://github.com/ayaandev09/ib-study-suite/releases/download/v1.0.1/IBStudySuite-macOS-v1.0.1.dmg) or [`IBStudySuite-macOS-v1.0.1.zip`](https://github.com/ayaandev09/ib-study-suite/releases/download/v1.0.1/IBStudySuite-macOS-v1.0.1.zip)
+- **🪟 Windows (x64):** [`IBStudySuite-Windows-x64-v1.0.1.exe`](https://github.com/ayaandev09/ib-study-suite/releases/download/v1.0.1/IBStudySuite-Windows-x64-v1.0.1.exe) or [`IBStudySuite-Windows-x64-v1.0.1.zip`](https://github.com/ayaandev09/ib-study-suite/releases/download/v1.0.1/IBStudySuite-Windows-x64-v1.0.1.zip)
 
 ### First-Time Opening & Security Permissions
 
