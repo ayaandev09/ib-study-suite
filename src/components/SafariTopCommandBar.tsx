@@ -409,10 +409,6 @@ export function SafariTopCommandBar() {
                                 key={mod.id}
                                 onClick={() => {
                                   soundEngine.playClick();
-                                  const store = useWorkspaceStore.getState();
-                                  if (!store.seenAppIntros[mod.id]) {
-                                    soundEngine.playSubjectIntro(mod.id);
-                                  }
                                   openModule(mod.id);
                                   setIsLauncherOpen(false);
                                 }}

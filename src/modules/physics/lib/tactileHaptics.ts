@@ -28,6 +28,12 @@ export function playTactileClick(type: "click" | "soft" | "pop" = "click") {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.016);
       osc.connect(gain);
       gain.connect(sharedAudioCtx.destination);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
       osc.start(now);
       osc.stop(now + 0.018);
     } else if (type === "pop") {
@@ -38,6 +44,12 @@ export function playTactileClick(type: "click" | "soft" | "pop" = "click") {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.02);
       osc.connect(gain);
       gain.connect(sharedAudioCtx.destination);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
       osc.start(now);
       osc.stop(now + 0.022);
     } else {
@@ -48,6 +60,12 @@ export function playTactileClick(type: "click" | "soft" | "pop" = "click") {
       gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.014);
       osc.connect(gain);
       gain.connect(sharedAudioCtx.destination);
+      osc.onended = () => {
+        try {
+          osc.disconnect();
+          gain.disconnect();
+        } catch {}
+      };
       osc.start(now);
       osc.stop(now + 0.016);
     }

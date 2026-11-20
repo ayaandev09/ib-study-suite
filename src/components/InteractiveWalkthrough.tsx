@@ -15,6 +15,7 @@ import {
 import { MODULE_CATALOG } from "@/data/modulesMeta";
 import { AppId } from "@/types/workspace";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
+import { soundEngine } from "@/lib/soundEngine";
 
 interface InteractiveWalkthroughProps {
   isOpen: boolean;
@@ -107,9 +108,6 @@ export function InteractiveWalkthrough({
     height: number;
   } | null>(null);
 
-  const audioRef = useRef<HTMLAudioElement | null>(null);
-  const fadeTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
   useEffect(() => {
     if (typeof window === "undefined") return;
     const savedName = localStorage.getItem(USER_NAME_KEY);
@@ -155,99 +153,22 @@ export function InteractiveWalkthrough({
     };
   }, [isOpen, stepIndex, updateRect]);
 
-  // Ambient background sound throughout walkthrough
+  // Ambient background sound throughout walkthrough (pure Web Audio API, no media session)
   useEffect(() => {
     if (!isOpen) return;
     setStepIndex(0);
     setIsSettingUp(false);
 
-    const audio = new Audio("/audio/walkthrough-ambient.wav");
-    audio.loop = true;
-    audio.volume = 0;
-    audio.preload = "auto";
-    audioRef.current = audio;
-
-    let unlockHandler: (() => void) | null = null;
-
-    const fadeIn = () => {
-      if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
-      fadeTimerRef.current = setInterval(() => {
-        if (!audioRef.current) return;
-        const target = isMuted ? 0 : 0.4;
-        if (audioRef.current.volume < target - 0.02) {
-          audioRef.current.volume = Math.min(target, audioRef.current.volume + 0.03);
-        } else {
-          audioRef.current.volume = target;
-          if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
-        }
-      }, 45);
-    };
-
-    const p = audio.play();
-    if (p && typeof p.then === "function") {
-      p.then(fadeIn).catch(() => {
-        unlockHandler = () => {
-          audio.play().then(fadeIn).catch(() => {});
-          if (unlockHandler) {
-            window.removeEventListener("pointerdown", unlockHandler);
-            unlockHandler = null;
-          }
-        };
-        window.addEventListener("pointerdown", unlockHandler, { once: true });
-      });
-    }
+    soundEngine.startWalkthroughAmbient();
 
     return () => {
-      if (fadeTimerRef.current) clearInterval(fadeTimerRef.current);
-      if (unlockHandler) window.removeEventListener("pointerdown", unlockHandler);
-      const a = audioRef.current;
-      audioRef.current = null;
-      if (a) {
-        const fadeOut = setInterval(() => {
-          if (a.volume > 0.04) {
-            a.volume = Math.max(0, a.volume - 0.06);
-          } else {
-            clearInterval(fadeOut);
-            a.pause();
-            a.src = "";
-            a.load();
-          }
-        }, 28);
-      }
+      soundEngine.stopWalkthroughAmbient();
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    if (audioRef.current) {
-      audioRef.current.volume = isMuted ? 0 : 0.4;
-    }
-  }, [isMuted]);
-
   const playStepChime = useCallback(() => {
-    if (isMuted || typeof window === "undefined") return;
-    try {
-      const Ctx =
-        window.AudioContext ||
-        (window as unknown as { webkitAudioContext: typeof AudioContext })
-          .webkitAudioContext;
-      if (!Ctx) return;
-      const ctx = new Ctx();
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.setValueAtTime(640 + stepIndex * 55, ctx.currentTime);
-      gain.gain.setValueAtTime(0.0001, ctx.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.04, ctx.currentTime + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.22);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.24);
-      setTimeout(() => ctx.close().catch(() => {}), 320);
-    } catch {
-      // ignore
-    }
-  }, [isMuted, stepIndex]);
+    soundEngine.playPop();
+  }, []);
 
   const handleLaunchDashboard = useCallback(() => {
     setIsSettingUp(true);

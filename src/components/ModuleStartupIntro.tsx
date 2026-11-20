@@ -173,7 +173,6 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
     (_isAuto = false) => {
       if (isDismissingRef.current) return;
       isDismissingRef.current = true;
-      soundEngine.stopSubjectIntro();
       onClose?.();
       onComplete?.();
     },
@@ -204,7 +203,6 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
 
     return () => {
       if (timer) clearTimeout(timer);
-      soundEngine.stopSubjectIntro();
     };
   }, [isOpen, appId, handleDismiss]);
 

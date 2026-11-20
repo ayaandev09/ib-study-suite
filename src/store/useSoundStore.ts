@@ -20,6 +20,7 @@ interface SoundStoreState {
   playKeystroke: () => void;
   playFile: (path: string, volumeScale?: number) => void;
   playSubjectIntro: (appId: AppId) => void;
+  playGrandOpeningSuite: () => void;
 }
 
 export const useSoundStore = create<SoundStoreState>((set, get) => ({
@@ -55,4 +56,5 @@ export const useSoundStore = create<SoundStoreState>((set, get) => ({
   playKeystroke: () => soundEngine.playKeystroke(),
   playFile: (path: string, volumeScale?: number) => soundEngine.playFile(path, volumeScale),
   playSubjectIntro: (appId: AppId) => soundEngine.playSubjectIntro(appId),
+  playGrandOpeningSuite: () => soundEngine.playGrandOpeningSuite(),
 }));

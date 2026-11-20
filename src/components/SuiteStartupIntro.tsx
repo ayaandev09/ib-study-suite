@@ -61,8 +61,9 @@ export const SuiteStartupIntro: React.FC<SuiteStartupIntroProps> = ({
     const rafId = requestAnimationFrame(() => {
       if (disposed) return;
       mountedAtRef.current = performance.now();
-      // Play cleanly via Web Audio API without registering to macOS/iOS MediaSession or headphone play controls
-      soundEngine.playFile("/audio/welcome-cockpit.wav", 1.1);
+      // Play legendary cinematic grand opening overture cleanly via Web Audio API
+      // strictly bypassing macOS/iOS MediaSession and headphone play/pause interception
+      soundEngine.playGrandOpeningSuite();
       timer = setTimeout(() => {
         autoCompletedRef.current = true;
         handleDismiss(true);

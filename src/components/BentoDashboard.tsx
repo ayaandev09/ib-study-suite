@@ -223,10 +223,6 @@ function BentoSubjectCard({
         className="bento-subject-card relative rounded-3xl p-6 flex flex-col justify-between overflow-hidden cursor-pointer min-h-[300px] border transition-colors"
         onClick={() => {
           soundEngine.playClick();
-          const store = useWorkspaceStore.getState();
-          if (!store.seenAppIntros[mod.id]) {
-            soundEngine.playSubjectIntro(mod.id);
-          }
           onLaunch();
         }}
       >
@@ -361,10 +357,6 @@ function BentoSubjectCard({
             onClick={(e) => {
               e.stopPropagation();
               soundEngine.playClick();
-              const store = useWorkspaceStore.getState();
-              if (!store.seenAppIntros[mod.id]) {
-                soundEngine.playSubjectIntro(mod.id);
-              }
               onLaunch();
             }}
             className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-white text-xs font-medium transition-all cursor-pointer shadow-sm whitespace-nowrap shrink-0"
