@@ -209,7 +209,8 @@ export function InteractiveWalkthrough({
           } else {
             clearInterval(fadeOut);
             a.pause();
-            a.currentTime = 0;
+            a.src = "";
+            a.load();
           }
         }, 28);
       }

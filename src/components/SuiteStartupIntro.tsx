@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import { LiquidGlassLogo } from "@/components/reactdrops/liquid-glass-logo";
 import { RefractedText } from "@/components/reactdrops/refracted-text";
+import { soundEngine } from "@/lib/soundEngine";
 
 interface SuiteStartupIntroProps {
   isOpen?: boolean;
@@ -56,35 +57,12 @@ export const SuiteStartupIntro: React.FC<SuiteStartupIntroProps> = ({
 
     let disposed = false;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let unlockHandler: (() => void) | null = null;
-    const audio = new Audio("/audio/welcome-cockpit.wav");
-    audio.preload = "auto";
-    audio.volume = 0.9;
-
-    const tryPlay = () => {
-      if (disposed) return;
-      const playPromise = audio.play();
-      if (playPromise && typeof playPromise.catch === "function") {
-        playPromise.catch(() => {
-          if (disposed || unlockHandler) return;
-          unlockHandler = () => {
-            if (!disposed) {
-              audio.play().catch(() => {});
-            }
-            if (unlockHandler) {
-              window.removeEventListener("pointerdown", unlockHandler);
-              unlockHandler = null;
-            }
-          };
-          window.addEventListener("pointerdown", unlockHandler, { once: true });
-        });
-      }
-    };
 
     const rafId = requestAnimationFrame(() => {
       if (disposed) return;
       mountedAtRef.current = performance.now();
-      tryPlay();
+      // Play cleanly via Web Audio API without registering to macOS/iOS MediaSession or headphone play controls
+      soundEngine.playFile("/audio/welcome-cockpit.wav", 1.1);
       timer = setTimeout(() => {
         autoCompletedRef.current = true;
         handleDismiss(true);
@@ -95,32 +73,6 @@ export const SuiteStartupIntro: React.FC<SuiteStartupIntroProps> = ({
       disposed = true;
       cancelAnimationFrame(rafId);
       if (timer) clearTimeout(timer);
-      if (unlockHandler) {
-        window.removeEventListener("pointerdown", unlockHandler);
-      }
-      if (!audio.paused) {
-        if (autoCompletedRef.current) {
-          // Let the 3.45s -> 4.55s bass tail and cosine fade-out finish naturally
-          // while the Bento dashboard cards glide into place.
-          const releaseAudio = () => {
-            audio.pause();
-            audio.currentTime = 0;
-          };
-          audio.addEventListener("ended", releaseAudio, { once: true });
-          setTimeout(releaseAudio, 1300);
-        } else {
-          const fadeStep = () => {
-            if (audio.volume > 0.08) {
-              audio.volume = Math.max(0, audio.volume - 0.12);
-              setTimeout(fadeStep, 25);
-            } else {
-              audio.pause();
-              audio.currentTime = 0;
-            }
-          };
-          fadeStep();
-        }
-      }
     };
   }, [isOpen, handleDismiss]);
 

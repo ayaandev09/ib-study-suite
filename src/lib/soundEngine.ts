@@ -27,27 +27,45 @@ class SoundEngine {
     if (typeof window !== "undefined") {
       this.initFromStorage();
       this.setupAutoUnlock();
+      this.disableMediaSessionRegistration();
       this.preloadSubjectAudios();
     }
+  }
+
+  /**
+   * Ensure audio playback inside WKWebView / browser does not register
+   * with macOS / iOS MPRemoteCommandCenter (Now Playing / headphone play buttons).
+   */
+  private disableMediaSessionRegistration() {
+    if (typeof window === "undefined" || !("mediaSession" in navigator)) return;
+    try {
+      navigator.mediaSession.playbackState = "none";
+      const noop = () => {};
+      const actions: MediaSessionAction[] = [
+        "play",
+        "pause",
+        "stop",
+        "previoustrack",
+        "nexttrack",
+        "seekbackward",
+        "seekforward",
+        "seekto",
+      ];
+      actions.forEach((action) => {
+        try {
+          navigator.mediaSession.setActionHandler(action, noop);
+        } catch {}
+      });
+    } catch {}
   }
 
   private preloadSubjectAudios() {
     if (typeof window === "undefined") return;
     const subjects = ["biology", "orwell", "business", "economics", "physics", "german", "geography"];
     subjects.forEach((id) => {
-      try {
-        const audio = new Audio(`/audio/intro-${id}.wav`);
-        audio.preload = "auto";
-        audio.volume = this.volume;
-        this.preloadedAudioElements.set(id, audio);
-      } catch {}
+      this.preloadAudioBuffer(`/audio/intro-${id}.wav`);
     });
-    try {
-      const welcome = new Audio("/audio/welcome-cockpit.wav");
-      welcome.preload = "auto";
-      welcome.volume = this.volume;
-      this.preloadedAudioElements.set("welcome-cockpit", welcome);
-    } catch {}
+    this.preloadAudioBuffer("/audio/welcome-cockpit.wav");
   }
 
   private initFromStorage() {
@@ -391,7 +409,8 @@ class SoundEngine {
     if (this.currentAudioElement) {
       try {
         this.currentAudioElement.pause();
-        this.currentAudioElement.currentTime = 0;
+        this.currentAudioElement.src = "";
+        this.currentAudioElement.load();
       } catch {}
       this.currentAudioElement = null;
     }
@@ -407,45 +426,61 @@ class SoundEngine {
   /**
    * Play subject intro tune: synchronous, zero-latency trigger designed to run
    * directly within user gesture handlers in WebKit / Safari and Desktop WKWebView.
+   * Uses Web Audio API (AudioBufferSourceNode) first to avoid registering with
+   * macOS Media Remote / Now Playing headphone play buttons.
    */
   public playSubjectIntro(appId: AppId): void {
     if (this.isMuted) return;
-
-    // If this subject's intro audio is already actively playing and under 1.4s in, let it keep rolling in sync
-    if (
-      this.currentPlayingSubjectId === appId &&
-      this.currentAudioElement &&
-      !this.currentAudioElement.paused &&
-      this.currentAudioElement.currentTime < 1.4
-    ) {
-      return;
-    }
 
     // 1. Immediately stop any existing intro sound
     this.stopSubjectIntro();
     this.currentPlayingSubjectId = appId;
 
-    // 2. Play synchronously via preloaded HTML5 Audio element (retains trusted gesture in WebKit)
-    const audio = this.preloadedAudioElements.get(appId) || new Audio(`/audio/intro-${appId}.wav`);
-    audio.volume = this.volume;
-    try {
-      audio.currentTime = 0;
-    } catch {}
-    this.currentAudioElement = audio;
+    const ctx = this.getContext();
+    const bufferPath = `/audio/intro-${appId}.wav`;
+    const cachedBuffer = this.audioBuffers.get(bufferPath);
 
-    const playPromise = audio.play();
-    if (playPromise !== undefined) {
-      playPromise.catch(() => {
-        // Fallback: Web Audio synthesis if HTML5 element is restricted
+    if (ctx && cachedBuffer) {
+      try {
+        const source = ctx.createBufferSource();
+        source.buffer = cachedBuffer;
+        const gainNode = ctx.createGain();
+        gainNode.gain.setValueAtTime(this.volume, ctx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+        this.currentIntroSource = source;
+        return;
+      } catch {
+        // Fall back below
+      }
+    }
+
+    // If buffer not decoded yet, load buffer asynchronously or play synthetic chime
+    if (ctx) {
+      this.preloadAudioBuffer(bufferPath).then((buf) => {
+        if (buf && this.currentPlayingSubjectId === appId) {
+          try {
+            const source = ctx.createBufferSource();
+            source.buffer = buf;
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(this.volume, ctx.currentTime);
+            source.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            source.start(0);
+            this.currentIntroSource = source;
+          } catch {
+            this.playSubjectSyntheticChime(appId);
+          }
+        }
+      }).catch(() => {
         this.playSubjectSyntheticChime(appId);
       });
+      return;
     }
 
-    // 3. Resume Web Audio context in background if needed
-    const ctx = this.getContext();
-    if (ctx && ctx.state === "suspended") {
-      ctx.resume().catch(() => {});
-    }
+    // Fallback: Web Audio synthesis
+    this.playSubjectSyntheticChime(appId);
   }
 
   /**
@@ -502,19 +537,44 @@ class SoundEngine {
     if (this.isMuted) return;
     if (typeof window === "undefined") return;
 
-    try {
-      const audio = new Audio(path);
-      audio.volume = Math.max(0, Math.min(1, this.volume * volumeScale));
-      const playPromise = audio.play();
-      if (playPromise !== undefined) {
-        playPromise.catch(() => {
-          // Fallback to synthesized chime if browser blocks audio file playback
-          this.playChime();
-        });
-      }
-    } catch {
-      this.playChime();
+    const ctx = this.getContext();
+    const cachedBuffer = this.audioBuffers.get(path);
+
+    if (ctx && cachedBuffer) {
+      try {
+        const source = ctx.createBufferSource();
+        source.buffer = cachedBuffer;
+        const gainNode = ctx.createGain();
+        gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, this.volume * volumeScale)), ctx.currentTime);
+        source.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        source.start(0);
+        return;
+      } catch {}
     }
+
+    if (ctx) {
+      this.preloadAudioBuffer(path).then((buf) => {
+        if (buf) {
+          try {
+            const source = ctx.createBufferSource();
+            source.buffer = buf;
+            const gainNode = ctx.createGain();
+            gainNode.gain.setValueAtTime(Math.max(0, Math.min(1, this.volume * volumeScale)), ctx.currentTime);
+            source.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            source.start(0);
+          } catch {
+            this.playChime();
+          }
+        }
+      }).catch(() => {
+        this.playChime();
+      });
+      return;
+    }
+
+    this.playChime();
   }
 
   // =========================================================================
