@@ -31,8 +31,10 @@ export const ThemeMatrixView: React.FC = () => {
 
   const allCases = useMemo(() => {
     const bankCases = CASE_STUDIES_BANK.map((cs) => {
+      const primaryCode = cs.topicCode.split("/")[0].trim();
       const matched =
         ALL_TOPICS.find((t) => t.displayCode === cs.topicCode || t.topicCode === cs.topicCode) ||
+        ALL_TOPICS.find((t) => t.displayCode === primaryCode || t.topicCode === primaryCode || t.displayCode === `U${primaryCode}`) ||
         ALL_TOPICS.find((t) => t.unitId === cs.unitId) ||
         ALL_TOPICS[0];
       return {

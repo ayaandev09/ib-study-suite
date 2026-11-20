@@ -134,17 +134,8 @@ export function TopCommandBar() {
         </div>
 
         <button
-          onClick={openSpotlight}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-xs text-white/70 hover:text-white transition-all"
-          title="Search Geography Syllabus"
-        >
-          <Search className="w-3.5 h-3.5 text-teal-300" />
-          <span className="hidden lg:inline">Search</span>
-        </button>
-
-        <button
           onClick={openExamSprint}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 border border-teal-400/25 text-xs font-medium text-teal-200 transition-all"
+          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-teal-500/15 hover:bg-teal-500/25 border border-teal-400/25 text-xs font-medium text-teal-200 transition-all cursor-pointer"
           title="Timed Paper 1/2/3 Sprint"
         >
           <Timer className="w-3.5 h-3.5" />
@@ -154,14 +145,15 @@ export function TopCommandBar() {
         <button
           onClick={toggleInspector}
           className={cn(
-            "h-8 w-8 rounded-xl border flex items-center justify-center transition-all",
+            "flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border transition-all text-xs font-medium cursor-pointer",
             isInspectorOpen
-              ? "bg-teal-500/25 border-teal-400/40 text-teal-200"
-              : "bg-white/[0.04] border-white/10 text-white/60 hover:text-white"
+              ? "bg-teal-500/25 border-teal-400/40 text-teal-200 shadow-inner"
+              : "bg-white/[0.04] border-white/10 text-white/70 hover:text-white"
           )}
-          title="Toggle Notes & Geographic Inspector"
+          title="Toggle Notes & Geographic Inspector (⌘I)"
         >
-          <PanelRight className="w-4 h-4" />
+          <PanelRight className="w-3.5 h-3.5 text-teal-300" />
+          <span className="hidden lg:inline">Companion</span>
         </button>
       </div>
     </header>

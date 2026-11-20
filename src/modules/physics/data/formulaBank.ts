@@ -292,6 +292,22 @@ export const FORMULA_BANK: FormulaBankItem[] = [
     conditions: "Assumes zero voltmeter loading (ideal infinite resistance voltmeter).",
     examTips: "On a graph of terminal V vs I: y-intercept = \\mathcal{E}, and gradient = -r.",
   },
+  {
+    id: "f-b5-4",
+    themeId: "theme-b",
+    topicCode: "B.5",
+    name: "Electrical Power Dissipation & Transmission Loss",
+    latex: "P = VI = I^2 R = \\frac{V^2}{R}, \\quad P_{\\text{loss}} = I^2 R",
+    variables: [
+      { symbol: "P", name: "Electric power dissipated", unit: "W (J s^{-1})" },
+      { symbol: "V", name: "Potential difference across resistor", unit: "V" },
+      { symbol: "I", name: "Current through component or cable", unit: "A" },
+      { symbol: "R", name: "Resistance of component or transmission lines", unit: "\\Omega" },
+      { symbol: "P_{\\text{loss}}", name: "Joule heating power loss in cables", unit: "W" },
+    ],
+    conditions: "P = I^2 R applies directly to calculate thermal losses along transmission cables carrying current I.",
+    examTips: "In grid transmission, stepping voltage up by factor k reduces current to I / k, slashing transmission line power losses P_{loss} = I^2 R by a factor of k^2.",
+  },
 
   // THEME C: Wave Behaviour
   {

@@ -442,7 +442,8 @@ export const CockpitClockAndCalendar: React.FC = () => {
   ]).map((clock, index) => {
     const snap = getZoneSnapshot(now, clock.timezone);
     const baseTz = worldClocks?.[0]?.timezone || "Europe/Berlin";
-    const offset = index === 0 ? snap.tzShort || "" : getHourOffsetLabel(now, baseTz, clock.timezone);
+    const isBase = index === 0;
+    const offset = isBase ? "" : getHourOffsetLabel(now, baseTz, clock.timezone);
     const colorPalette = [
       { hex: "#38bdf8", glow: "rgba(56, 189, 248, 0.25)", border: "border-cyan-300/30" },
       { hex: "#34d399", glow: "rgba(52, 211, 153, 0.24)", border: "border-emerald-300/30" },
@@ -451,10 +452,13 @@ export const CockpitClockAndCalendar: React.FC = () => {
       { hex: "#fb7185", glow: "rgba(251, 113, 133, 0.24)", border: "border-rose-300/30" },
     ];
     const palette = colorPalette[index % colorPalette.length];
+    const badgeText = isBase
+      ? (snap.tzShort || "Local")
+      : (offset && offset !== "Same" ? `${snap.tzShort || ""} · ${offset}`.trim() : (snap.tzShort || ""));
     return {
       clock,
       snap,
-      badge: offset ? `${snap.tzShort || ""} ${offset}`.trim() : snap.tzShort || "",
+      badge: badgeText,
       palette,
     };
   });
@@ -558,7 +562,7 @@ export const CockpitClockAndCalendar: React.FC = () => {
             onMouseMove={handlePillMouseMove}
             onMouseLeave={handlePillMouseLeave}
             onClick={handlePillClick}
-            className="relative group flex items-center justify-between sm:justify-start gap-2.5 px-3 sm:px-4 py-2 rounded-full border text-xs transition-all cursor-pointer w-full sm:max-w-[390px] overflow-hidden select-none"
+            className="relative group flex items-center justify-between sm:justify-start gap-2.5 px-3 sm:px-4 py-2 rounded-full border text-xs transition-all cursor-pointer w-full sm:w-auto sm:max-w-[540px] overflow-hidden select-none"
             style={{
               transformStyle: "preserve-3d",
               backfaceVisibility: "hidden",

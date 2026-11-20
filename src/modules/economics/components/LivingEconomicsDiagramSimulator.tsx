@@ -72,10 +72,10 @@ export function LivingEconomicsDiagramSimulator() {
   const qFloorS = Math.max(0, floorPrice - 20 + supplyShift);
   const floorSurplus = Math.max(0, qFloorS - qFloorD);
 
-  // Chart coordinate mappings (viewBox 0 0 500 360, padX 50, padY 20, w 420, h 280)
-  const padX = 50;
+  // Chart coordinate mappings (viewBox 0 0 540 360, padX 65, padY 25, w 440, h 280)
+  const padX = 65;
   const padY = 25;
-  const chartW = 420;
+  const chartW = 440;
   const chartH = 280;
 
   const toX = (q: number) => padX + (Math.min(q, 120) / 120) * chartW;
@@ -149,7 +149,7 @@ export function LivingEconomicsDiagramSimulator() {
               Living Market Diagram &amp; Welfare Simulator
             </h1>
             <p className="text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-              Dynamically manipulate supply, demand, elasticity zones, and government interventions in real-time with automated Deadweight Welfare Loss ($DWL$) and tax burden geometry.
+              Dynamically manipulate supply, demand, elasticity zones, and government interventions in real-time with automated Deadweight Welfare Loss (DWL) and tax burden geometry.
             </p>
           </div>
 
@@ -492,7 +492,7 @@ export function LivingEconomicsDiagramSimulator() {
 
             {/* SVG Chart */}
             <div className="w-full overflow-x-auto py-2">
-              <svg viewBox="0 0 500 360" className="w-full min-w-[500px] h-[340px] select-none font-sans">
+              <svg viewBox="0 0 540 360" className="w-full min-w-[500px] h-[340px] select-none font-sans">
                 {/* Axes */}
                 <line x1={padX} y1={padY} x2={padX} y2={padY + chartH} stroke="#475569" strokeWidth="2" />
                 <line x1={padX} y1={padY + chartH} x2={padX + chartW} y2={padY + chartH} stroke="#475569" strokeWidth="2" />
@@ -805,68 +805,68 @@ export function LivingEconomicsDiagramSimulator() {
 
             {/* Dual SVG Viewport */}
             <div className="w-full overflow-x-auto py-2">
-              <svg viewBox="0 0 500 360" className="w-full min-w-[500px] h-[320px] select-none font-sans">
+              <svg viewBox="0 0 540 360" className="w-full min-w-[500px] h-[320px] select-none font-sans">
                 {/* Upper Chart: Demand Curve (P vs Q) */}
-                <line x1="50" y1="20" x2="50" y2="160" stroke="#475569" strokeWidth="1.5" />
-                <line x1="50" y1="160" x2="470" y2="160" stroke="#475569" strokeWidth="1.5" />
+                <line x1="60" y1="20" x2="60" y2="160" stroke="#475569" strokeWidth="1.5" />
+                <line x1="60" y1="160" x2="490" y2="160" stroke="#475569" strokeWidth="1.5" />
 
                 {/* Demand Line */}
-                <line x1="50" y1="30" x2="450" y2="160" stroke="#38BDF8" strokeWidth="3" />
-                <text x="455" y="155" fill="#38BDF8" fontSize="11" fontWeight="bold">D</text>
+                <line x1="60" y1="30" x2="470" y2="160" stroke="#38BDF8" strokeWidth="3" />
+                <text x="475" y="155" fill="#38BDF8" fontSize="11" fontWeight="bold">D</text>
 
                 {/* Midpoint marker (P=50, Q=50) */}
-                <circle cx="250" cy="95" r="3" fill="#10B981" />
-                <text x="255" y="90" fill="#10B981" fontSize="9" fontWeight="bold">Unitary (PED=1)</text>
+                <circle cx="265" cy="95" r="3" fill="#10B981" />
+                <text x="270" y="90" fill="#10B981" fontSize="9" fontWeight="bold">Unitary (PED=1)</text>
 
                 {/* Active Slider Price Point on Demand */}
                 {(() => {
-                  const x = 50 + ((100 - sliderPrice) / 100) * 400;
+                  const x = 60 + ((100 - sliderPrice) / 100) * 410;
                   const y = 160 - (sliderPrice / 100) * 130;
                   return (
                     <>
                       <circle cx={x} cy={y} r="5" fill="#A855F7" stroke="#FFFFFF" strokeWidth="2" />
-                      <line x1="50" y1={y} x2={x} y2={y} stroke="#A855F7" strokeWidth="1" strokeDasharray="2 2" />
+                      <line x1="60" y1={y} x2={x} y2={y} stroke="#A855F7" strokeWidth="1" strokeDasharray="2 2" />
                       <line x1={x} y1={y} x2={x} y2="160" stroke="#A855F7" strokeWidth="1" strokeDasharray="2 2" />
-                      <text x="44" y={y + 4} textAnchor="end" fill="#A855F7" fontSize="9" fontWeight="bold">
+                      <text x="54" y={y + 4} textAnchor="end" fill="#A855F7" fontSize="9" fontWeight="bold">
                         ${sliderPrice}
                       </text>
                     </>
                   );
                 })()}
 
-                <text x="50" y="14" fill="#94A3B8" fontSize="10">Price ($)</text>
+                <text x="60" y="14" fill="#94A3B8" fontSize="10">Price ($)</text>
 
                 {/* Lower Chart: Total Revenue Parabola (TR vs Q) */}
-                <line x1="50" y1="200" x2="50" y2="330" stroke="#475569" strokeWidth="1.5" />
-                <line x1="50" y1="330" x2="470" y2="330" stroke="#475569" strokeWidth="1.5" />
+                <line x1="60" y1="200" x2="60" y2="330" stroke="#475569" strokeWidth="1.5" />
+                <line x1="60" y1="330" x2="490" y2="330" stroke="#475569" strokeWidth="1.5" />
 
                 {/* Parabola path */}
                 <path
-                  d="M 50,330 Q 250,210 450,330"
+                  d="M 60,330 Q 265,210 470,330"
                   fill="none"
                   stroke="#F59E0B"
                   strokeWidth="2.5"
                 />
-                <text x="455" y="325" fill="#F59E0B" fontSize="11" fontWeight="bold">TR</text>
+                <text x="475" y="325" fill="#F59E0B" fontSize="11" fontWeight="bold">TR</text>
 
                 {/* Active Point on TR Parabola */}
                 {(() => {
-                  const x = 50 + (simQ / 100) * 400;
+                  const x = 60 + (simQ / 100) * 410;
                   const y = 330 - (simTR / 2500) * 115;
                   return (
                     <>
                       <circle cx={x} cy={y} r="5" fill="#F59E0B" stroke="#FFFFFF" strokeWidth="2" />
-                      <line x1="50" y1={y} x2={x} y2={y} stroke="#F59E0B" strokeWidth="1" strokeDasharray="2 2" />
+                      <line x1="60" y1={y} x2={x} y2={y} stroke="#F59E0B" strokeWidth="1" strokeDasharray="2 2" />
                       <line x1={x} y1={y} x2={x} y2="330" stroke="#F59E0B" strokeWidth="1" strokeDasharray="2 2" />
-                      <text x="44" y={y + 4} textAnchor="end" fill="#F59E0B" fontSize="9" fontWeight="bold">
+                      <text x="54" y={y + 4} textAnchor="end" fill="#F59E0B" fontSize="9" fontWeight="bold">
                         ${simTR}
                       </text>
                     </>
                   );
                 })()}
 
-                <text x="50" y="194" fill="#94A3B8" fontSize="10">Total Revenue ($)</text>
-                <text x="465" y="348" textAnchor="end" fill="#94A3B8" fontSize="10">Quantity (Q)</text>
+                <text x="60" y="194" fill="#94A3B8" fontSize="10">Total Revenue ($)</text>
+                <text x="485" y="348" textAnchor="end" fill="#94A3B8" fontSize="10">Quantity (Q)</text>
               </svg>
             </div>
 

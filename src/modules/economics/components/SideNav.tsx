@@ -11,6 +11,7 @@ import {
   Library,
   Briefcase,
   ClipboardList,
+  TrendingUp,
 } from "lucide-react";
 import { ALL_TOPICS } from "@/modules/economics/data";
 import { useStudyStore, ViewMode } from "@/modules/economics/store/useStudyStore";
@@ -19,6 +20,7 @@ import { IBEconomicsAppLogo } from "./IBEconomicsAppLogo";
 const ITEMS: { id: ViewMode; label: string; tint: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", tint: "245,158,11", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Topics", tint: "245,158,11", icon: <LayoutGrid className="w-4 h-4" /> },
+  { id: "diagrams", label: "Diagram Simulator", tint: "56,189,248", icon: <TrendingUp className="w-4 h-4" /> },
   { id: "cases", label: "Case Studies", tint: "244,63,94", icon: <Briefcase className="w-4 h-4" /> },
   { id: "exam-guide", label: "Exam Guide", tint: "139,92,246", icon: <ClipboardList className="w-4 h-4" /> },
   { id: "revision", label: "Revise", tint: "16,185,129", icon: <GraduationCap className="w-4 h-4" /> },

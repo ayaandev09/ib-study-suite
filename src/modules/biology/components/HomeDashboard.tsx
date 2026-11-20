@@ -173,6 +173,38 @@ export function HomeDashboard() {
           </JellyBentoItem>
         ))}
       </div>
+
+      {/* May 2027 Biology SL vs HL Assessment Structure */}
+      <JellyBentoItem index={2 + TILES.length}>
+        <div className="liquid-glass-bento rounded-3xl p-5 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-widest text-green-300/85 font-mono">
+              Biology SL / HL · May 2027 Official Assessment
+            </p>
+            <span className="text-[11px] font-mono text-white/50">
+              Paper 1A/B · Paper 2 · Scientific Investigation (IA)
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="rounded-2xl bg-black/40 border border-white/10 p-3.5 space-y-1">
+              <div className="font-semibold text-white">Standard Level (SL)</div>
+              <p className="text-white/65">
+                <strong>Paper 1</strong> (1h 30m, 36%): Paper 1A (30 MCQs, no calculator) + Paper 1B (4 data-based/experimental questions) ·{" "}
+                <strong>Paper 2</strong> (1h 30m, 44%): Short-answer and 1 extended-response question (50 marks) ·{" "}
+                <strong>Scientific Investigation (IA)</strong> (20%): 24-mark inquiry report.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-green-500/[0.06] border border-green-400/25 p-3.5 space-y-1">
+              <div className="font-semibold text-green-200">Higher Level (HL)</div>
+              <p className="text-white/70">
+                <strong>Paper 1</strong> (2h, 36%): Paper 1A (40 MCQs, no calculator) + Paper 1B (Data-based &amp; experimental questions) ·{" "}
+                <strong>Paper 2</strong> (2h 30m, 44%): Advanced short-answer &amp; 2 extended-response questions (80 marks) ·{" "}
+                <strong>Scientific Investigation (IA)</strong> (20%): 24 marks.
+              </p>
+            </div>
+          </div>
+        </div>
+      </JellyBentoItem>
     </div>
   );
 }

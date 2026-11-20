@@ -12,6 +12,7 @@ import {
   Library,
   Briefcase,
   ClipboardList,
+  LineChart,
   ArrowUpRight,
   Play,
 } from "lucide-react";
@@ -29,11 +30,12 @@ type Tile = {
 
 const TILES: Tile[] = [
   { id: "focus", title: "Topics", blurb: "Study one topic at a time", tint: "tint-amber", icon: <LayoutGrid className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "diagrams", title: "Diagram Simulator", blurb: "Living market welfare & taxes", tint: "tint-sky", icon: <LineChart className="w-6 h-6 text-sky-400" />, span: "sm:col-span-2" },
   { id: "cases", title: "Case Studies", blurb: "Real-world examples to cite", tint: "tint-rose", icon: <Briefcase className="w-6 h-6" />, span: "" },
   { id: "exam-guide", title: "Exam Guide", blurb: "Paper structure and mark schemes", tint: "tint-violet", icon: <ClipboardList className="w-6 h-6" />, span: "" },
   { id: "revision", title: "Revise", blurb: "Flashcards and active recall", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "matrix", title: "Concept Matrix", blurb: "How the key concepts connect", tint: "tint-indigo", icon: <Network className="w-6 h-6" />, span: "" },
-  { id: "lexicon", title: "Glossary", blurb: "Terms, formulas and theorists", tint: "tint-cyan", icon: <Library className="w-6 h-6" />, span: "" },
+  { id: "lexicon", title: "Glossary & Formulas", blurb: "Formulas & 80+ command terms", tint: "tint-cyan", icon: <Library className="w-6 h-6 text-cyan-400" />, span: "sm:col-span-2" },
   { id: "stream", title: "Syllabus Checklist", blurb: "Track every unit and subunit", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
 ];
 
@@ -126,6 +128,39 @@ export function HomeDashboard() {
           </JellyBentoItem>
         ))}
       </div>
+
+      {/* May 2027 Economics SL vs HL Assessment Structure */}
+      <JellyBentoItem index={2 + TILES.length}>
+        <div className="liquid-glass-bento rounded-3xl p-5 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-widest text-sky-300/85 font-mono">
+              Economics SL / HL · May 2027 Assessment Structure
+            </p>
+            <span className="text-[11px] font-mono text-white/50">
+              Paper 1 · Paper 2 · Paper 3 (HL) · Internal Assessment (IA)
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="rounded-2xl bg-black/40 border border-white/10 p-3.5 space-y-1">
+              <div className="font-semibold text-white">Standard Level (SL)</div>
+              <p className="text-white/65">
+                <strong>Paper 1</strong> (1h 15m, 30%): Extended-response essay question (25 marks) ·{" "}
+                <strong>Paper 2</strong> (1h 45m, 40%): Data-response paper (40 marks) ·{" "}
+                <strong>Internal Assessment (IA)</strong> (30%): 3 economic commentaries on real-world news articles.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-sky-500/[0.06] border border-sky-400/25 p-3.5 space-y-1">
+              <div className="font-semibold text-sky-200">Higher Level (HL)</div>
+              <p className="text-white/70">
+                <strong>Paper 1</strong> (1h 15m, 20%): Extended-response essay ·{" "}
+                <strong>Paper 2</strong> (1h 45m, 30%): Data-response questions ·{" "}
+                <strong>Paper 3 (HL Only)</strong> (1h 45m, 30%): Policy-calculation &amp; recommendation paper ·{" "}
+                <strong>Internal Assessment (IA)</strong> (20%): 3 commentaries.
+              </p>
+            </div>
+          </div>
+        </div>
+      </JellyBentoItem>
     </div>
   );
 }

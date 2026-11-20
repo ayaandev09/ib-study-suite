@@ -43,8 +43,8 @@ const VIEW_MODES: {
   },
   {
     id: "matrix",
-    label: "CUEGIS Matrix",
-    shortLabel: "Matrix",
+    label: "CCES Matrix",
+    shortLabel: "CCES",
     icon: <Radar className="w-3.5 h-3.5" />,
   },
   {
@@ -180,48 +180,19 @@ export function TopCommandBar({ onOpenWalkthrough }: TopCommandBarProps = {}) {
               </button>
             ))}
           </div>
-          <button
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(new CustomEvent("ib-suite-open-search"));
-              }
-            }}
-            title="Universal Suite Search (⌘K)"
-            className={glassBtn}
-          >
-            <Search className="w-3.5 h-3.5 text-white/80" />
-            <span className="hidden md:inline text-slate-300">Search Suite</span>
-            <kbd className="hidden md:inline text-[10px] font-mono text-slate-400">⌘K</kbd>
-          </button>
-
-          <div className="hidden sm:flex items-center p-0.5 rounded-full bg-black/30 border border-white/15 h-9 shrink-0">
-            {(["learn", "revise"] as const).map((g) => (
-              <button
-                key={g}
-                onClick={() => setStudyGoal(g)}
-                title={g === "revise" ? "Quick recall and exam traps" : "Guided first-time study"}
-                className={`px-3 h-full rounded-full text-xs font-semibold cursor-pointer transition-colors ${
-                  studyGoal === g
-                    ? "bg-white/20 text-white"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {g === "revise" ? "Revise" : "Study"}
-              </button>
-            ))}
-          </div>
-
           <button onClick={openExamSprint} title="Timed exam sprint (⌘E)" className={glassBtn}>
             <Timer className="w-3.5 h-3.5 text-white/80" />
             <span className="hidden lg:inline">Sprint</span>
           </button>
 
-          {!isInspectorOpen && (
-            <button onClick={toggleInspector} title="Analysis panel (⌘I)" className={glassBtn}>
-              <Sparkles className="w-3.5 h-3.5 text-white/80" />
-              <span className="hidden lg:inline">Analysis</span>
-            </button>
-          )}
+          <button
+            onClick={toggleInspector}
+            title="Business Companion (⌘I)"
+            className={`${glassBtn} ${isInspectorOpen ? "bg-white/20 text-white border-white/40 shadow-inner" : ""}`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-blue-300" />
+            <span className="hidden lg:inline">Companion</span>
+          </button>
 
           <button
             onClick={() => setIsShortcutsOpen((prev) => !prev)}

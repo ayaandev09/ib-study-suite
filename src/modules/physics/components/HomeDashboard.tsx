@@ -34,15 +34,23 @@ const TILES: Tile[] = [
   { id: "revision", title: "Revise", blurb: "Flashcards and practice", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "matrix", title: "Concept Matrix", blurb: "How ideas connect", tint: "tint-indigo", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Glossary", blurb: "Terms and symbols", tint: "tint-cyan", icon: <Library className="w-6 h-6" />, span: "" },
-  { id: "stream", title: "Syllabus Checklist", blurb: "Track units & subunits", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
+  { id: "stream", title: "Syllabus Checklist", blurb: "Track units & subunits", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "" },
 ];
 
 export function HomeDashboard() {
-  const { setViewMode, setActiveTopic, activeTopicId, completedTopics } = useStudyStore();
-  const total = ALL_TOPICS.length;
-  const done = ALL_TOPICS.filter((t) => completedTopics[t.id]).length;
+  const { setViewMode, setActiveTopic, activeTopicId, completedTopics, levelFilter } = useStudyStore();
+  const activeTopics = React.useMemo(() => {
+    return ALL_TOPICS.filter((t) => {
+      const isHlOnly = t.level === "HL" || ["A.4", "A.5", "B.4", "D.4", "E.2"].includes(t.topicCode);
+      if (levelFilter === "SL") return !isHlOnly;
+      if (levelFilter === "HL") return isHlOnly;
+      return true;
+    });
+  }, [levelFilter]);
+  const total = activeTopics.length;
+  const done = activeTopics.filter((t) => completedTopics[t.id]).length;
   const pct = total ? Math.round((done / total) * 100) : 0;
-  const current = ALL_TOPICS.find((t) => t.id === activeTopicId) ?? ALL_TOPICS[0];
+  const current = activeTopics.find((t) => t.id === activeTopicId) ?? activeTopics[0] ?? ALL_TOPICS[0];
 
   return (
     <div className="max-w-5xl mx-auto py-4 sm:py-8 space-y-4">
@@ -126,6 +134,38 @@ export function HomeDashboard() {
           </JellyBentoItem>
         ))}
       </div>
+
+      {/* May 2027 Physics SL vs HL Assessment Structure */}
+      <JellyBentoItem index={2 + TILES.length}>
+        <div className="liquid-glass-bento rounded-3xl p-5 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-widest text-indigo-300/85 font-mono">
+              Physics SL / HL · May 2027 Assessment Structure
+            </p>
+            <span className="text-[11px] font-mono text-white/50">
+              Paper 1A/B · Paper 2 · Scientific Investigation (IA)
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="rounded-2xl bg-black/40 border border-white/10 p-3.5 space-y-1">
+              <div className="font-semibold text-white">Standard Level (SL)</div>
+              <p className="text-white/65">
+                <strong>Paper 1</strong> (1h 30m, 36%): Paper 1A (25 MCQs, no calculator) + Paper 1B (Data-based & experimental questions) ·{" "}
+                <strong>Paper 2</strong> (1h 30m, 44%): Short-answer and extended-response structured questions ·{" "}
+                <strong>Internal Assessment (IA)</strong> (20%): 24 marks scientific investigation.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-indigo-500/[0.06] border border-indigo-400/25 p-3.5 space-y-1">
+              <div className="font-semibold text-indigo-200">Higher Level (HL)</div>
+              <p className="text-white/70">
+                <strong>Paper 1</strong> (2h, 36%): Paper 1A (40 MCQs, no calculator) + Paper 1B (Data-based & experimental questions) ·{" "}
+                <strong>Paper 2</strong> (2h 30m, 44%): Advanced extended-response questions across Core & HL subunits ·{" "}
+                <strong>Internal Assessment (IA)</strong> (20%): 24 marks scientific investigation.
+              </p>
+            </div>
+          </div>
+        </div>
+      </JellyBentoItem>
     </div>
   );
 }

@@ -385,7 +385,7 @@ export const useRawGermanStudyStore = create<GermanStudyState>((set, get) => {
     toggleSidebar: () => set((state) => ({ sidebarCollapsed: !state.sidebarCollapsed })),
     setSidebarCollapsed: (collapsed) => set({ sidebarCollapsed: collapsed }),
 
-    isInspectorOpen: true,
+    isInspectorOpen: false,
     toggleInspector: () => set((state) => ({ isInspectorOpen: !state.isInspectorOpen })),
     setInspectorOpen: (open) => set({ isInspectorOpen: open }),
 

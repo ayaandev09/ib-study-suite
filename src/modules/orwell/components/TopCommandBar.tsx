@@ -130,48 +130,19 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = React.memo(({
         </div>
 
         <div className="flex items-center gap-1.5">
-          <button
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(new CustomEvent("ib-suite-open-search"));
-              }
-            }}
-            title="Universal Suite Search (⌘K)"
-            className={glassBtn}
-          >
-            <Search className="w-3.5 h-3.5 text-white/80" />
-            <span className="hidden md:inline text-slate-300">Search Suite</span>
-            <kbd className="hidden md:inline text-[10px] font-mono text-slate-400">⌘K</kbd>
-          </button>
-
-          <div className="hidden sm:flex items-center p-0.5 rounded-full bg-black/30 border border-white/15 h-9 shrink-0">
-            {(["learn", "revise"] as const).map((g) => (
-              <button
-                key={g}
-                onClick={() => setStudyGoal(g)}
-                title={g === "revise" ? "Quick recall & exam traps" : "Guided study with historical context"}
-                className={`px-3 h-full rounded-full text-xs font-semibold cursor-pointer transition-colors ${
-                  studyGoal === g
-                    ? "bg-white/20 text-white"
-                    : "text-slate-400 hover:text-white"
-                }`}
-              >
-                {g === "revise" ? "Revise" : "Study"}
-              </button>
-            ))}
-          </div>
-
           <button onClick={openExamSprint} title="Timed sprint (⌘E)" className={glassBtn}>
             <Timer className="w-3.5 h-3.5 text-rose-300" />
             <span className="hidden lg:inline">Sprint</span>
           </button>
 
-          {!isInspectorOpen && (
-            <button onClick={toggleInspector} title="Analysis panel (⌘I)" className={glassBtn}>
-              <Sparkles className="w-3.5 h-3.5 text-rose-300" />
-              <span className="hidden lg:inline">Analysis</span>
-            </button>
-          )}
+          <button
+            onClick={toggleInspector}
+            title="Literary Analysis Companion (⌘I)"
+            className={`${glassBtn} ${isInspectorOpen ? "bg-white/20 text-white border-white/40 shadow-inner" : ""}`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-rose-300" />
+            <span className="hidden lg:inline">Companion</span>
+          </button>
 
           <button
             onClick={() => setIsShortcutsOpen((prev) => !prev)}

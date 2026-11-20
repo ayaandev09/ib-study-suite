@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { motion } from "framer-motion";
 import { useWorkspaceStore } from "@/store/useWorkspaceStore";
 import { MODULE_CATALOG, SUBJECT_CLUSTERS } from "@/data/modulesMeta";
@@ -351,7 +351,7 @@ function BentoSubjectCard({
         {/* Footer Action Bar Raised in 3D Space */}
         <div
           style={{ transform: "translateZ(24px)" }}
-          className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-2 flex-nowrap overflow-hidden"
+          className="pt-4 border-t border-white/[0.08] flex items-center justify-between gap-2 flex-wrap sm:flex-nowrap"
         >
           <motion.button
             data-motion="true"
@@ -381,7 +381,7 @@ function BentoSubjectCard({
             />
           </motion.button>
 
-          <div className="flex items-center gap-1.5 flex-nowrap shrink-0">
+          <div className="flex items-center gap-1.5 flex-wrap sm:flex-nowrap min-w-0 shrink-0">
             {mod.quickRoutes.slice(0, 2).map((r) => (
               <motion.button
                 key={r.label}
@@ -424,6 +424,14 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
   );
 
   const [userName, setUserName] = useState("Ayaan");
+
+  const greeting = useMemo(() => {
+    const hour = new Date().getHours();
+    if (hour >= 5 && hour < 12) return `Good Morning, ${userName}`;
+    if (hour >= 12 && hour < 17) return `Good Afternoon, ${userName}`;
+    if (hour >= 17 && hour < 22) return `Good Evening, ${userName}`;
+    return `Late Night Session, ${userName}`;
+  }, [userName]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -481,7 +489,7 @@ export function BentoDashboard({ isRevealed = true }: { isRevealed?: boolean }) 
               </div>
               <h1 className="leading-none">
                 <RefractedText
-                  text={`Good Morning, ${userName}`}
+                  text={greeting}
                   theme="dark"
                   fontSize="36px"
                   fontFamily="ui-rounded, 'SF Pro Rounded', 'Nunito', -apple-system, BlinkMacSystemFont, sans-serif"

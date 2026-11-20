@@ -44,7 +44,7 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
   },
   orwell: {
     title: "1984",
-    badge: "ENGLISH A LIT · SL / HL · MAY 2027",
+    badge: "MAY 2027 · SL / HL · ENGLISH A LITERATURE",
     subtitle: "George Orwell · Thoughtcrime, Newspeak & Memory Control",
     logoPath: "/logos/orwell.svg",
     rgb: "244, 63, 94",
@@ -60,7 +60,7 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
   },
   business: {
     title: "IB BUSINESS",
-    badge: "CUEGIS STRATEGY · SL / HL · MAY 2027",
+    badge: "MAY 2027 · SL / HL · CCES STRATEGY",
     subtitle: "Corporate Decision Tools, Finance & Case Studies",
     logoPath: "/logos/business.svg",
     rgb: "37, 99, 235",
@@ -75,8 +75,8 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
     spectrumCoolColor: "#1d4ed8",
   },
   economics: {
-    title: "ECONOMICS SL / HL",
-    badge: "LIVING DIAGRAM ENGINE · SL / HL · MAY 2027",
+    title: "IB ECONOMICS",
+    badge: "MAY 2027 · SL / HL · LIVING DIAGRAM ENGINE",
     subtitle: "Microeconomics, Macroeconomics, Global Trade & Paper 3 HL",
     logoPath: "/logos/economics.svg",
     rgb: "14, 165, 233",
@@ -91,8 +91,8 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
     spectrumCoolColor: "#3b82f6",
   },
   physics: {
-    title: "PHYSICS SL / HL",
-    badge: "THEMES A–E ENGINE · SL / HL · MAY 2027",
+    title: "IB PHYSICS",
+    badge: "MAY 2027 · SL / HL · THEMES A–E ENGINE",
     subtitle: "Mechanics, Relativity, Thermodynamics, Induction & Quantum",
     logoPath: "/logos/physics.svg",
     rgb: "99, 102, 241",
@@ -107,8 +107,8 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
     spectrumCoolColor: "#38bdf8",
   },
   german: {
-    title: "DEUTSCH B SL / HL",
-    badge: "TEXTSORTEN & REDEMITTEL · SL / HL · MAY 2027",
+    title: "IB GERMAN B",
+    badge: "MAY 2027 · SL / HL · TEXTSORTEN & GRAMMATIK",
     subtitle: "Dürrenmatt Oral Studio, Paper 1/2 & Grammar Matrix",
     logoPath: "/logos/german.svg",
     rgb: "217, 70, 239",
@@ -124,7 +124,7 @@ export const SUBJECT_INTRO_THEMES: Record<AppId, SubjectIntroTheme> = {
   },
   geography: {
     title: "IB GEOGRAPHY",
-    badge: "SPATIAL SYSTEMS & GLOBAL CHANGE · SL / HL",
+    badge: "MAY 2027 · SL / HL · SPATIAL SYSTEMS & GLOBAL CHANGE",
     subtitle: "4 Units · Options, HL Interactions, GIS & IA Fieldwork",
     logoPath: "/logos/geography.svg",
     rgb: "20, 184, 166",
@@ -170,13 +170,8 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
   const theme = SUBJECT_INTRO_THEMES[appId] || SUBJECT_INTRO_THEMES.biology;
 
   const handleDismiss = useCallback(
-    (isAuto = false) => {
+    (_isAuto = false) => {
       if (isDismissingRef.current) return;
-      if (!isAuto) {
-        if (!mountedAtRef.current || performance.now() - mountedAtRef.current < 450) {
-          return;
-        }
-      }
       isDismissingRef.current = true;
       soundEngine.stopSubjectIntro();
       onClose?.();
@@ -205,7 +200,7 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
     timer = setTimeout(() => {
       autoCompletedRef.current = true;
       handleDismiss(true);
-    }, 2650);
+    }, 480);
 
     return () => {
       if (timer) clearTimeout(timer);
@@ -229,15 +224,16 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
 
   return (
     <motion.div
-      initial={{ opacity: 1 }}
-      animate={{ opacity: 1 }}
+      initial={{ opacity: 0, scale: 0.97, filter: "blur(12px)" }}
+      animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
       exit={{
         opacity: 0,
         scale: 1.03,
-        transition: { duration: 0.55, ease: EASE_APPLE },
+        transition: { duration: 0.3, ease: EASE_APPLE },
       }}
+      transition={{ type: "spring", stiffness: 340, damping: 30 }}
       onClick={() => handleDismiss(false)}
-      style={{ willChange: "transform, opacity" }}
+      style={{ willChange: "transform, opacity, filter" }}
       className="fixed inset-0 z-[9999] flex flex-col items-center justify-center p-6 select-none overflow-hidden cursor-pointer bg-[#000000]"
       aria-label={`${theme.title} Startup`}
     >
@@ -362,18 +358,6 @@ export const ModuleStartupIntro: React.FC<ModuleStartupIntroProps> = ({
           </div>
         </motion.div>
       </div>
-
-      {/* Subtle Skip Hint (appears after 450ms) */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 0.55 }}
-        transition={{ delay: 0.45, duration: 0.35 }}
-        className="absolute bottom-8 inset-x-0 text-center pointer-events-none"
-      >
-        <span className="font-mono text-[10px] uppercase tracking-[0.22em] text-white/50">
-          Click or press Space to enter workspace
-        </span>
-      </motion.div>
     </motion.div>
   );
 };

@@ -48,7 +48,7 @@ const TILES: Tile[] = [
   {
     id: "lexicon",
     title: "Models & Lexicon",
-    blurb: "Spearman's rₛ, Q = A×v, Gini & terms",
+    blurb: "Spearman's r_s, Q = A × v, Gini & terms",
     icon: <BookMarked className="w-6 h-6 text-emerald-300" />,
   },
   {
@@ -175,6 +175,39 @@ export function HomeDashboard() {
           </JellyBentoItem>
         ))}
       </div>
+
+      {/* May 2027 Geography SL vs HL Assessment Structure */}
+      <JellyBentoItem index={2 + TILES.length}>
+        <div className="liquid-glass-bento rounded-3xl p-5 space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-xs uppercase tracking-widest text-teal-300/85 font-mono">
+              Geography SL / HL · May 2027 Assessment Structure
+            </p>
+            <span className="text-[11px] font-mono text-white/50">
+              Paper 1 · Paper 2 · Paper 3 (HL) · Fieldwork (IA)
+            </span>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+            <div className="rounded-2xl bg-black/40 border border-white/10 p-3.5 space-y-1">
+              <div className="font-semibold text-white">Standard Level (SL)</div>
+              <p className="text-white/65">
+                <strong>Paper 1</strong> (1h 30m, 35%): Geographic Themes/Options (2 options) ·{" "}
+                <strong>Paper 2</strong> (1h 15m, 40%): Core Units (Population, Climate &amp; Resources) ·{" "}
+                <strong>Internal Assessment (IA)</strong> (25%): 2,500-word spatial fieldwork report.
+              </p>
+            </div>
+            <div className="rounded-2xl bg-teal-500/[0.06] border border-teal-400/25 p-3.5 space-y-1">
+              <div className="font-semibold text-teal-200">Higher Level (HL)</div>
+              <p className="text-white/70">
+                <strong>Paper 1</strong> (2h 15m, 35%): Geographic Themes (3 options) ·{" "}
+                <strong>Paper 2</strong> (1h 15m, 25%): Core Units ·{" "}
+                <strong>Paper 3 (HL Only)</strong> (1h, 20%): Global Interactions essay ·{" "}
+                <strong>Internal Assessment (IA)</strong> (20%): Fieldwork report.
+              </p>
+            </div>
+          </div>
+        </div>
+      </JellyBentoItem>
     </div>
   );
 }

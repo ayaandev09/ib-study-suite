@@ -259,6 +259,12 @@ export const ActiveRecallRevisionView: React.FC = () => {
   const currentFlashcard = filteredFlashcards[currentIndex] || filteredFlashcards[0];
   const isMastered = currentFlashcard ? !!masteredFlashcards[currentFlashcard.id] : false;
 
+  useEffect(() => {
+    if (currentIndex >= filteredFlashcards.length && filteredFlashcards.length > 0) {
+      setCurrentIndex(0);
+    }
+  }, [filteredFlashcards.length, currentIndex]);
+
   const handleNextCard = () => {
     setIsFlipped(false);
     setCurrentIndex((prev) => (prev + 1) % filteredFlashcards.length);
@@ -543,7 +549,12 @@ export const ActiveRecallRevisionView: React.FC = () => {
               return (
                 <button
                   key={deck.id}
-                  onClick={() => setActiveFlashcardDeck(deck.id as FlashcardDeckType)}
+                  onClick={() => {
+                    setActiveFlashcardDeck(deck.id as FlashcardDeckType);
+                    setCurrentIndex(0);
+                    setIsFlipped(false);
+                    setUnitFilter("all");
+                  }}
                   className={`flex items-center justify-between p-3 rounded-2xl border transition-all cursor-pointer text-left ${
                     isActive
                       ? "bg-sky-500/20 border-sky-400 text-white shadow-[0_0_20px_-5px_rgba(14,165,233,0.4)]"

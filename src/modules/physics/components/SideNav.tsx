@@ -28,9 +28,18 @@ const ITEMS: { id: ViewMode; label: string; tint: string; icon: React.ReactNode 
 ];
 
 export function SideNav() {
-  const { viewMode, setViewMode, sidebarCollapsed, completedTopics } = useStudyStore();
-  const done = ALL_TOPICS.filter((t) => completedTopics[t.id]).length;
-  const pct = Math.round((done / ALL_TOPICS.length) * 100);
+  const { viewMode, setViewMode, sidebarCollapsed, completedTopics, levelFilter } = useStudyStore();
+  const activeTopics = React.useMemo(() => {
+    return ALL_TOPICS.filter((t) => {
+      const isHlOnly = t.level === "HL" || ["A.4", "A.5", "B.4", "D.4", "E.2"].includes(t.topicCode);
+      if (levelFilter === "SL") return !isHlOnly;
+      if (levelFilter === "HL") return isHlOnly;
+      return true;
+    });
+  }, [levelFilter]);
+  const total = activeTopics.length;
+  const done = activeTopics.filter((t) => completedTopics[t.id]).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
 
   return (
     <aside
@@ -85,7 +94,7 @@ export function SideNav() {
             <div className="h-1.5 rounded-full bg-white/10 overflow-hidden">
               <div className="h-full bg-indigo-400/85 transition-all duration-500 rounded-full" style={{ width: `${pct}%` }} />
             </div>
-            <p className="text-[11px] text-slate-400 mt-1.5">{done} of {ALL_TOPICS.length} topics done</p>
+            <p className="text-[11px] text-slate-400 mt-1.5">{done} of {total} topics done</p>
           </div>
         </div>
       </div>

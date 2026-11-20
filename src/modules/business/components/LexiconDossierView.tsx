@@ -25,7 +25,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 
-type DossierTab = "formulas" | "theorists" | "glossary";
+type DossierTab = "formulas" | "theorists" | "glossary" | "calculator";
 
 const ALPHABET = [
   "ALL",
@@ -76,6 +76,22 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
   const [selectedUnit, setSelectedUnit] = useState<string>("ALL");
   const [hlOnlyFilter, setHlOnlyFilter] = useState<boolean>(false);
   const [displayCount, setDisplayCount] = useState<number>(40);
+
+  // Financial Calculator State
+  const [calcFC, setCalcFC] = useState(50000);
+  const [calcPrice, setCalcPrice] = useState(80);
+  const [calcVC, setCalcVC] = useState(30);
+  const [calcCurrentOutput, setCalcCurrentOutput] = useState(1500);
+
+  const [initialInv, setInitialInv] = useState(100000);
+  const [cfY1, setCfy1] = useState(35000);
+  const [cfY2, setCfy2] = useState(40000);
+  const [cfY3, setCfy3] = useState(45000);
+  const [discountRate, setDiscountRate] = useState(8);
+
+  const [caVal, setCaVal] = useState(120000);
+  const [clVal, setClVal] = useState(80000);
+  const [stockVal, setStockVal] = useState(45000);
 
   const q = searchQuery.trim().toLowerCase();
 
@@ -205,12 +221,24 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
               <BookOpen className="w-3.5 h-3.5" />
               <span>Glossary ({filteredGlossary.length})</span>
             </button>
+            <button
+              onClick={() => setActiveTab("calculator")}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-sans font-medium transition-all cursor-pointer ${
+                activeTab === "calculator"
+                  ? "bg-blue-500/25 border border-blue-400/50 text-blue-200 shadow-sm"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              <Calculator className="w-3.5 h-3.5 text-blue-400" />
+              <span>BMT Calculator</span>
+            </button>
           </div>
         </div>
       </section>
 
       {/* Universal Mini Search Across Formulas, Theorists & Glossary */}
-      <MiniSectionSearch
+      {activeTab !== "calculator" && (
+        <MiniSectionSearch
         query={searchQuery}
         onQueryChange={setSearchQuery}
         placeholder={
@@ -236,6 +264,7 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
         }
         accentColor="#2563eb"
       />
+      )}
 
       {/* =====================================================================
           TAB 1: FORMULAS BANK
@@ -540,6 +569,315 @@ export const LexiconDossierView = React.memo(function LexiconDossierView() {
           )}
         </div>
       )}
+    
+      {activeTab === "calculator" && (
+        <div className="space-y-6">
+          {/* 1. Break-Even Analysis Calculator */}
+          <div className="liquid-glass-card rounded-[24px] p-6 space-y-4 border border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-lg bg-blue-500/15 border border-blue-400/30 text-[10px] font-mono uppercase tracking-wider text-blue-300">
+                BMT 3.3 · Break-Even Analysis
+              </span>
+              <span className="text-xs font-mono text-white/50">Quantitative Toolkit</span>
+            </div>
+            <h3 className="text-xl font-bold text-white">Break-Even & Margin of Safety Calculator</h3>
+            <p className="text-sm text-white/70">
+              {"Calculate Contribution per unit (P - VC), Break-Even Quantity (Q = FC / Contribution), and Margin of Safety."}
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 p-4 rounded-2xl bg-black/40 border border-white/10">
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70">Fixed Costs ($FC$):</label>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-mono text-white/50">$</span>
+                  <input
+                    type="number"
+                    value={calcFC}
+                    onChange={(e) => setCalcFC(Math.max(0, parseFloat(e.target.value) || 0))}
+                    className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70">Selling Price ($P$):</label>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-mono text-white/50">$</span>
+                  <input
+                    type="number"
+                    value={calcPrice}
+                    onChange={(e) => setCalcPrice(Math.max(1, parseFloat(e.target.value) || 1))}
+                    className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70">Variable Cost ($VC$):</label>
+                <div className="flex items-center gap-1">
+                  <span className="text-xs font-mono text-white/50">$</span>
+                  <input
+                    type="number"
+                    value={calcVC}
+                    onChange={(e) => setCalcVC(Math.max(0, parseFloat(e.target.value) || 0))}
+                    className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-blue-400"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs text-white/70">Current Output ($Q$):</label>
+                <input
+                  type="number"
+                  value={calcCurrentOutput}
+                  onChange={(e) => setCalcCurrentOutput(Math.max(0, parseFloat(e.target.value) || 0))}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-3 py-1.5 text-xs text-white font-mono focus:outline-none focus:border-blue-400"
+                />
+              </div>
+            </div>
+
+            {(() => {
+              const unitContribution = Math.max(0.01, calcPrice - calcVC);
+              const beQuantity = Math.ceil(calcFC / unitContribution);
+              const mos = calcCurrentOutput - beQuantity;
+              const totalRevenue = calcCurrentOutput * calcPrice;
+              const totalCosts = calcFC + calcCurrentOutput * calcVC;
+              const profitOrLoss = totalRevenue - totalCosts;
+
+              return (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
+                    <p className="text-[10px] font-mono text-white/50 uppercase">Unit Contribution</p>
+                    <p className="text-lg font-bold text-blue-300 font-mono mt-1">${unitContribution.toFixed(2)}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">P - VC</p>
+                  </div>
+                  <div className="p-3.5 rounded-2xl bg-blue-500/[0.08] border border-blue-400/25 text-center">
+                    <p className="text-[10px] font-mono text-blue-300 uppercase">Break-Even Output</p>
+                    <p className="text-lg font-bold text-white font-mono mt-1">{beQuantity.toLocaleString()} units</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">FC / Contribution</p>
+                  </div>
+                  <div className={`p-3.5 rounded-2xl border text-center ${
+                    mos >= 0 ? "bg-emerald-500/[0.08] border-emerald-400/25" : "bg-rose-500/[0.08] border-rose-400/25"
+                  }`}>
+                    <p className={`text-[10px] font-mono uppercase ${mos >= 0 ? "text-emerald-300" : "text-rose-300"}`}>
+                      Margin of Safety
+                    </p>
+                    <p className={`text-lg font-bold font-mono mt-1 ${mos >= 0 ? "text-emerald-200" : "text-rose-200"}`}>
+                      {mos >= 0 ? `+${mos.toLocaleString()}` : mos.toLocaleString()} units
+                    </p>
+                    <p className="text-[10px] text-white/40 mt-0.5">Current Q - BEQ</p>
+                  </div>
+                  <div className={`p-3.5 rounded-2xl border text-center ${
+                    profitOrLoss >= 0 ? "bg-emerald-500/[0.08] border-emerald-400/25" : "bg-rose-500/[0.08] border-rose-400/25"
+                  }`}>
+                    <p className={`text-[10px] font-mono uppercase ${profitOrLoss >= 0 ? "text-emerald-300" : "text-rose-300"}`}>
+                      Profit / Loss
+                    </p>
+                    <p className={`text-lg font-bold font-mono mt-1 ${profitOrLoss >= 0 ? "text-emerald-200" : "text-rose-200"}`}>
+                      ${Math.abs(profitOrLoss).toLocaleString()} {profitOrLoss >= 0 ? "Profit" : "Loss"}
+                    </p>
+                    <p className="text-[10px] text-white/40 mt-0.5">TR - TC</p>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* 2. Payback Period & Net Present Value (NPV) Calculator */}
+          <div className="liquid-glass-card rounded-[24px] p-6 space-y-4 border border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-lg bg-indigo-500/15 border border-indigo-400/30 text-[10px] font-mono uppercase tracking-wider text-indigo-300">
+                BMT 3.8 · Investment Appraisal (Payback & NPV)
+              </span>
+              <span className="text-xs font-mono text-white/50">Capital Budgeting</span>
+            </div>
+            <h3 className="text-xl font-bold text-white">Investment Appraisal (Payback &amp; Discounted NPV)</h3>
+            <p className="text-sm text-white/70">
+              Calculate exact payback period in years &amp; months and Net Present Value (NPV) discounted at rate $r$.
+            </p>
+
+            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 p-4 rounded-2xl bg-black/40 border border-white/10">
+              <div className="space-y-1">
+                <label className="text-[11px] text-white/70">Initial Cost ($C_0$):</label>
+                <input
+                  type="number"
+                  value={initialInv}
+                  onChange={(e) => setInitialInv(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-white/70">Year 1 Cash Flow:</label>
+                <input
+                  type="number"
+                  value={cfY1}
+                  onChange={(e) => setCfy1(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-white/70">Year 2 Cash Flow:</label>
+                <input
+                  type="number"
+                  value={cfY2}
+                  onChange={(e) => setCfy2(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-white/70">Year 3 Cash Flow:</label>
+                <input
+                  type="number"
+                  value={cfY3}
+                  onChange={(e) => setCfy3(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-[11px] text-white/70">Discount Rate (%):</label>
+                <input
+                  type="number"
+                  value={discountRate}
+                  onChange={(e) => setDiscountRate(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {(() => {
+              const r = discountRate / 100;
+              const pv1 = cfY1 / Math.pow(1 + r, 1);
+              const pv2 = cfY2 / Math.pow(1 + r, 2);
+              const pv3 = cfY3 / Math.pow(1 + r, 3);
+              const totalPV = pv1 + pv2 + pv3;
+              const npv = totalPV - initialInv;
+
+              // Payback Calculation
+              let cum = 0;
+              let paybackStr = "Over 3 Years";
+              if (cfY1 >= initialInv) {
+                const fraction = initialInv / cfY1;
+                paybackStr = `${(fraction * 12).toFixed(1)} Months`;
+              } else if (cfY1 + cfY2 >= initialInv) {
+                const remaining = initialInv - cfY1;
+                const fraction = remaining / cfY2;
+                paybackStr = `1 Year, ${(fraction * 12).toFixed(1)} Months`;
+              } else if (cfY1 + cfY2 + cfY3 >= initialInv) {
+                const remaining = initialInv - (cfY1 + cfY2);
+                const fraction = remaining / cfY3;
+                paybackStr = `2 Years, ${(fraction * 12).toFixed(1)} Months`;
+              }
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-2xl bg-white/[0.04] border border-white/10 flex items-center justify-between">
+                    <div>
+                      <p className="text-xs font-mono text-white/50 uppercase">Payback Period</p>
+                      <p className="text-xl font-bold text-indigo-300 font-mono mt-0.5">{paybackStr}</p>
+                    </div>
+                    <span className="text-[10px] font-mono text-white/40 max-w-[140px] text-right">
+                      Cumulative inflow recovers initial ${initialInv.toLocaleString()}
+                    </span>
+                  </div>
+
+                  <div className={`p-4 rounded-2xl border flex items-center justify-between ${
+                    npv >= 0 ? "bg-emerald-500/[0.08] border-emerald-400/25" : "bg-rose-500/[0.08] border-rose-400/25"
+                  }`}>
+                    <div>
+                      <p className={`text-xs font-mono uppercase ${npv >= 0 ? "text-emerald-300" : "text-rose-300"}`}>
+                        Net Present Value (NPV @ {discountRate}%)
+                      </p>
+                      <p className={`text-xl font-bold font-mono mt-0.5 ${npv >= 0 ? "text-emerald-200" : "text-rose-200"}`}>
+                        {npv >= 0 ? `+$${npv.toFixed(0)}` : `-$${Math.abs(npv).toFixed(0)}`}
+                      </p>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-xl text-xs font-bold font-mono border ${
+                      npv >= 0 ? "bg-emerald-500/20 text-emerald-200 border-emerald-400/30" : "bg-rose-500/20 text-rose-200 border-rose-400/30"
+                    }`}>
+                      {npv >= 0 ? "ACCEPT PROJECT" : "REJECT PROJECT"}
+                    </span>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+
+          {/* 3. Working Capital & Liquidity Ratios */}
+          <div className="liquid-glass-card rounded-[24px] p-6 space-y-4 border border-white/10">
+            <div className="flex items-center justify-between">
+              <span className="px-2.5 py-0.5 rounded-lg bg-teal-500/15 border border-teal-400/30 text-[10px] font-mono uppercase tracking-wider text-teal-300">
+                BMT 3.5 · Liquidity Ratios
+              </span>
+              <span className="text-xs font-mono text-white/50">Balance Sheet Health</span>
+            </div>
+            <h3 className="text-xl font-bold text-white">Working Capital &amp; Liquidity Ratio Benchmark</h3>
+            <p className="text-sm text-white/70">
+              Evaluate solvency with the Current Ratio (ideal benchmark 1.5–2.0:1) and Acid Test / Quick Ratio (ideal benchmark &ge; 1.0:1).
+            </p>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 p-4 rounded-2xl bg-black/40 border border-white/10">
+              <div className="space-y-1">
+                <label className="text-xs text-white/70">Current Assets ($CA$):</label>
+                <input
+                  type="number"
+                  value={caVal}
+                  onChange={(e) => setCaVal(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-white/70">Current Liabilities ($CL$):</label>
+                <input
+                  type="number"
+                  value={clVal}
+                  onChange={(e) => setClVal(Math.max(1, parseFloat(e.target.value) || 1))}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-xs text-white/70">Inventory / Stock ($S$):</label>
+                <input
+                  type="number"
+                  value={stockVal}
+                  onChange={(e) => setStockVal(parseFloat(e.target.value) || 0)}
+                  className="w-full bg-white/[0.06] border border-white/15 rounded-xl px-2.5 py-1.5 text-xs text-white font-mono focus:outline-none"
+                />
+              </div>
+            </div>
+
+            {(() => {
+              const workingCapital = caVal - clVal;
+              const currentRatio = Number((caVal / clVal).toFixed(2));
+              const acidTestRatio = Number(((caVal - stockVal) / clVal).toFixed(2));
+
+              return (
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <div className="p-3.5 rounded-2xl bg-white/[0.04] border border-white/10 text-center">
+                    <p className="text-[10px] font-mono text-white/50 uppercase">Net Working Capital</p>
+                    <p className="text-lg font-bold text-white font-mono mt-1">${workingCapital.toLocaleString()}</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">CA - CL</p>
+                  </div>
+                  <div className={`p-3.5 rounded-2xl border text-center ${
+                    currentRatio >= 1.5 ? "bg-emerald-500/[0.08] border-emerald-400/25" : "bg-amber-500/[0.08] border-amber-400/25"
+                  }`}>
+                    <p className="text-[10px] font-mono text-teal-300 uppercase">Current Ratio</p>
+                    <p className="text-lg font-bold font-mono mt-1 text-teal-200">{currentRatio} : 1</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">Target: 1.5 – 2.0 : 1</p>
+                  </div>
+                  <div className={`p-3.5 rounded-2xl border text-center ${
+                    acidTestRatio >= 1.0 ? "bg-emerald-500/[0.08] border-emerald-400/25" : "bg-rose-500/[0.08] border-rose-400/25"
+                  }`}>
+                    <p className="text-[10px] font-mono text-indigo-300 uppercase">Acid Test / Quick Ratio</p>
+                    <p className="text-lg font-bold font-mono mt-1 text-indigo-200">{acidTestRatio} : 1</p>
+                    <p className="text-[10px] text-white/40 mt-0.5">Target: &ge; 1.0 : 1</p>
+                  </div>
+                </div>
+              );
+            })()}
+          </div>
+        </div>
+      )}
+
     </div>
   );
 });

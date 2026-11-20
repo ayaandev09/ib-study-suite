@@ -15,6 +15,7 @@ import { ExecutiveStreamView } from "@/modules/economics/components/ExecutiveStr
 import { ThemeMatrixView } from "@/modules/economics/components/ThemeMatrixView";
 import { CaseStudyVaultView } from "@/modules/economics/components/CaseStudyVaultView";
 import { ExamStructureMasteryView } from "@/modules/economics/components/ExamStructureMasteryView";
+import { DiagramLabView } from "@/modules/economics/components/DiagramLabView";
 import { LexiconDossierView } from "@/modules/economics/components/LexiconDossierView";
 import { ActiveRecallRevisionView } from "@/modules/economics/components/ActiveRecallRevisionView";
 import { FloatingBottomDock } from "@/modules/economics/components/FloatingBottomDock";
@@ -374,6 +375,15 @@ export default function IBEconomicsSLStudyDashboardPage() {
 
 
             {/* ===============================================================
+                MODE 3.5: DIAGRAM LAB & LIVING MARKET SIMULATOR
+                =============================================================== */}
+            {(viewMode === "diagrams" || visitedViews["diagrams"]) && (
+              <div className={viewMode === "diagrams" ? "" : "hidden"} aria-hidden={viewMode !== "diagrams"}>
+                <DiagramLabView />
+              </div>
+            )}
+
+            {/* ===============================================================
                 MODE 4: 9 KEY CONCEPTS MATRIX VIEW
                 =============================================================== */}
             {(viewMode === "matrix" || visitedViews["matrix"]) && (
@@ -419,7 +429,7 @@ export default function IBEconomicsSLStudyDashboardPage() {
             )}
 
             {/* ==================== FALLBACK VIEW (SAFE DEFAULT) ==================== */}
-            {!["home", "focus", "stream", "matrix", "cases", "exam-guide", "lexicon", "revision"].includes(viewMode) && (
+            {!["home", "focus", "stream", "diagrams", "matrix", "cases", "exam-guide", "lexicon", "revision"].includes(viewMode) && (
               <HomeDashboard />
             )}
           </div>

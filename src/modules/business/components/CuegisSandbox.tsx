@@ -18,6 +18,13 @@ interface CaseNode {
   hook: string;
 }
 
+const CCES_CONCEPTS: CuegisConcept[] = [
+  { id: "creativity", label: "Creativity", color: "#38BDF8", hint: "Generating novel ideas, R&D, brand positioning and disruptive innovation" },
+  { id: "change", label: "Change", color: "#50C878", hint: "Adapting to external environment, managing resistance, and business restructuring" },
+  { id: "ethics", label: "Ethics", color: "#A78BFA", hint: "CSR, moral decision-making, stakeholder rights, fair wages and governance" },
+  { id: "sustainability", label: "Sustainability", color: "#34D399", hint: "Triple bottom line (People, Planet, Profit), circular supply chains and ESG" },
+];
+
 const CUEGIS_CONCEPTS: CuegisConcept[] = [
   { id: "change", label: "Change", color: "#50C878", hint: "Adaptation, resistance and transformation" },
   { id: "culture", label: "Culture", color: "#D4AF37", hint: "Schein levels, Handy typologies and values" },
@@ -38,6 +45,17 @@ const CASE_NODES: CaseNode[] = [
   { id: "shein", company: "Shein", context: "E-commerce fashion", hook: "Algorithmic trend detection raises ethical scrutiny." },
 ];
 
+const SEEDED_CCES_LINKS: Record<string, string[]> = {
+  spacex: ["creativity", "change"],
+  patagonia: ["sustainability", "ethics"],
+  netflix: ["creativity", "change"],
+  zara: ["change", "sustainability"],
+  dyson: ["creativity"],
+  toyota: ["sustainability", "change"],
+  starbucks: ["ethics", "change"],
+  shein: ["ethics", "creativity"],
+};
+
 const SEEDED_LINKS: Record<string, string[]> = {
   spacex: ["innovation", "strategy"],
   patagonia: ["ethics", "culture"],
@@ -50,12 +68,18 @@ const SEEDED_LINKS: Record<string, string[]> = {
 };
 
 export function CuegisSandbox() {
-  const [links, setLinks] = useState<Record<string, string[]>>(SEEDED_LINKS);
+  const [framework, setFramework] = useState<"cces" | "cuegis">("cces");
+  const [links, setLinks] = useState<Record<string, string[]>>(SEEDED_CCES_LINKS);
   const [selectedConcept, setSelectedConcept] = useState<string | null>(null);
 
+  const activeConcepts = useMemo(
+    () => (framework === "cces" ? CCES_CONCEPTS : CUEGIS_CONCEPTS),
+    [framework]
+  );
+
   const conceptMap = useMemo(
-    () => Object.fromEntries(CUEGIS_CONCEPTS.map((concept) => [concept.id, concept])),
-    []
+    () => Object.fromEntries(activeConcepts.map((concept) => [concept.id, concept])),
+    [activeConcepts]
   );
 
   const linkCount = useMemo(
@@ -82,28 +106,67 @@ export function CuegisSandbox() {
             <Briefcase className="h-4 w-4" />
           </span>
           <div>
-            <h3 className="text-base font-bold text-white">CUEGIS Sandbox · Drag-and-Drop Matrix</h3>
+            <h3 className="text-base font-bold text-white">
+              {framework === "cces" ? "CCES Strategy Sandbox (May 2027 Official)" : "CUEGIS Legacy Sandbox"}
+            </h3>
             <p className="text-[11px] text-slate-400">
-              Drag any CUEGIS concept onto a case node, or select a concept and tap a node. Active links glow with the cobalt-blue theme.
+              {framework === "cces"
+                ? "Official May 2027 IB Syllabus 4-Concept Framework: Creativity, Change, Ethics, Sustainability."
+                : "Legacy 6-concept lens for retrospective case analysis: Change, Culture, Ethics, Globalization, Innovation, Strategy."}
             </p>
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => {
-            setLinks(SEEDED_LINKS);
-            setSelectedConcept(null);
-          }}
-          className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition hover:bg-white/10"
-        >
-          <RotateCcw className="h-3 w-3" />
-          Reset Matrix · {linkCount} links
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center rounded-xl border border-white/10 bg-black/40 p-1 text-[11px] font-mono">
+            <button
+              type="button"
+              onClick={() => {
+                setFramework("cces");
+                setLinks(SEEDED_CCES_LINKS);
+                setSelectedConcept(null);
+              }}
+              className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                framework === "cces"
+                  ? "bg-blue-500/30 text-blue-200 font-semibold"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              CCES (May 2027)
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setFramework("cuegis");
+                setLinks(SEEDED_LINKS);
+                setSelectedConcept(null);
+              }}
+              className={`px-2.5 py-1 rounded-lg transition-colors cursor-pointer ${
+                framework === "cuegis"
+                  ? "bg-amber-500/30 text-amber-200 font-semibold"
+                  : "text-slate-400 hover:text-white"
+              }`}
+            >
+              Legacy CUEGIS
+            </button>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              setLinks(framework === "cces" ? SEEDED_CCES_LINKS : SEEDED_LINKS);
+              setSelectedConcept(null);
+            }}
+            className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-white/5 px-3 py-1.5 font-mono text-[11px] text-slate-300 transition hover:bg-white/10 cursor-pointer"
+          >
+            <RotateCcw className="h-3 w-3" />
+            Reset Matrix · {linkCount} links
+          </button>
+        </div>
       </div>
 
-      <div className="mb-4 grid grid-cols-2 gap-2 sm:grid-cols-3 xl:grid-cols-6">
-        {CUEGIS_CONCEPTS.map((concept) => {
+      <div className={`mb-4 grid grid-cols-2 gap-2 sm:grid-cols-2 ${framework === "cces" ? "xl:grid-cols-4" : "xl:grid-cols-6"}`}>
+        {activeConcepts.map((concept) => {
           const isSelected = selectedConcept === concept.id;
           const usage = Object.values(links).filter((ids) => ids.includes(concept.id)).length;
           return (
@@ -225,7 +288,7 @@ export function CuegisSandbox() {
                 {assigned.length === 0 && (
                   <span className="flex items-center gap-1 font-mono text-[9px] text-slate-500">
                     <Sparkles className="h-2.5 w-2.5" />
-                    Drop a CUEGIS concept here
+                    Drop a {framework.toUpperCase()} concept here
                   </span>
                 )}
               </div>

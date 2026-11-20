@@ -18,7 +18,7 @@ const ITEMS: { id: ViewMode; label: string; icon: React.ReactNode }[] = [
   { id: "home", label: "Home", icon: <Compass className="w-4 h-4" /> },
   { id: "focus", label: "Topics", icon: <LayoutGrid className="w-4 h-4" /> },
   { id: "stream", label: "Syllabus Checklist", icon: <Layers className="w-4 h-4" /> },
-  { id: "matrix", label: "CUEGIS Matrix", icon: <Network className="w-4 h-4" /> },
+  { id: "matrix", label: "CCES Matrix", icon: <Network className="w-4 h-4" /> },
   { id: "lexicon", label: "Glossary & Theories", icon: <Library className="w-4 h-4" /> },
   { id: "revision", label: "Active Recall", icon: <GraduationCap className="w-4 h-4" /> },
 ];

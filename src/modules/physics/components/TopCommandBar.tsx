@@ -237,29 +237,18 @@ export function TopCommandBar({
             </button>
           ))}
         </div>
-        <button
-          onClick={() => {
-            if (typeof window !== "undefined") {
-              window.dispatchEvent(new CustomEvent("ib-suite-open-search"));
-            }
-          }}
-          title="Universal Suite Search (⌘K)"
-          className={btn}
-        >
-          <Search className="w-3.5 h-3.5 text-white/80" />
-          <span className="hidden md:inline">Search Suite</span>
-          <kbd className="hidden md:inline text-[10px] font-mono text-slate-400">⌘K</kbd>
-        </button>
         <button onClick={openExamSprint} title="Timed sprint (⌘E)" className={btn}>
           <Timer className="w-3.5 h-3.5 text-white/80" />
           <span className="hidden lg:inline">Sprint</span>
         </button>
-        {!isInspectorOpen && (
-          <button onClick={toggleInspector} title="Analysis panel (⌘I)" className={btn}>
-            <Sparkles className="w-3.5 h-3.5 text-white/80" />
-            <span className="hidden lg:inline">Analysis</span>
-          </button>
-        )}
+        <button
+          onClick={toggleInspector}
+          title="Exam Companion (⌘I)"
+          className={`${btn} ${isInspectorOpen ? "bg-white/20 text-white border-white/40 shadow-inner" : ""}`}
+        >
+          <Sparkles className="w-3.5 h-3.5 text-indigo-300" />
+          <span className="hidden lg:inline">Companion</span>
+        </button>
         <button
           onClick={() => setIsShortcutsOpen(true)}
           title="Keyboard shortcuts (?)"

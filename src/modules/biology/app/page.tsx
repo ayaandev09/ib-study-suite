@@ -75,7 +75,7 @@ export default function IBBiologyStudyDashboardPage() {
   return (
     <div className="relative min-h-screen w-full bg-[#060402] overflow-x-clip text-slate-100">
       <AmbientAuroraCanvas />
-      <div className="w-full px-5 sm:px-7 lg:px-8 py-4 flex items-start mac-dashboard-shell relative z-10">
+      <div className="w-full max-w-[1760px] mx-auto px-5 sm:px-7 lg:px-8 py-4 flex items-start mac-dashboard-shell relative z-10">
         <SideNav />
 
         <main

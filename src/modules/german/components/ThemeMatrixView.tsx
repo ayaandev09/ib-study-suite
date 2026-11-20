@@ -22,6 +22,39 @@ const LEVEL_ROWS = [
   },
 ];
 
+const HL_THEME_LITERATURE: Record<string, { code: string; title: string; subtitle: string; targetMode: "literatur" | "themen" }> = {
+  identitaeten: {
+    code: "HL Literatur",
+    title: "Der Besuch der alten Dame",
+    subtitle: "Dürrenmatt: Moralische Integrität & Käuflichkeit",
+    targetMode: "literatur",
+  },
+  erfahrungen: {
+    code: "HL Literatur",
+    title: "Der Vorleser",
+    subtitle: "Schlink: Schuld, Scham & Vergangenheitsbewältigung",
+    targetMode: "literatur",
+  },
+  menschliche_erfindungskraft: {
+    code: "HL Literatur",
+    title: "Die Verwandlung",
+    subtitle: "Kafka: Entfremdung, Moderne & Identitätsverlust",
+    targetMode: "literatur",
+  },
+  soziale_organisation: {
+    code: "HL Literatur",
+    title: "Andorra",
+    subtitle: "Max Frisch: Vorurteile, Antisemitismus & Kollektivschuld",
+    targetMode: "literatur",
+  },
+  teilung_des_planeten: {
+    code: "HL Diskurs",
+    title: "Klimagerechtigkeit & Ethik",
+    subtitle: "Globale Umweltverantwortung & Ressourcenkriege",
+    targetMode: "literatur",
+  },
+};
+
 export const ThemeMatrixView: React.FC = () => {
   const { setActiveTopic, setActiveTheme, setViewMode } = useGermanStudyStore();
   const [tab, setTab] = useState<MatrixTab>("matrix");
@@ -132,32 +165,51 @@ export const ThemeMatrixView: React.FC = () => {
                     return (
                       <td key={th.id} className="p-2.5">
                         <div className="space-y-1.5">
-                          {cellTopics.length > 0 ? (
-                            cellTopics.map((s) => (
-                              <button
-                                key={s.id}
-                                onClick={() => openSubtopic(s.id, th.id)}
-                                className="w-full text-left p-2.5 rounded-2xl bg-white/[0.03] hover:bg-fuchsia-500/[0.12] border border-white/[0.07] hover:border-fuchsia-400/35 transition-all cursor-pointer group"
-                              >
-                                <div className="flex items-center justify-between gap-1">
-                                  <span className="text-xs font-mono font-semibold text-fuchsia-300">
-                                    {s.displayCode}
+                          {cellTopics.map((s) => (
+                            <button
+                              key={s.id}
+                              onClick={() => openSubtopic(s.id, th.id)}
+                              className="w-full text-left p-2.5 rounded-2xl bg-white/[0.03] hover:bg-fuchsia-500/[0.12] border border-white/[0.07] hover:border-fuchsia-400/35 transition-all cursor-pointer group"
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-xs font-mono font-semibold text-fuchsia-300">
+                                  {s.displayCode}
+                                </span>
+                                {s.level === "HL Focus" && (
+                                  <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">
+                                    HL
                                   </span>
-                                  {s.level === "HL Focus" && (
-                                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-violet-500/20 text-violet-300">
-                                      HL
-                                    </span>
-                                  )}
-                                </div>
-                                <p className="text-xs text-slate-200 group-hover:text-white mt-0.5 line-clamp-1 font-medium">
-                                  {s.title}
-                                </p>
-                              </button>
-                            ))
-                          ) : (
-                            <div className="p-2.5 rounded-2xl border border-dashed border-white/[0.06] text-[11px] font-mono text-slate-500">
-                              Integriert in SL/HL
-                            </div>
+                                )}
+                              </div>
+                              <p className="text-xs text-slate-200 group-hover:text-white mt-0.5 line-clamp-1 font-medium">
+                                {s.title}
+                              </p>
+                            </button>
+                          ))}
+
+                          {row.id === "hl" && HL_THEME_LITERATURE[th.id] && (
+                            <button
+                              onClick={() => {
+                                setViewMode("literatur");
+                                window.scrollTo({ top: 0, behavior: "smooth" });
+                              }}
+                              className="w-full text-left p-2.5 rounded-2xl bg-violet-500/[0.08] hover:bg-violet-500/[0.18] border border-violet-400/25 hover:border-violet-400/50 transition-all cursor-pointer group"
+                            >
+                              <div className="flex items-center justify-between gap-1">
+                                <span className="text-[10px] font-mono font-bold text-violet-300 uppercase tracking-wider">
+                                  {HL_THEME_LITERATURE[th.id].code}
+                                </span>
+                                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-fuchsia-500/20 text-fuchsia-300">
+                                  IO / Paper 1
+                                </span>
+                              </div>
+                              <p className="text-xs text-white group-hover:text-violet-200 mt-1 font-semibold line-clamp-1">
+                                {HL_THEME_LITERATURE[th.id].title}
+                              </p>
+                              <p className="text-[10px] text-slate-300/80 mt-0.5 line-clamp-1 leading-snug">
+                                {HL_THEME_LITERATURE[th.id].subtitle}
+                              </p>
+                            </button>
                           )}
                         </div>
                       </td>

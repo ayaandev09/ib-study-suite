@@ -72,6 +72,17 @@ export function SafariTopCommandBar() {
   const launcherRef = useRef<HTMLDivElement>(null);
   const launcherButtonRef = useRef<HTMLButtonElement>(null);
   const launcherMenuRef = useRef<HTMLDivElement>(null);
+  const tabRefs = useRef<Record<string, HTMLDivElement | null>>({});
+
+  useEffect(() => {
+    if (primaryInstanceId && tabRefs.current[primaryInstanceId]) {
+      tabRefs.current[primaryInstanceId]?.scrollIntoView({
+        inline: "center",
+        behavior: "smooth",
+        block: "nearest",
+      });
+    }
+  }, [primaryInstanceId]);
 
   // Close launcher when clicking outside
   useEffect(() => {
@@ -280,9 +291,9 @@ export function SafariTopCommandBar() {
         {/* ====================================================================
             2. Center Region: Subject Tabs + Safari Smart Search Omnibar
            ==================================================================== */}
-        <div className="flex-1 max-w-3xl mx-3 flex items-center gap-2 overflow-hidden">
+        <div className="flex-1 max-w-4xl mx-3 flex items-center gap-2 overflow-hidden">
           {/* A. Unified Subject Tabs */}
-          <div className="flex items-center gap-1 max-w-[45vw] overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-1 flex-1 overflow-x-auto no-scrollbar scroll-smooth">
             {openInstances
               .filter((inst) => Boolean(MODULE_CATALOG[inst.appId]))
               .map((inst) => {
@@ -295,6 +306,9 @@ export function SafariTopCommandBar() {
               return (
                 <div
                   key={inst.instanceId}
+                  ref={(el) => {
+                    tabRefs.current[inst.instanceId] = el;
+                  }}
                   className="group relative flex items-center shrink-0"
                 >
                   <button
@@ -453,7 +467,7 @@ export function SafariTopCommandBar() {
           <button
             data-tour="search-trigger"
             onClick={() => setIsSearchModalOpen(true)}
-            className="flex-1 min-w-[160px] h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/20 hover:border-white/35 flex items-center justify-between px-3 text-xs text-white/70 hover:text-white transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md group cursor-pointer"
+            className="shrink-0 w-48 sm:w-56 md:w-64 h-8 rounded-full bg-white/[0.08] hover:bg-white/[0.14] border border-white/20 hover:border-white/35 flex items-center justify-between px-3 text-xs text-white/70 hover:text-white transition-all shadow-[inset_0_1px_1px_rgba(255,255,255,0.25),0_4px_16px_rgba(0,0,0,0.4)] backdrop-blur-md group cursor-pointer"
             title="Universal Search & Local AI Intelligence (⌘K)"
           >
             <div className="flex items-center gap-2 truncate">

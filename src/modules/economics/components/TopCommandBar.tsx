@@ -275,29 +275,22 @@ export const TopCommandBar: React.FC<TopCommandBarProps> = ({
               </button>
             ))}
           </div>
-          <button
-            onClick={() => {
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(new CustomEvent("ib-suite-open-search"));
-              }
-            }}
-            title="Universal Suite Search (⌘K)"
-            className="flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-medium cursor-pointer transition-colors bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-slate-200 shrink-0"
-          >
-            <Search className="w-3.5 h-3.5 text-white/80" />
-            <span className="hidden md:inline">Search Suite</span>
-            <kbd className="hidden md:inline text-[10px] font-mono text-slate-400">⌘K</kbd>
-          </button>
           <button onClick={openExamSprint} title="Timed sprint (⌘E)" className="flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-medium cursor-pointer transition-colors bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-slate-200 shrink-0">
             <Timer className="w-3.5 h-3.5 text-white/80" />
             <span className="hidden lg:inline">Sprint</span>
           </button>
-          {!isInspectorOpen && (
-            <button onClick={toggleInspector} title="Analysis panel (⌘I)" className="flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-medium cursor-pointer transition-colors bg-white/[0.07] hover:bg-white/[0.14] border border-white/15 text-slate-200 shrink-0">
-              <Sparkles className="w-3.5 h-3.5 text-white/80" />
-              <span className="hidden lg:inline">Analysis</span>
-            </button>
-          )}
+          <button
+            onClick={toggleInspector}
+            title="Exam Companion (⌘I)"
+            className={`flex items-center gap-1.5 h-9 px-3 rounded-full text-xs font-medium cursor-pointer transition-colors border text-slate-200 shrink-0 ${
+              isInspectorOpen
+                ? "bg-white/20 text-white border-white/40 shadow-inner"
+                : "bg-white/[0.07] hover:bg-white/[0.14] border-white/15"
+            }`}
+          >
+            <Sparkles className="w-3.5 h-3.5 text-sky-400" />
+            <span className="hidden lg:inline">Companion</span>
+          </button>
           <button
             onClick={() => setIsShortcutsOpen((prev) => !prev)}
             title="Keyboard shortcuts (?)"

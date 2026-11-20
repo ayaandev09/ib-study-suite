@@ -91,15 +91,6 @@ export function TopCommandBar() {
         </div>
 
         <button
-          onClick={openSpotlight}
-          className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-white/[0.06] hover:bg-white/[0.14] border border-white/10 text-xs text-white/75 hover:text-white cursor-pointer transition-colors"
-          title="Search Biology Syllabus"
-        >
-          <Search className="w-3.5 h-3.5" />
-          <span className="hidden sm:inline">Search</span>
-        </button>
-
-        <button
           onClick={openExamSprint}
           className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-green-500/15 hover:bg-green-500/25 border border-green-400/30 text-xs text-green-200 cursor-pointer transition-colors"
           title="Timed IB Bio Exam Sprint"
@@ -110,14 +101,15 @@ export function TopCommandBar() {
 
         <button
           onClick={toggleInspector}
-          className={`p-1.5 rounded-xl border cursor-pointer transition-colors ${
+          className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-medium cursor-pointer transition-colors ${
             isInspectorOpen
-              ? "bg-green-500/20 border-green-400/35 text-green-200"
-              : "bg-white/[0.06] border-white/10 text-white/65 hover:text-white"
+              ? "bg-green-500/20 border-green-400/35 text-green-200 shadow-inner"
+              : "bg-white/[0.06] border-white/10 text-white/70 hover:text-white"
           }`}
-          title="Toggle IB Exam Companion"
+          title="Toggle IB Exam Companion (⌘I)"
         >
-          <PanelRight className="w-4 h-4" />
+          <PanelRight className="w-3.5 h-3.5 text-green-300" />
+          <span className="hidden sm:inline">Companion</span>
         </button>
       </div>
     </header>

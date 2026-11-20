@@ -99,7 +99,7 @@ const useRawStudyStore = create<StudyStoreState>()(
       studyStreak: 4,
       levelFilter: "all",
 
-      isInspectorOpen: true,
+      isInspectorOpen: false,
       sidebarCollapsed: false,
       isExamSprintActive: false,
       isSpotlightOpen: false,

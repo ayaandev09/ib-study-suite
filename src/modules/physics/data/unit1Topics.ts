@@ -16,12 +16,12 @@ export const THEME_A_TOPICS: TopicData[] = [
     summary:
       "Kinematics describes the motion of bodies through space and time without reference to the forces causing that motion. It establishes the mathematical definitions of displacement (s), initial velocity (u), final velocity (v), acceleration (a), and time (t). For constant acceleration, the five SUVAT equations permit analytical solutions in 1D and independent 2D trajectories (projectile motion under uniform gravity, neglecting air resistance). Velocity-time and displacement-time graphs provide essential geometric representations of motion via gradients and enclosed areas.",
     speedReadBullets: [
-      "Vector vs. Scalar: Displacement, velocity, and acceleration are vectors with magnitude and direction; distance and speed are scalars.",
-      "Gradients & Areas: Displacement-time gradient = velocity (ds/dt); Velocity-time gradient = acceleration (dv/dt); Velocity-time area under curve = change in displacement (\\Delta s); Acceleration-time area = change in velocity (\\Delta v).",
-      "SUVAT Equations (Constant 'a' ONLY): v = u + at; s = ut + 0.5at^2; v^2 = u^2 + 2as; s = 0.5(u + v)t; s = vt - 0.5at^2.",
-      "Projectile Independence: Horizontal motion has zero acceleration (a_x = 0, v_x = u\\cos\\theta = constant), while vertical motion experiences free-fall acceleration (a_y = -g = -9.81 m/s^2).",
-      "Time of Flight: Controlled solely by vertical dynamics: t_{flight} = 2u\\sin\\theta / g (for horizontal launch and landing).",
-      "Terminal Velocity: In real fluids, drag force increases with speed until F_{drag} = mg, resulting in net force F_{net} = 0 and constant velocity.",
+      "Vector vs. Scalar: Displacement ($s$), velocity ($v$), and acceleration ($a$) are vectors with magnitude and direction; distance and speed are scalars.",
+      "Gradients & Areas: Displacement-time gradient = velocity ($\\frac{ds}{dt}$); Velocity-time gradient = acceleration ($\\frac{dv}{dt}$); Velocity-time area under curve = change in displacement ($\\Delta s$); Acceleration-time area = change in velocity ($\\Delta v$).",
+      "SUVAT Equations (Constant $a$ ONLY): $v = u + at$, $s = ut + \\frac{1}{2}at^2$, $v^2 = u^2 + 2as$, $s = \\frac{u + v}{2}t$, $s = vt - \\frac{1}{2}at^2$.",
+      "Projectile Independence: Horizontal motion has zero acceleration ($a_x = 0$, $v_x = u\\cos\\theta = \\text{constant}$), while vertical motion experiences free-fall acceleration ($a_y = -g = -9.81\\text{ m s}^{-2}$).",
+      "Time of Flight: Controlled solely by vertical dynamics: $t_{\\text{flight}} = \\frac{2u\\sin\\theta}{g}$ (for horizontal launch and landing).",
+      "Terminal Velocity: In real fluids, drag force increases with speed until $F_{\\text{drag}} = mg$, resulting in net force $F_{\\text{net}} = 0$ and constant velocity.",
     ],
     primer5Min:
       "When tackling kinematics problems, always establish an explicit coordinate frame (+y upwards, +x forwards). Write down your 5 SUVAT variables: s, u, v, a, t. Identify which 3 are given and which one is needed. If acceleration is non-constant, you cannot use SUVAT—you must use graph calculus (tangent gradient or counting grid squares under the curve). In projectile problems, never mix horizontal and vertical components: time (t) is the sole scalar parameter bridging x and y axes.",

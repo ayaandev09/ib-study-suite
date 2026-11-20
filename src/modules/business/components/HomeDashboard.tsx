@@ -27,7 +27,7 @@ type Tile = {
 
 const TILES: Tile[] = [
   { id: "focus", title: "Syllabus Topics", blurb: "Units 1 to 5 + Business Management Toolkit", tint: "tint-blue", icon: <LayoutGrid className="w-6 h-6" />, span: "sm:col-span-2" },
-  { id: "matrix", title: "CUEGIS & Concept Matrix", blurb: "Change, Culture, Ethics, Globalization, Innovation, Strategy", tint: "tint-rose", icon: <Network className="w-6 h-6" />, span: "" },
+  { id: "matrix", title: "CCES & Concept Matrix", blurb: "Creativity, Change, Ethics, Sustainability", tint: "tint-rose", icon: <Network className="w-6 h-6" />, span: "" },
   { id: "revision", title: "Active Recall Hub", blurb: "Flashcard decks, formulas & Paper 1/2 models", tint: "tint-emerald", icon: <GraduationCap className="w-6 h-6" />, span: "" },
   { id: "lexicon", title: "Terms & Theorists", blurb: "Maslow, Taylor, Ansoff, Porter, Lewin & BMT glossary", tint: "tint-sky", icon: <Library className="w-6 h-6" />, span: "" },
   { id: "stream", title: "Syllabus Checklist", blurb: "Track every unit and subunit", tint: "tint-orange", icon: <Layers className="w-6 h-6" />, span: "sm:col-span-2" },
